@@ -1,6 +1,7 @@
 from datetime import datetime, timezone
 from fastapi import Request, Depends
 from jose import jwt, JWTError, ExpiredSignatureError
+from loguru import logger
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.auth.dao import UsersDAO
@@ -16,6 +17,7 @@ from app.exceptions import (
 def get_access_token(request: Request) -> str:
     """Извлекаем access_token из кук."""
     token = request.cookies.get('user_access_token')
+    logger.info("Пытаюсь извлечь токен авторизации")
     if not token:
         raise TokenNoFoundException
     return token
@@ -24,6 +26,7 @@ def get_access_token(request: Request) -> str:
 def get_refresh_token(request: Request) -> str:
     """Извлекаем refresh_token из кук."""
     token = request.cookies.get('user_refresh_token')
+    logger.info("Пытаюсь извлечь токен обновления")
     if not token:
         raise TokenNoFoundException
     return token
@@ -35,6 +38,7 @@ async def check_refresh_token(
 ) -> User:
     """ Проверяем refresh_token и возвращаем пользователя."""
     try:
+        logger.info("Проверка рефреш токена")
         payload = jwt.decode(
             token,
             settings.auth_jwt.SECRET_KEY,
@@ -60,6 +64,7 @@ async def get_current_user(
     """Проверяем access_token и возвращаем пользователя."""
     try:
         # Декодируем токен
+        logger.info("Проверка текущего пользователя")
         payload = jwt.decode(token, settings.auth_jwt.SECRET_KEY, algorithms=[settings.auth_jwt.ALGORITHM])
     except ExpiredSignatureError:
         raise TokenExpiredException
@@ -84,6 +89,7 @@ async def get_current_user(
 
 async def get_current_admin_user(current_user: User = Depends(get_current_user)) -> User:
     """Проверяем права пользователя как администратора."""
+    logger.info("Проверка на права администратора")
     if current_user.is_admin:
         return current_user
     raise ForbiddenException

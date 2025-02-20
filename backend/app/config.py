@@ -1,4 +1,6 @@
 import os
+
+from loguru import logger
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
@@ -51,4 +53,5 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(extra="allow")
 
 
+logger.info("Формируем окружение переменных (settings)")
 settings = Settings()

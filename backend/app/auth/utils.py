@@ -1,3 +1,4 @@
+from loguru import logger
 from passlib.context import CryptContext
 from jose import jwt
 from datetime import datetime, timedelta, timezone
@@ -10,6 +11,7 @@ from app.config import settings
 
 
 def create_tokens(data: dict) -> dict:
+    logger.info("Создание новых токенов")
     # Текущее время в UTC
     now = datetime.now(timezone.utc)
 
@@ -36,6 +38,7 @@ def create_tokens(data: dict) -> dict:
 
 
 async def authenticate_user(session: AsyncSession, email: EmailStr, password: str):
+    logger.info("Аутентификация пользователя")
     user = await UsersDAO.find_one_or_none(session=session, email=email)
     if not user or verify_password(plain_password=password, hashed_password=user.password) is False:
         return None
@@ -43,6 +46,7 @@ async def authenticate_user(session: AsyncSession, email: EmailStr, password: st
 
 
 def set_tokens(response: Response, user_id: int):
+    logger.info("Установка токенов")
     new_tokens = create_tokens(data={"sub": str(user_id)})
     access_token = new_tokens.get('access_token')
     refresh_token = new_tokens.get("refresh_token")
@@ -68,8 +72,10 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 def get_password_hash(password: str) -> str:
+    logger.info("Получение хеша пароля")
     return pwd_context.hash(password)
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
+    logger.info("Проверка пароля")
     return pwd_context.verify(plain_password, hashed_password)
