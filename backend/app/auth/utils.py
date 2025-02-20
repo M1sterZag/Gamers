@@ -2,6 +2,10 @@ from passlib.context import CryptContext
 from jose import jwt
 from datetime import datetime, timedelta, timezone
 from fastapi.responses import Response
+from pydantic import EmailStr
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.auth.dao import UsersDAO
 from app.config import settings
 
 
@@ -31,7 +35,8 @@ def create_tokens(data: dict) -> dict:
     return {"access_token": access_token, "refresh_token": refresh_token}
 
 
-async def authenticate_user(user, password):
+async def authenticate_user(session: AsyncSession, email: EmailStr, password: str):
+    user = await UsersDAO.find_one_or_none(session=session, email=email)
     if not user or verify_password(plain_password=password, hashed_password=user.password) is False:
         return None
     return user

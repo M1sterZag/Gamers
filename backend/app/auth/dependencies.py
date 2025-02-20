@@ -6,9 +6,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.auth.dao import UsersDAO
 from app.auth.models import User
 from app.config import settings
-from app.dependencies.dao_dep import get_session_without_commit
+from app.dao.dependencies import get_session_without_commit
 from app.exceptions import (
-    TokenNoFound, NoJwtException, TokenExpiredException, NoUserIdException, ForbiddenException, UserNotFoundException
+    TokenNoFoundException, NoJwtException, TokenExpiredException, NoUserIdException, ForbiddenException,
+    UserNotFoundException
 )
 
 
@@ -16,7 +17,7 @@ def get_access_token(request: Request) -> str:
     """Извлекаем access_token из кук."""
     token = request.cookies.get('user_access_token')
     if not token:
-        raise TokenNoFound
+        raise TokenNoFoundException
     return token
 
 
@@ -24,7 +25,7 @@ def get_refresh_token(request: Request) -> str:
     """Извлекаем refresh_token из кук."""
     token = request.cookies.get('user_refresh_token')
     if not token:
-        raise TokenNoFound
+        raise TokenNoFoundException
     return token
 
 
@@ -43,7 +44,7 @@ async def check_refresh_token(
         if not user_id:
             raise NoJwtException
 
-        user = await UsersDAO(session).find_one_or_none_by_id(data_id=int(user_id))
+        user = await UsersDAO.find_one_or_none_by_id(session=session, data_id=int(user_id))
         if not user:
             raise NoJwtException
 
@@ -75,7 +76,7 @@ async def get_current_user(
     if not user_id:
         raise NoUserIdException
 
-    user = await UsersDAO(session).find_one_or_none_by_id(data_id=int(user_id))
+    user = await UsersDAO.find_one_or_none_by_id(session=session, data_id=int(user_id))
     if not user:
         raise UserNotFoundException
     return user

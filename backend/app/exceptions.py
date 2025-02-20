@@ -37,7 +37,7 @@ InvalidTokenFormatException = HTTPException(
 )
 
 # Токен отсутствует в заголовке
-TokenNoFound = HTTPException(
+TokenNoFoundException = HTTPException(
     status_code=status.HTTP_400_BAD_REQUEST,
     detail='Токен отсутствует в заголовке'
 )
