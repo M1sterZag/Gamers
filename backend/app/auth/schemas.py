@@ -11,9 +11,9 @@ class User(BaseModel):
 
 class SUserRegister(User):
     email: EmailStr = Field(..., description="Электронная почта")
-    password: str = Field(..., min_length=8, max_length=50, description="Пароль, от 8 до 50 знаков")
-    confirm_password: str = Field(..., min_length=8, max_length=50, description="Пароль, от 8 до 50 знаков")
-    username: str = Field(..., min_length=3, max_length=50, description="Имя, от 3 до 50 символов")
+    password: str = Field(..., min_length=8, max_length=255, description="Пароль, от 8 до 255 знаков")
+    confirm_password: str = Field(..., min_length=8, max_length=255, description="Пароль, от 8 до 255 знаков")
+    username: str = Field(..., min_length=3, max_length=60, description="Имя, от 3 до 60 символов")
 
     @model_validator(mode="after")
     def check_password(self):
@@ -25,12 +25,12 @@ class SUserRegister(User):
 
 class SUserAuth(User):
     email: EmailStr = Field(..., description="Электронная почта")
-    password: str = Field(..., min_length=8, max_length=50, description="Пароль, от 8 до 50 знаков")
+    password: str = Field(..., min_length=8, max_length=60, description="Пароль, от 8 до 60 знаков")
 
 
 class SUserRead(User):
     id: int = Field(..., description="Идентификатор пользователя")
-    username: str = Field(..., min_length=3, max_length=50, description="Имя, от 3 до 50 символов")
+    username: str = Field(..., min_length=3, max_length=60, description="Имя, от 3 до 60 символов")
     avatar: str | None = None
     is_active: bool = Field(..., description="Отстранение пользователя")
     is_admin: bool = Field(..., description="Права пользователя")
