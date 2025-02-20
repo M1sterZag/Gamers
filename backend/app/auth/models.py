@@ -14,6 +14,3 @@ class User(Base):
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
     is_admin: Mapped[bool] = mapped_column(Boolean, default=False)
     created_at: Mapped[Date] = mapped_column(Date, server_default=text("CURRENT_DATE"))
-
-    # def __repr__(self):
-    #     return f"User(id={self.id}, username={self.username}, email={self.email})"
