@@ -1,7 +1,11 @@
+<template>
+  <div class="min-h-screen bg-fon text-text font-montserrat">
+    <router-view/>
+  </div>
+</template>
+
 <script setup>
-import UserList from "./components/UserList.vue";
 </script>
 
-<template>
-  <UserList />
-</template>
+<style scoped>
+</style>
