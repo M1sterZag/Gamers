@@ -104,7 +104,7 @@
 
     <div class="advantages mt-[45px]">
       <!-- Заголовок и иконка в одну линию -->
-      <div class="text-icon flex items-start gap-1">
+      <div class="text-icon flex items-center gap-1">
         <h2 class="text-[32px] font-semibold text-text">Преимущества подписки Gamers+</h2>
         <svg xmlns="http://www.w3.org/2000/svg" class="w-[40px] h-[40px] text-primary" viewBox="0 0 256 256">
           <path fill="currentColor"

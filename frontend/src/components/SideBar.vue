@@ -1,6 +1,8 @@
 <template>
   <aside class="p-[40px] flex flex-col items-center justify-between !bg-secondary h-screen overflow-y-auto">
-    <h2 class="text-text text-s32 font-semibold">GAMERS</h2>
+    <router-link to="/">
+      <h2 class="text-text text-s32 font-semibold">GAMERS</h2>
+    </router-link>
 
     <!-- Навигация -->
     <ul class="my-auto space-y-4">
