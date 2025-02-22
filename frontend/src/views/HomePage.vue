@@ -5,13 +5,18 @@
       <h1 class="text-left text-[48px] font-semibold text-text">Добро пожаловать в Gamers!</h1>
       <!-- Правая часть с кнопками -->
       <div class="flex items-start gap-4">
-        <button
-            class="bg-accent !text-secondary py-2 px-4 rounded-lg font-medium text-[20px] hover:bg-accent_hover">
-          Вход
-        </button>
-        <button class="bg-[#50fa7b] text-[#1b1c1e] py-2 px-4 rounded-lg font-medium text-[20px] hover:bg-accent_hover">
-          Регистрация
-        </button>
+        <router-link to="/login">
+          <button
+              class="bg-accent !text-secondary py-2 px-4 rounded-lg font-medium text-[20px] hover:bg-accent_hover">
+            Вход
+          </button>
+        </router-link>
+        <router-link to="/register">
+          <button
+              class="bg-[#50fa7b] text-[#1b1c1e] py-2 px-4 rounded-lg font-medium text-[20px] hover:bg-accent_hover">
+            Регистрация
+          </button>
+        </router-link>
       </div>
     </div>
 
@@ -25,12 +30,14 @@
         <hr class="w-full h-[2px] bg-primary border-0 my-3">
         <div class="flex items-center gap-2 my-auto">
           <p class="text-s16">Находите тиммейтов по предпочтениям</p>
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-               stroke="currentColor"
-               class="w-[40px] h-[40px] flex-shrink-0 text-accent hover:text-accent_hover cursor-pointer">
-            <path stroke-linecap="round" stroke-linejoin="round"
-                  d="m12.75 15 3-3m0 0-3-3m3 3h-7.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
-          </svg>
+          <router-link to="/create-team">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                 stroke="currentColor"
+                 class="w-[40px] h-[40px] flex-shrink-0 text-accent hover:text-accent_hover cursor-pointer">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                    d="m12.75 15 3-3m0 0-3-3m3 3h-7.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
+            </svg>
+          </router-link>
         </div>
       </div>
 
@@ -40,12 +47,14 @@
         <hr class="w-full h-[2px] bg-primary border-0 my-3">
         <div class="flex items-center gap-2 my-auto">
           <p class="text-s16">Общайтесь и находите друзей</p>
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-               stroke="currentColor"
-               class="w-[40px] h-[40px] flex-shrink-0 text-accent hover:text-accent_hover cursor-pointer">
-            <path stroke-linecap="round" stroke-linejoin="round"
-                  d="m12.75 15 3-3m0 0-3-3m3 3h-7.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
-          </svg>
+          <router-link to="/chats">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                 stroke="currentColor"
+                 class="w-[40px] h-[40px] flex-shrink-0 text-accent hover:text-accent_hover cursor-pointer">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                    d="m12.75 15 3-3m0 0-3-3m3 3h-7.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
+            </svg>
+          </router-link>
         </div>
       </div>
 
@@ -54,13 +63,15 @@
         <p class="text-s20">Участвуйте</p>
         <hr class="w-full h-[2px] bg-primary border-0 my-3">
         <div class="flex items-center gap-2 my-auto">
-          <p class="text-s16">Принимайте участие в турнирах</p>
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-               stroke="currentColor"
-               class="w-[40px] h-[40px] flex-shrink-0 text-accent hover:text-accent_hover cursor-pointer">
-            <path stroke-linecap="round" stroke-linejoin="round"
-                  d="m12.75 15 3-3m0 0-3-3m3 3h-7.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
-          </svg>
+          <p class="text-s16">Заходите в новую команду</p>
+          <router-link to="/teams">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                 stroke="currentColor"
+                 class="w-[40px] h-[40px] flex-shrink-0 text-accent hover:text-accent_hover cursor-pointer">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                    d="m12.75 15 3-3m0 0-3-3m3 3h-7.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
+            </svg>
+          </router-link>
         </div>
       </div>
 
@@ -69,22 +80,26 @@
         <p class="text-s20">Выделяйтесь</p>
         <hr class="w-full h-[2px] bg-primary border-0 my-3">
         <div class="flex items-center gap-2 my-auto">
-          <p class="text-s16">Присмотритесь к прeмиум-подписке</p>
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-               stroke="currentColor"
-               class="w-[40px] h-[40px] flex-shrink-0 text-accent hover:text-accent_hover cursor-pointer">
-            <path stroke-linecap="round" stroke-linejoin="round"
-                  d="m12.75 15 3-3m0 0-3-3m3 3h-7.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
-          </svg>
+          <p class="text-s16">Присмотритесь к премиум-подписке</p>
+          <router-link to="/premium">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                 stroke="currentColor"
+                 class="w-[40px] h-[40px] flex-shrink-0 text-accent hover:text-accent_hover cursor-pointer">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                    d="m12.75 15 3-3m0 0-3-3m3 3h-7.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
+            </svg>
+          </router-link>
         </div>
       </div>
     </div>
 
     <div class="flex justify-center items-center mt-8">
-      <button
-          class="bg-accent !text-secondary py-2 px-4 rounded-lg font-medium text-[20px] hover:bg-accent_hover">
-        Начать
-      </button>
+      <router-link to="/register">
+        <button
+            class="bg-accent !text-secondary py-2 px-4 rounded-lg font-medium text-[20px] hover:bg-accent_hover">
+          Начать
+        </button>
+      </router-link>
     </div>
 
     <div class="advantages mt-[45px]">
@@ -140,15 +155,17 @@
     </div>
 
     <div class="flex justify-center items-center mt-8">
-      <button
-          class="bg-accent !text-secondary py-2 px-4 rounded-lg font-medium text-[20px] hover:bg-accent_hover">
-        Оформить
-      </button>
+      <router-link to="/premium">
+        <button
+            class="bg-accent !text-secondary py-2 px-4 rounded-lg font-medium text-[20px] hover:bg-accent_hover">
+          Оформить
+        </button>
+      </router-link>
     </div>
 
     <div class="prices grid grid-cols-3 gap-4 justify-center mt-[45px]">
-      <div
-          class="card !bg-secondary rounded-lg p-[32px] justify-center items-start border-secondary border-2 hover:border-accent flex flex-col">
+      <!-- Карточка 1 -->
+      <div class="card !bg-secondary rounded-lg p-[32px] border-secondary border-2 hover:border-accent flex flex-col">
         <h1 class="text-s32 font-medium text-text">Месяц</h1>
         <div class="flex items-baseline gap-1">
           <p class="text-s48 font-medium text-primary">300₽</p>
@@ -156,26 +173,23 @@
         </div>
         <p class="text-s16 text-text mt-2">Хороший план чтобы начать пользоваться сервисом</p>
 
-        <ul class="text-text text-s16 mt-3">
+        <ul class="text-text text-s16 mt-3 flex-grow">
           <li class="flex items-center gap-1">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                 class="text-primary">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="text-primary">
               <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
                     d="m19.75 7.018l-9.257 9.257a1 1 0 0 1-1.414 0L4.25 11.446"/>
             </svg>
             <span>Преимущество 1</span>
           </li>
           <li class="flex items-center gap-1 mt-2">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                 class="text-primary">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="text-primary">
               <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
                     d="m19.75 7.018l-9.257 9.257a1 1 0 0 1-1.414 0L4.25 11.446"/>
             </svg>
             <span>Преимущество 2</span>
           </li>
           <li class="flex items-center gap-1 mt-2">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                 class="text-primary">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="text-primary">
               <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
                     d="m19.75 7.018l-9.257 9.257a1 1 0 0 1-1.414 0L4.25 11.446"/>
             </svg>
@@ -184,14 +198,17 @@
         </ul>
 
         <div class="mt-4 w-full">
-          <button
-              class="bg-accent !text-secondary py-2 px-4 rounded-lg font-medium text-[20px] hover:bg-accent_hover w-full">
-            Купить
-          </button>
+          <router-link to="/premium">
+            <button
+                class="bg-accent !text-secondary py-2 px-4 rounded-lg font-medium text-[20px] hover:bg-accent_hover w-full">
+              Купить
+            </button>
+          </router-link>
         </div>
       </div>
-      <div
-          class="card !bg-secondary rounded-lg p-[32px] justify-center items-start border-secondary border-2 hover:border-accent flex flex-col">
+
+      <!-- Карточка 2 -->
+      <div class="card !bg-secondary rounded-lg p-[32px] border-secondary border-2 hover:border-accent flex flex-col">
         <h1 class="text-s32 font-medium text-text">3 Месяца</h1>
         <div class="flex items-baseline gap-1">
           <p class="text-s48 font-medium text-primary">300₽</p>
@@ -200,26 +217,23 @@
         <p class="text-s16 text-text mt-2">Идеальный выбор для тех, кто хочет оценить все возможности сервиса с
           выгодой!</p>
 
-        <ul class="text-text text-s16 mt-3">
+        <ul class="text-text text-s16 mt-3 flex-grow">
           <li class="flex items-center gap-1">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                 class="text-primary">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="text-primary">
               <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
                     d="m19.75 7.018l-9.257 9.257a1 1 0 0 1-1.414 0L4.25 11.446"/>
             </svg>
             <span>Преимущество 1</span>
           </li>
           <li class="flex items-center gap-1 mt-2">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                 class="text-primary">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="text-primary">
               <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
                     d="m19.75 7.018l-9.257 9.257a1 1 0 0 1-1.414 0L4.25 11.446"/>
             </svg>
             <span>Преимущество 2</span>
           </li>
           <li class="flex items-center gap-1 mt-2">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                 class="text-primary">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="text-primary">
               <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
                     d="m19.75 7.018l-9.257 9.257a1 1 0 0 1-1.414 0L4.25 11.446"/>
             </svg>
@@ -228,14 +242,17 @@
         </ul>
 
         <div class="mt-4 w-full">
-          <button
-              class="bg-accent !text-secondary py-2 px-4 rounded-lg font-medium text-[20px] hover:bg-accent_hover w-full">
-            Купить
-          </button>
+          <router-link to="/premium">
+            <button
+                class="bg-accent !text-secondary py-2 px-4 rounded-lg font-medium text-[20px] hover:bg-accent_hover w-full">
+              Купить
+            </button>
+          </router-link>
         </div>
       </div>
-      <div
-          class="card !bg-secondary rounded-lg p-[32px] justify-center items-start border-secondary border-2 hover:border-accent flex flex-col">
+
+      <!-- Карточка 3 -->
+      <div class="card !bg-secondary rounded-lg p-[32px] border-secondary border-2 hover:border-accent flex flex-col">
         <h1 class="text-s32 font-medium text-text">Год</h1>
         <div class="flex items-baseline gap-1">
           <p class="text-s48 font-medium text-primary">300₽</p>
@@ -243,26 +260,23 @@
         </div>
         <p class="text-s16 text-text mt-2">Самый выгодный план для тех, кто ценит качество и долгосрочные решения.</p>
 
-        <ul class="text-text text-s16 mt-3">
+        <ul class="text-text text-s16 mt-3 flex-grow">
           <li class="flex items-center gap-1">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                 class="text-primary">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="text-primary">
               <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
                     d="m19.75 7.018l-9.257 9.257a1 1 0 0 1-1.414 0L4.25 11.446"/>
             </svg>
             <span>Преимущество 1</span>
           </li>
           <li class="flex items-center gap-1 mt-2">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                 class="text-primary">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="text-primary">
               <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
                     d="m19.75 7.018l-9.257 9.257a1 1 0 0 1-1.414 0L4.25 11.446"/>
             </svg>
             <span>Преимущество 2</span>
           </li>
           <li class="flex items-center gap-1 mt-2">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                 class="text-primary">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="text-primary">
               <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
                     d="m19.75 7.018l-9.257 9.257a1 1 0 0 1-1.414 0L4.25 11.446"/>
             </svg>
@@ -271,10 +285,12 @@
         </ul>
 
         <div class="mt-4 w-full">
-          <button
-              class="bg-accent !text-secondary py-2 px-4 rounded-lg font-medium text-[20px] hover:bg-accent_hover w-full">
-            Купить
-          </button>
+          <router-link to="/premium">
+            <button
+                class="bg-accent !text-secondary py-2 px-4 rounded-lg font-medium text-[20px] hover:bg-accent_hover w-full">
+              Купить
+            </button>
+          </router-link>
         </div>
       </div>
     </div>
@@ -282,35 +298,6 @@
 </template>
 
 <script setup>
-// import {CheckIcon} from '@heroicons/vue/20/solid'
-
-const tiers = [
-  {
-    name: 'Hobby',
-    id: 'tier-hobby',
-    href: '#',
-    priceMonthly: '$29',
-    description: "The perfect plan if you're just getting started with our product.",
-    features: ['25 products', 'Up to 10,000 subscribers', 'Advanced analytics', '24-hour support response time'],
-    featured: false,
-  },
-  {
-    name: 'Enterprise',
-    id: 'tier-enterprise',
-    href: '#',
-    priceMonthly: '$99',
-    description: 'Dedicated support and infrastructure for your company.',
-    features: [
-      'Unlimited products',
-      'Unlimited subscribers',
-      'Advanced analytics',
-      'Dedicated support representative',
-      'Marketing automations',
-      'Custom integrations',
-    ],
-    featured: true,
-  },
-]
 </script>
 
 <style scoped>
