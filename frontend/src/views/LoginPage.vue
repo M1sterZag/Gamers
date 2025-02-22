@@ -31,7 +31,8 @@
         </button>
       </form>
       <div class="mt-4 text-center">
-        <p>Нет аккаунта? <a href="/register" class="text-accent hover:underline">Регистрация</a></p>
+        <p>Нет аккаунта? <a href="/register" class="text-primary hover:underline visited:text-primary">Регистрация</a>
+        </p>
       </div>
     </div>
   </div>

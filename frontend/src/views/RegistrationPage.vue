@@ -51,7 +51,7 @@
         </button>
       </form>
       <div class="mt-4 text-center">
-        <p>Уже есть аккаунт? <a href="/login" class="text-accent hover:underline">Вход</a></p>
+        <p>Уже есть аккаунт? <a href="/login" class="text-primary hover:underline visited:text-primary">Вход</a></p>
       </div>
     </div>
   </div>

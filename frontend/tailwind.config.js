@@ -8,8 +8,8 @@ export default {
                 primary: "#8244FF",
                 primary_hover: "#8E5FEC",
                 secondary: "#1B1C1E",
-                accent: "#2AE359",
-                accent_hover: "#50FA7B",
+                accent: "#50FA7B",
+                accent_hover: "#2AE359",
                 text: "#E8D8C9",
             },
             fontFamily: {
