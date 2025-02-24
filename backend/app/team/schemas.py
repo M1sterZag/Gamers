@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 from typing import Optional
 from datetime import datetime
 
@@ -12,6 +12,12 @@ class STeamBase(BaseModel):
     chat_id: int = Field(..., description="ID чата команды")
     game_type_id: int = Field(..., description="ID типа игры")
     time: datetime = Field(..., description="Время игры")
+
+    @field_validator("time")
+    def validate_time(self, value):
+        if value < datetime.now():
+            raise ValueError("Время должно быть в будущем")
+        return value
 
 
 class STeamCreate(STeamBase):

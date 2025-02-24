@@ -69,3 +69,8 @@ AccountIsNotActiveException = HTTPException(
     status_code=status.HTTP_403_FORBIDDEN,
     detail="Аккаунт заблокирован или отключен"
 )
+
+TeamNotFoundException = HTTPException(
+    status_code=status.HTTP_404_NOT_FOUND,
+    detail="Team not found"
+)

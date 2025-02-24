@@ -6,6 +6,9 @@ from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 from app.config import settings
 from app.auth.models import User
+from app.chat.models import Chat, ChatMember, Message
+from app.team.models import Team, TeamMember
+from app.game.models import Game, GameType
 from app.dao.database import Base
 
 from alembic import context

@@ -1,9 +1,9 @@
 from fastapi import FastAPI, HTTPException, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
-from starlette.responses import RedirectResponse
 
 from app.auth.router import router as router_auth
-from app.exceptions import TokenExpiredException, TokenNoFoundException
+from app.team.router import router as router_teams
+from app.chat.router import router as router_chats
 
 app = FastAPI()
 
@@ -15,9 +15,9 @@ app.add_middleware(
     allow_headers=["*"]
 )
 
-# app.add_middleware(SessionMiddleware, secret_key=settings.app_settings.app_secret_key)
-
 app.include_router(router_auth, prefix='/auth', tags=['Auth'])
+app.include_router(router_chats, prefix='/ws/chats', tags=['Chats'])
+app.include_router(router_teams, prefix='/teams', tags=['Teams'])
 
 
 @app.get("/")

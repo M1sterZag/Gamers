@@ -10,7 +10,7 @@ from app.config import settings
 from app.dao.dependencies import get_session_without_commit
 from app.exceptions import (
     TokenNoFoundException, NoJwtException, TokenExpiredException, NoUserIdException, ForbiddenException,
-    UserNotFoundException
+    UserNotFoundException, AccountIsNotActiveException
 )
 
 
@@ -93,3 +93,10 @@ async def get_current_admin_user(current_user: User = Depends(get_current_user))
     if current_user.is_admin:
         return current_user
     raise ForbiddenException
+
+
+async def get_current_active_user(current_user: User = Depends(get_current_user)) -> User:
+    logger.info("Проверка пользователя на блокировку")
+    if current_user.is_active:
+        return current_user
+    raise AccountIsNotActiveException

@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from sqlalchemy import Integer, ForeignKey, String, text, Date, Text
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.dao.database import Base
 
@@ -15,6 +15,9 @@ class Message(Base):
     content: Mapped[str] = mapped_column(Text, nullable=False)
     created_at: Mapped[datetime] = mapped_column(Date, server_default=text("CURRENT_DATE"))
 
+    chat = relationship("Chat", back_populates="messages")
+    sender = relationship("User")
+
 
 class Chat(Base):
     __tablename__ = 'chats'
@@ -24,6 +27,10 @@ class Chat(Base):
     owner_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"), nullable=False)
     created_at: Mapped[datetime] = mapped_column(Date, server_default=text("CURRENT_DATE"))
 
+    team = relationship("Team", back_populates="chat", uselist=False)
+    members = relationship("ChatMember", back_populates="chat", cascade="all, delete-orphan")
+    messages = relationship("Message", back_populates="chat", cascade="all, delete-orphan")
+
 
 class ChatMember(Base):
     __tablename__ = 'chat_members'
@@ -31,3 +38,6 @@ class ChatMember(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     chat_id: Mapped[int] = mapped_column(Integer, ForeignKey("chats.id"), nullable=False)
     user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"), nullable=False)
+
+    chat = relationship("Chat", back_populates="members")
+    user = relationship("User")
