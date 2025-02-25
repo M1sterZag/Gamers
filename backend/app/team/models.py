@@ -24,7 +24,7 @@ class Team(Base):
         CheckConstraint('time >= CURRENT_TIMESTAMP', name='check_time_in_future'),
     )
 
-    chat = relationship("Chat", back_populates="team", cascade="all, delete-orphan")
+    chat = relationship("Chat", back_populates="team", cascade="all, delete-orphan", single_parent=True)
     members = relationship("TeamMember", back_populates="team", cascade="all, delete-orphan")
 
 

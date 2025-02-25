@@ -1,6 +1,7 @@
 from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException, status
+from loguru import logger
 from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -19,41 +20,54 @@ router = APIRouter()
 async def create_team(team_data: STeamCreate,
                       current_user: SUserRead = Depends(get_current_active_user),
                       session: AsyncSession = Depends(get_session_with_commit)):
-    new_chat = await ChatDAO.add(
-        session=session,
-        name=team_data.name,
-        owner_id=current_user.id,
-    )
+    try:
+        async with session.begin():  # Начинаем транзакцию вручную
 
-    new_team = await TeamDAO.add(
-        session=session,
-        name=team_data.name,
-        game_id=team_data.game_id,
-        description=team_data.description,
-        max_members=team_data.max_members,
-        owner_id=current_user.id,
-        chat_id=new_chat.id,
-        game_type_id=team_data.game_type_id,
-        time=team_data.time,
-    )
+            # Создаем чат
+            new_chat = await ChatDAO.add(
+                session=session,
+                name=team_data.name,
+                owner_id=current_user.id,
+            )
 
-    await TeamMemberDAO.add(
-        session=session,
-        user_id=current_user.id,
-        team_id=new_team.id,
-    )
+            # Создаем команду с привязкой к чату
+            new_team = await TeamDAO.add(
+                session=session,
+                name=team_data.name,
+                game_id=team_data.game_id,
+                description=team_data.description,
+                max_members=team_data.max_members,
+                owner_id=current_user.id,
+                chat_id=new_chat.id,
+                game_type_id=team_data.game_type_id,
+                time=team_data.time,
+            )
 
-    await ChatMemberDAO.add(
-        session=session,
-        chat_id=new_chat.id,
-        user_id=current_user.id,
-    )
+            # Добавляем создателя команды в команду
+            await TeamMemberDAO.add(
+                session=session,
+                user_id=current_user.id,
+                team_id=new_team.id,
+            )
 
-    return {
-        "message": "Команда успешно создана",
-        "team_id": new_team.id,
-        "chat_id": new_chat.id
-    }
+            # Добавляем создателя в чат
+            await ChatMemberDAO.add(
+                session=session,
+                chat_id=new_chat.id,
+                user_id=current_user.id,
+            )
+
+        # Если все операции успешны, транзакция будет зафиксирована
+        return {
+            "message": "Команда и чат успешно созданы",
+            "team_id": new_team.id,
+            "chat_id": new_chat.id
+        }
+
+    except Exception as e:
+        # В случае ошибки транзакция откатывается
+        logger.error(f"Ошибка при создании команды: {str(e)}")
+        raise HTTPException(status_code=500, detail="Ошибка при создании команды")
 
 
 @router.get("/")
@@ -62,7 +76,7 @@ async def read_teams(session: AsyncSession = Depends(get_session_without_commit)
 
 
 @router.get("/{team_id}")
-async def read_team(team_id: int, session: AsyncSession = Depends(get_session_without_commit)) -> List[STeamRead]:
+async def read_team(team_id: int, session: AsyncSession = Depends(get_session_without_commit)) -> STeamRead:
     return await TeamDAO.find_one_or_none_by_id(session=session, data_id=team_id)
 
 

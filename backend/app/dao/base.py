@@ -69,6 +69,8 @@ class BaseDAO:
         logger.info("Добавляем запись в базу: таблица={}, данные={}", cls.model.__tablename__, values)
         new_instance = cls.model(**values)
         session.add(new_instance)
+        await session.flush()
+        return new_instance
 
     @classmethod
     async def add_many(cls, instances: list[dict], session: AsyncSession):

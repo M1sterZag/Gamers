@@ -1,10 +1,12 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 from typing import Optional
 
 
 class SGameBase(BaseModel):
     name: str = Field(..., min_length=1, max_length=100, description="Название игры")
     avatar: Optional[str] = Field(None, description="Аватар игры")
+
+    model_config = ConfigDict(from_attributes=True)
 
 
 class SGameCreate(SGameBase):
@@ -20,6 +22,8 @@ class SGameRead(SGameBase):
 
 class SGameTypeBase(BaseModel):
     name: str = Field(..., min_length=1, max_length=100, description="Тип игры")
+
+    model_config = ConfigDict(from_attributes=True)
 
 
 class SGameTypeCreate(SGameTypeBase):
