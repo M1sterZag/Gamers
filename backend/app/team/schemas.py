@@ -8,8 +8,6 @@ class STeamBase(BaseModel):
     game_id: int = Field(..., description="ID игры")
     description: Optional[str] = Field(None, max_length=255, description="Описание команды")
     max_members: int = Field(..., description="Максимальное количество участников")
-    # owner_id: int = Field(..., description="ID владельца команды")
-    # chat_id: int = Field(..., description="ID чата команды")
     game_type_id: int = Field(..., description="ID типа игры")
     time: datetime = Field(..., description="Время игры")
 

@@ -1,4 +1,6 @@
 from datetime import date
+from typing import Optional
+
 from pydantic import BaseModel, Field
 
 
@@ -22,7 +24,7 @@ class SMessageRead(SMessageBase):
 
 class SChatBase(BaseModel):
     name: str = Field(..., min_length=1, max_length=100, description="Название чата")
-    owner_id: int = Field(..., description="ID владельца")
+    team_id: Optional[int] = Field(..., description="ID команды")
 
 
 class SChatCreate(SChatBase):

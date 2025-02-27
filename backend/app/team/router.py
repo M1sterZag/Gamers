@@ -23,13 +23,6 @@ async def create_team(team_data: STeamCreate,
     try:
         async with session.begin():  # Начинаем транзакцию вручную
 
-            # Создаем чат
-            new_chat = await ChatDAO.add(
-                session=session,
-                name=team_data.name,
-                owner_id=current_user.id,
-            )
-
             # Создаем команду с привязкой к чату
             new_team = await TeamDAO.add(
                 session=session,
@@ -38,9 +31,15 @@ async def create_team(team_data: STeamCreate,
                 description=team_data.description,
                 max_members=team_data.max_members,
                 owner_id=current_user.id,
-                chat_id=new_chat.id,
                 game_type_id=team_data.game_type_id,
                 time=team_data.time,
+            )
+
+            # Создаем чат
+            new_chat = await ChatDAO.add(
+                session=session,
+                name=team_data.name,
+                team_id=new_team.id,
             )
 
             # Добавляем создателя команды в команду
@@ -95,7 +94,6 @@ async def delete_team(
     return {"message": "Команда и все связанные данные успешно удалены"}
 
 
-# TODO добавить человека в websocket чата
 @router.post("/member/{team_id}")
 async def create_team_member(
         team_id: int,

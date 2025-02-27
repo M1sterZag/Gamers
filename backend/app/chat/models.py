@@ -1,5 +1,4 @@
 from datetime import datetime
-
 from sqlalchemy import Integer, ForeignKey, String, text, Date, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -11,7 +10,7 @@ class Message(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     sender_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"), nullable=False)
-    chat_id: Mapped[int] = mapped_column(Integer, ForeignKey("chats.id"), nullable=False)
+    chat_id: Mapped[int] = mapped_column(Integer, ForeignKey("chats.id", ondelete="CASCADE"), nullable=False)
     content: Mapped[str] = mapped_column(Text, nullable=False)
     created_at: Mapped[datetime] = mapped_column(Date, server_default=text("CURRENT_DATE"))
 
@@ -24,7 +23,7 @@ class Chat(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column(String(100), nullable=False, unique=True)
-    owner_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"), nullable=False)
+    team_id: Mapped[int] = mapped_column(Integer, ForeignKey('teams.id', ondelete="CASCADE"), nullable=True)
     created_at: Mapped[datetime] = mapped_column(Date, server_default=text("CURRENT_DATE"))
 
     team = relationship("Team", back_populates="chat", uselist=False)
@@ -36,8 +35,8 @@ class ChatMember(Base):
     __tablename__ = 'chat_members'
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    chat_id: Mapped[int] = mapped_column(Integer, ForeignKey("chats.id"), nullable=False)
-    user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"), nullable=False)
+    chat_id: Mapped[int] = mapped_column(Integer, ForeignKey("chats.id", ondelete="CASCADE"), nullable=False)
+    user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
 
     chat = relationship("Chat", back_populates="members")
     user = relationship("User")
