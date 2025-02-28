@@ -15,4 +15,23 @@ input:-webkit-autofill:active {
 
 body {
     font-family: 'Montserrat', sans-serif;
+    background-color: #111214;
+}
+
+::-webkit-scrollbar {
+    width: 12px; /* Ширина полосы */
+}
+
+::-webkit-scrollbar-track {
+    background: #1B1C1E; /* Фон дорожки */
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #8244FF; /* Цвет бегунка */
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #8E5FEC; /* Цвет при наведении */
 }

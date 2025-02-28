@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-fon">
+  <div class="min-h-screen flex items-center justify-center">
     <div class="p-8 rounded-brs w-full max-w-sm">
       <h1 class="text-s32 font-montserrat mb-2 text-center font-semibold">Вход</h1>
       <form @submit.prevent="submitForm" class="space-y-4">
