@@ -7,7 +7,7 @@ from app.game.schemas import SGameCreate, SGameRead, SGameTypeCreate, SGameTypeR
 from app.game.dao import GameDAO, GameTypeDAO
 from app.dao.dependencies import get_session_with_commit, get_session_without_commit
 
-router = APIRouter(prefix="/games", tags=["Games"])
+router = APIRouter()
 
 
 # CRUD для игр
@@ -51,7 +51,7 @@ async def delete_game(
 
 
 # CRUD для типов игр
-@router.post("/types/")
+@router.post("/types")
 async def create_game_type(
         game_type_data: SGameTypeCreate,
         admin_user=Depends(get_current_admin_user),
@@ -60,7 +60,7 @@ async def create_game_type(
     return await GameTypeDAO.add(session=session, **game_type_data.model_dump())
 
 
-@router.get("/types/")
+@router.get("/types")
 async def read_game_types(session: AsyncSession = Depends(get_session_without_commit)):
     return await GameTypeDAO.find_all(session=session)
 
