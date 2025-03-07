@@ -11,6 +11,7 @@ export default {
                 primary: "#8244FF",
                 primary_hover: "#8E5FEC",
                 secondary: "#1B1C1E",
+                secondary_hover: "#262729",
                 accent: "#50FA7B",
                 accent_hover: "#2AE359",
                 text: "#E8D8C9",
