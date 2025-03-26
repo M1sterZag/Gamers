@@ -31,7 +31,9 @@
         </button>
       </form>
       <div class="mt-4 text-center">
-        <p>Нет аккаунта? <a href="/register" class="text-primary hover:underline visited:text-primary">Регистрация</a>
+        <p>Нет аккаунта?
+          <router-link to="/register" class="text-primary hover:underline visited:text-primary">Регистрация
+          </router-link>
         </p>
       </div>
     </div>
@@ -39,48 +41,59 @@
 </template>
 
 <script setup>
-import {reactive} from 'vue'
+import {reactive} from 'vue';
+import {useRouter} from 'vue-router';
+import {useAuthStore} from '../stores/auth';
+
+const router = useRouter();
+const authStore = useAuthStore();
 
 const form = reactive({
   email: '',
-  password: ''
-})
+  password: '',
+});
 
 const errors = reactive({
   email: '',
-  password: ''
-})
+  password: '',
+});
 
 function validateForm() {
-  let valid = true
+  let valid = true;
+  errors.email = '';
+  errors.password = '';
 
-  // Очистка ошибок
-  errors.email = ''
-  errors.password = ''
-
-  // Проверка email
   if (!form.email) {
-    errors.email = 'Email обязателен'
-    valid = false
+    errors.email = 'Email обязателен';
+    valid = false;
   } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
-    errors.email = 'Некорректный email'
-    valid = false
+    errors.email = 'Некорректный email';
+    valid = false;
   }
 
-  // Проверка пароля
   if (!form.password) {
-    errors.password = 'Пароль обязателен'
-    valid = false
+    errors.password = 'Пароль обязателен';
+    valid = false;
   }
 
-  return valid
+  return valid;
 }
 
-function submitForm() {
+async function submitForm() {
   if (validateForm()) {
-    console.log('Отправка данных:', {...form})
+    try {
+      await authStore.login(form.email, form.password);
+      await router.push('/'); // Перенаправление на главную страницу
+    } catch (error) {
+      const errorMessage = error.response?.data?.detail || 'Ошибка авторизации';
+      if (errorMessage.includes('Incorrect email or password')) {
+        errors.password = 'Неверный email или пароль';
+      } else if (errorMessage.includes('Account is not active')) {
+        errors.email = 'Аккаунт не активирован';
+      } else {
+        errors.password = errorMessage;
+      }
+    }
   }
 }
 </script>
-
-<style scoped></style>
