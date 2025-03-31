@@ -1,6 +1,5 @@
 <template>
-  <div class="pt-[88px] pr-[64px] pl-[2px]">
-
+  <div v-if="authStore.isAuthenticated" class="pt-[88px] pr-[64px] pl-[2px]">
     <h1 class="text-left text-[48px] font-semibold text-text">Найдите свою идеальную команду!</h1>
 
     <div class="mt-[30px] flex items-center">
@@ -17,7 +16,7 @@
         <input
             type="text"
             v-model="searchQuery"
-            placeholder="Поиск команды..."
+            placeholder="Поиск по названию, игре, типу..."
             class="w-full p-3 pl-10 text-s16 text-text rounded-lg bg-secondary focus:outline-none focus:ring-2 focus:ring-primary placeholder:text-text/50"
         />
       </div>
@@ -54,8 +53,7 @@
         <option value="medium">От 5 до 10</option>
         <option value="large">Больше 10</option>
       </select>
-
-      <label class="flex items-center text-text">
+      <label class="flex items-center p-2 rounded bg-secondary text-text">
         <input type="checkbox" v-model="onlyMyTeams" class="mr-2"/>
         Мои команды
       </label>
@@ -73,12 +71,12 @@
         <!-- Отображение участников -->
         <div class="flex items-center mt-2 mb-4">
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-               class="w-[27px] h-[27px] text-text">
+               class="w-[28px] h-[28px] text-text">
             <path fill="currentColor" fill-rule="evenodd"
                   d="M12 4a8 8 0 0 0-6.96 11.947A4.99 4.99 0 0 1 9 14h6a4.99 4.99 0 0 1 3.96 1.947A8 8 0 0 0 12 4m7.943 14.076q.188-.245.36-.502A9.96 9.96 0 0 0 22 12c0-5.523-4.477-10-10-10S2 6.477 2 12a9.96 9.96 0 0 0 2.057 6.076l-.005.018l.355.413A9.98 9.98 0 0 0 12 22q.324 0 .644-.02a9.95 9.95 0 0 0 5.031-1.745a10 10 0 0 0 1.918-1.728l.355-.413zM12 6a3 3 0 1 0 0 6a3 3 0 0 0 0-6"
                   clip-rule="evenodd"/>
           </svg>
-          <div class="flex ml-1">
+          <div class="flex">
             <template v-for="i in Math.min(team.max_members - 1, 4)" :key="i">
               <svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024"
                    class="w-[25px] h-[25px] text-accent ml-1">
@@ -91,9 +89,18 @@
         </div>
 
         <button
-            class="mt-auto bg-accent !text-secondary py-2 px-4 rounded-lg font-medium text-[16px] hover:bg-accent_hover">
+            v-if="!isTeamMember(team)"
+            class="mt-auto bg-accent !text-secondary py-2 px-4 rounded-lg font-medium text-[16px] hover:bg-accent_hover"
+            @click="joinTeam(team.id)">
           Присоединиться
         </button>
+
+        <router-link
+            v-else
+            :to="`/team/${team.id}`"
+            class="mt-auto bg-primary !text-secondary py-2 px-4 rounded-lg font-medium text-[16px] hover:bg-primary_hover text-center block">
+          На страницу команды
+        </router-link>
       </div>
     </div>
 
@@ -112,7 +119,6 @@
                 required
             />
           </div>
-
           <div>
             <label class="block text-text mb-1">Описание</label>
             <textarea
@@ -121,7 +127,6 @@
                 required
             ></textarea>
           </div>
-
           <div>
             <label class="block text-text mb-1">Игра</label>
             <select
@@ -132,7 +137,6 @@
               <option v-for="game in games" :key="game.id" :value="game.id">{{ game.name }}</option>
             </select>
           </div>
-
           <div>
             <label class="block text-text mb-1">Тип игры</label>
             <select
@@ -143,7 +147,6 @@
               <option v-for="type in gameTypes" :key="type.id" :value="type.id">{{ type.name }}</option>
             </select>
           </div>
-
           <div>
             <label class="block text-text mb-1">Кол-во участников</label>
             <input
@@ -153,7 +156,6 @@
                 required
             />
           </div>
-
           <div>
             <label class="block text-text mb-1">Дата и время</label>
             <input
@@ -163,7 +165,6 @@
                 required
             />
           </div>
-
           <div class="flex justify-between">
             <button
                 type="button"
@@ -182,13 +183,22 @@
         </form>
       </div>
     </div>
-
+  </div>
+  <div v-else class="min-h-screen flex items-center justify-center">
+    <p>Пожалуйста, войдите в систему.
+      <router-link to="/login" class="text-primary hover:underline">Вход</router-link>
+    </p>
   </div>
 </template>
 
 <script setup>
 import {ref, computed, onMounted} from 'vue';
+import {useRouter} from 'vue-router';
+import {useAuthStore} from '../stores/auth';
+import api from '../api';
 
+const router = useRouter();
+const authStore = useAuthStore();
 const teams = ref([]);
 const games = ref([]);
 const gameTypes = ref([]);
@@ -198,75 +208,84 @@ const selectedGameType = ref('');
 const selectedDate = ref('');
 const selectedPlayers = ref('');
 const onlyMyTeams = ref(false);
-const isCreateTeamModalOpen = ref(false);  // Флаг для открытия модального окна
+const isCreateTeamModalOpen = ref(false);
 const newTeam = ref({
   name: '',
   description: '',
   game: '',
   gameType: '',
   maxMembers: 0,
-  time: ''
+  time: '',
 });
 
 const formatDate = (dateStr) => {
   const date = new Date(dateStr);
   return new Intl.DateTimeFormat('ru-RU', {
-    day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit'
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
   }).format(date);
 };
 
-// Загружаем команды, игры и типы игр
+const isTeamMember = (team) => {
+  if (!authStore.user?.id) return false;
+  return team.owner_id === authStore.user.id ||
+      team.members?.some(member => member.user_id === authStore.user.id);
+};
+
 onMounted(async () => {
+  await authStore.checkAuth();
+  if (!authStore.isAuthenticated) {
+    router.push('/login');
+    return;
+  }
+  await loadTeamsAndFilters();
+});
+
+const loadTeamsAndFilters = async () => {
   try {
     const [teamsRes, gamesRes, gameTypesRes] = await Promise.all([
-      fetch('/api/teams'),
-      fetch('/api/games'),
-      fetch('/api/games/types'),
+      api.get('/api/teams'),
+      api.get('/api/games'),
+      api.get('/api/games/types'),
     ]);
 
-    const [teamsData, gamesData, gameTypesData] = await Promise.all([
-      teamsRes.json(),
-      gamesRes.json(),
-      gameTypesRes.json(),
-    ]);
+    games.value = gamesRes.data;
+    gameTypes.value = gameTypesRes.data;
 
-    games.value = gamesData;
-    gameTypes.value = gameTypesData;
-
-    teams.value = teamsData.map(team => ({
+    teams.value = teamsRes.data.map(team => ({
       ...team,
       formattedTime: formatDate(team.time),
-      game: gamesData.find(game => game.id === team.game_id)?.name || 'Неизвестно',
-      gameType: gameTypesData.find(type => type.id === team.game_type_id)?.name || 'Неизвестно',
+      game: games.value.find(game => game.id === team.game_id)?.name || 'Неизвестно',
+      gameType: gameTypes.value.find(type => type.id === team.game_type_id)?.name || 'Неизвестно',
+      isMyTeam: team.owner_id === authStore.user?.id,
+      members: team.members || []
     }));
-
   } catch (error) {
     console.error('Ошибка загрузки данных:', error);
   }
-});
+};
 
 const filteredTeams = computed(() => {
   return teams.value.filter(team => {
     let matches = true;
 
-    // Фильтрация по поисковому запросу
     if (searchQuery.value && !team.name.toLowerCase().includes(searchQuery.value.toLowerCase()) &&
         !team.game.toLowerCase().includes(searchQuery.value.toLowerCase()) &&
         !team.gameType.toLowerCase().includes(searchQuery.value.toLowerCase())) {
       matches = false;
     }
 
-    // Фильтрация по выбранной игре
     if (selectedGame.value && team.game_id !== selectedGame.value) {
       matches = false;
     }
 
-    // Фильтрация по выбранному типу игры
     if (selectedGameType.value && team.game_type_id !== selectedGameType.value) {
       matches = false;
     }
 
-    // Фильтрация по дате
     if (selectedDate.value) {
       const now = new Date();
       const teamDate = new Date(team.time);
@@ -281,7 +300,6 @@ const filteredTeams = computed(() => {
       }
     }
 
-    // Фильтрация по количеству игроков
     if (selectedPlayers.value === 'small' && team.max_members > 5) {
       matches = false;
     }
@@ -292,38 +310,57 @@ const filteredTeams = computed(() => {
       matches = false;
     }
 
-    // Фильтрация по моим командам
-    // if (onlyMyTeams.value && !team.isMyTeam) {
-    //   matches = false;
-    // }
+    if (onlyMyTeams.value && !team.isMyTeam) {
+      matches = false;
+    }
 
     return matches;
   });
 });
 
-// Открытие модального окна для создания команды
 const openCreateTeamForm = () => {
   isCreateTeamModalOpen.value = true;
 };
 
-// Закрытие модального окна
 const closeCreateTeamModal = () => {
   isCreateTeamModalOpen.value = false;
-  // Очистка данных формы
   newTeam.value = {
     name: '',
     description: '',
     game: '',
     gameType: '',
     maxMembers: 0,
-    time: ''
+    time: '',
   };
 };
 
-// Создание команды
-const createTeam = () => {
-  // Логика для сохранения команды (например, отправка данных на сервер)
-  console.log(newTeam.value);
-  closeCreateTeamModal();
+const createTeam = async () => {
+  try {
+    const teamData = {
+      name: newTeam.value.name,
+      description: newTeam.value.description,
+      game_id: newTeam.value.game,
+      game_type_id: newTeam.value.gameType,
+      max_members: parseInt(newTeam.value.maxMembers),
+      time: new Date(newTeam.value.time).toISOString(),
+    };
+    await api.post('/api/teams', teamData);
+    await loadTeamsAndFilters();
+    closeCreateTeamModal();
+  } catch (error) {
+    console.error('Ошибка создания команды:', error);
+  }
+};
+
+const joinTeam = async (teamId) => {
+  try {
+    await api.post(`/api/teams/member/${teamId}`);
+    await loadTeamsAndFilters();
+  } catch (error) {
+    console.error('Ошибка при вступлении в команду:', error);
+    if (error.response?.data?.detail) {
+      alert(error.response.data.detail);
+    }
+  }
 };
 </script>

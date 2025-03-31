@@ -1,6 +1,23 @@
 from pydantic import BaseModel, Field, field_validator
-from typing import Optional
+from typing import Optional, List
 from datetime import datetime, timezone
+
+
+class STeamMemberBase(BaseModel):
+    team_id: int = Field(..., description="ID команды")
+    user_id: int = Field(..., description="ID пользователя")
+
+
+class STeamMemberCreate(STeamMemberBase):
+    pass
+
+
+class STeamMemberRead(STeamMemberBase):
+    id: int = Field(..., description="ID участника команды")
+    joined_at: datetime = Field(..., description="Дата вступления")
+
+    class Config:
+        from_attributes = True
 
 
 class STeamBase(BaseModel):
@@ -29,24 +46,9 @@ class STeamCreate(STeamBase):
 
 class STeamRead(STeamBase):
     id: int = Field(..., description="ID команды")
+    owner_id: int = Field(..., description="ID владельца команды")
+    members: List[STeamMemberRead] = Field(default_factory=list, description="Участники команды")
     created_at: datetime = Field(..., description="Дата создания")
-
-    class Config:
-        from_attributes = True
-
-
-class STeamMemberBase(BaseModel):
-    team_id: int = Field(..., description="ID команды")
-    user_id: int = Field(..., description="ID пользователя")
-
-
-class STeamMemberCreate(STeamMemberBase):
-    pass
-
-
-class STeamMemberRead(STeamMemberBase):
-    id: int = Field(..., description="ID участника команды")
-    joined_at: datetime = Field(..., description="Дата вступления")
 
     class Config:
         from_attributes = True

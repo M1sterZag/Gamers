@@ -4,6 +4,7 @@ import LoginPage from '../views/LoginPage.vue';
 import RegistrationPage from '../views/RegistrationPage.vue';
 import ProfilePage from '../views/ProfilePage.vue';
 import TeamsPage from '../views/TeamsPage.vue';
+import TeamDetails from '../views/TeamDetails.vue';
 import ChatsPage from '../views/ChatsPage.vue';
 import PremiumPage from '../views/PremiumPage.vue';
 import Layout from '../components/Layout.vue';
@@ -22,7 +23,7 @@ const routes = [
     },
     {
         path: '/',
-        component: Layout, // Обёртка с сайдбаром
+        component: Layout,
         children: [
             {
                 path: '',
@@ -33,31 +34,38 @@ const routes = [
                 path: '/teams',
                 name: 'Teams',
                 component: TeamsPage,
-                meta: {requiresAuth: true}, // Требуется авторизация
+                meta: {requiresAuth: true},
             },
             {
-                path: '/chats',
-                name: 'Chats',
-                component: ChatsPage,
-                meta: {requiresAuth: true}, // Требуется авторизация
+                path: '/team/:id',
+                name: 'Team',
+                component: TeamDetails,
+                meta: {requiresAuth: true},
+                props: true,
             },
+            // {
+            //   path: '/chats',
+            //   name: 'Chats',
+            //   component: ChatsPage,
+            //   meta: { requiresAuth: true },
+            // },
             {
                 path: '/profile',
                 name: 'Profile',
                 component: ProfilePage,
-                meta: {requiresAuth: true}, // Требуется авторизация
+                meta: {requiresAuth: true},
             },
-            {
-                path: '/premium',
-                name: 'Premium',
-                component: PremiumPage,
-                meta: {requiresAuth: true}, // Требуется авторизация
-            },
+            // {
+            //   path: '/premium',
+            //   name: 'Premium',
+            //   component: PremiumPage,
+            //   meta: { requiresAuth: true },
+            // },
             {
                 path: '/create-team',
                 name: 'CreateTeam',
-                component: TeamsPage, // Предполагаю, что создание команды — это часть TeamsPage
-                meta: {requiresAuth: true}, // Требуется авторизация
+                component: TeamsPage,
+                meta: {requiresAuth: true},
             },
         ],
     },
@@ -70,14 +78,14 @@ const router = createRouter({
 
 router.beforeEach(async (to, from, next) => {
     const authStore = useAuthStore();
-    await authStore.checkAuth(); // Проверяем авторизацию
+    await authStore.checkAuth();
 
     if (to.meta.requiresAuth && !authStore.isAuthenticated) {
-        next('/login'); // Неавторизованных на защищённые маршруты перенаправляем на логин
+        next('/login');
     } else if (['/login', '/register'].includes(to.path) && authStore.isAuthenticated) {
-        next('/'); // Авторизованных с логина/регистрации перенаправляем на главную
+        next('/');
     } else {
-        next(); // Разрешаем переход
+        next();
     }
 });
 
