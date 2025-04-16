@@ -52,14 +52,14 @@
     <!-- Нижние ссылки -->
     <div class="mt-auto text-center space-y-2 pt-4">
       <p class="text-s12 text-text">2025 © Gamers</p>
-      <router-link to="/privacy-policy"
-                   class="text-text text-s12 hover:text-text visited:text-text hover:underline">
+      <a href="/static/privacy_policy.pdf" download
+         class="text-text text-s12 hover:text-text visited:text-text hover:underline">
         Политика конфиденциальности
-      </router-link>
-      <router-link to="/terms-of-service"
-                   class="text-text text-s12 hover:text-text visited:text-text hover:underline">
+      </a>
+      <a href="/static/terms_of_service.pdf" download
+         class="text-text text-s12 hover:text-text visited:text-text hover:underline">
         Пользовательское соглашение
-      </router-link>
+      </a>
     </div>
   </aside>
 </template>

@@ -1,5 +1,5 @@
 <template>
-  <div class="pt-[88px] pr-[64px]">
+  <div class="pt-[88px] pr-[64px] pb-[20px]">
     <div class="text-and-buttons flex justify-between items-start mb-[30px]">
       <h1 class="text-left text-[48px] font-semibold text-text">Добро пожаловать в Gamers!</h1>
       <!-- Правая часть: кнопки или профиль -->
