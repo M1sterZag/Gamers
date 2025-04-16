@@ -43,6 +43,25 @@
           />
           <p v-if="errors.confirmPassword" class="text-red-500 text-s12">{{ errors.confirmPassword }}</p>
         </div>
+
+        <!-- Чекбокс -->
+        <div class="flex items-center space-x-2">
+          <input
+              v-model="acceptTerms"
+              type="checkbox"
+              class="rounded border-accent text-accent focus:ring-accent"
+              required
+          />
+          <label class="text-s12">
+            Я принимаю
+            <a href="/static/privacy_policy.pdf" download class="text-accent underline">политику
+              конфиденциальности</a>
+            и
+            <a href="/static/terms_of_service.pdf" download class="text-accent underline">пользовательское
+              соглашение</a>.
+          </label>
+        </div>
+
         <button
             type="submit"
             class="max-w-60 p-2 bg-accent hover:bg-accent_hover !text-secondary rounded-brs transition mx-auto block font-semibold"
@@ -60,7 +79,7 @@
 </template>
 
 <script setup>
-import {reactive} from 'vue';
+import {reactive, ref} from 'vue';
 import {useRouter} from 'vue-router';
 import {useAuthStore} from '../stores/auth';
 
@@ -73,6 +92,8 @@ const form = reactive({
   password: '',
   confirmPassword: '',
 });
+
+const acceptTerms = ref(false); // Состояние чекбокса
 
 const errors = reactive({
   email: '',
@@ -117,13 +138,18 @@ function validateForm() {
     valid = false;
   }
 
+  if (!acceptTerms.value) {
+    alert('Вы должны принять политику конфиденциальности и пользовательское соглашение.');
+    valid = false;
+  }
+
   return valid;
 }
 
 async function submitForm() {
   if (validateForm()) {
     try {
-      await authStore.register(form.email, form.username, form.password, form.confirmPassword); // Передаём confirmPassword
+      await authStore.register(form.email, form.username, form.password, form.confirmPassword);
       await router.push('/login');
     } catch (error) {
       const errorMessage = error.response?.data?.detail || 'Ошибка регистрации';
