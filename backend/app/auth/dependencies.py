@@ -16,7 +16,7 @@ from app.exceptions import (
 
 def get_access_token(request: Request) -> str:
     """Извлекаем access_token из кук."""
-    token = request.cookies.get('user_access_token')
+    token = request.cookies.get('access_token')
     logger.info("Пытаюсь извлечь токен авторизации")
     if not token:
         raise TokenNoFoundException
@@ -25,7 +25,7 @@ def get_access_token(request: Request) -> str:
 
 def get_refresh_token(request: Request) -> str:
     """Извлекаем refresh_token из кук."""
-    token = request.cookies.get('user_refresh_token')
+    token = request.cookies.get('refresh_token')
     logger.info("Пытаюсь извлечь токен обновления")
     if not token:
         raise TokenNoFoundException

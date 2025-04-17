@@ -4,7 +4,7 @@ from fastapi import WebSocket
 
 class WebSocketManager:
     def __init__(self):
-        self.active_connections: Dict[int, List[WebSocket]] = {}  # chat_id -> list of WebSocket
+        self.active_connections: Dict[int, List[WebSocket]] = {}
 
     async def connect(self, chat_id: int, websocket: WebSocket):
         await websocket.accept()
@@ -18,7 +18,7 @@ class WebSocketManager:
             if not self.active_connections[chat_id]:  # Если в чате больше никого нет, удаляем
                 del self.active_connections[chat_id]
 
-    async def send_message(self, chat_id: int, message: str):
+    async def broadcast(self, chat_id: int, message: str):
         if chat_id in self.active_connections:
             for connection in self.active_connections[chat_id]:
                 await connection.send_text(message)

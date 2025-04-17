@@ -28,9 +28,9 @@ export const useAuthStore = defineStore('auth', () => {
         try {
             const response = await api.post('/api/auth/login', {email, password});
             if (response.data.ok) {
-                const access = localStorage.getItem('access_token');
-                const refresh = localStorage.getItem('refresh_token');
-                setTokens(access, refresh);
+                const access = response.data.access_token; // Получаем токен из ответа
+                const refresh = response.data.refresh_token;
+                setTokens(access, refresh); // Сохраняем токены в localStorage
                 await fetchUser();
                 isAuthenticated.value = true;
             }
@@ -41,13 +41,13 @@ export const useAuthStore = defineStore('auth', () => {
         }
     }
 
-    async function register(email, username, password, confirmPassword) { // Добавляем confirmPassword
+    async function register(email, username, password, confirmPassword) {
         try {
             const response = await api.post('/api/auth/register', {
                 email,
                 username,
                 password,
-                confirm_password: confirmPassword // Добавляем confirm_password
+                confirm_password: confirmPassword
             });
             return response.data;
         } catch (error) {

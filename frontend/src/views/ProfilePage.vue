@@ -12,7 +12,7 @@
 
     <!-- Аватар, никнейм и кнопка выхода -->
     <div class="flex items-center mt-3">
-      <div class="flex items-center gap-4 bg-secondary p-3 rounded-lg mr-2">
+      <div class="items-center bg-secondary p-3 rounded-lg mr-2">
         <div class="w-16 h-16 rounded-full overflow-hidden">
           <img
               v-if="profileUser?.avatar"

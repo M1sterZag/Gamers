@@ -52,7 +52,7 @@ def set_tokens(response: Response, user_id: int):
     refresh_token = new_tokens.get("refresh_token")
 
     response.set_cookie(
-        key="user_access_token",
+        key="access_token",
         value=access_token,
         httponly=True,
         secure=True,
@@ -60,7 +60,7 @@ def set_tokens(response: Response, user_id: int):
     )
 
     response.set_cookie(
-        key="user_refresh_token",
+        key="refresh_token",
         value=refresh_token,
         httponly=True,
         secure=True,

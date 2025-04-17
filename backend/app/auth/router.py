@@ -4,7 +4,7 @@ from loguru import logger
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.auth.models import User
-from app.auth.utils import authenticate_user, set_tokens
+from app.auth.utils import authenticate_user, set_tokens, create_tokens
 from app.auth.dependencies import get_current_user, get_current_admin_user, check_refresh_token
 from app.dao.dependencies import get_session_with_commit, get_session_without_commit
 from app.exceptions import UserAlreadyExistsException, IncorrectEmailOrPasswordException, AccountIsNotActiveException, \
@@ -12,12 +12,7 @@ from app.exceptions import UserAlreadyExistsException, IncorrectEmailOrPasswordE
 from app.auth.dao import UsersDAO
 from app.auth.schemas import SUserRegister, SUserAuth, SUserRead
 
-# from app.auth.google.router import router as google_router
-
 router = APIRouter()
-
-
-# router.include_router(google_router, prefix="/google")
 
 
 @router.post("/register")
@@ -52,17 +47,18 @@ async def auth_user(
         raise AccountIsNotActiveException
 
     set_tokens(response, user.id)
+
     return {
         'ok': True,
-        'message': 'Авторизация успешна!'
+        'message': 'Авторизация успешна!',
     }
 
 
 @router.post("/logout")
 async def logout(response: Response):
     logger.info("Очистка токенов (выход)")
-    response.delete_cookie("user_access_token")
-    response.delete_cookie("user_refresh_token")
+    response.delete_cookie("access_token")
+    response.delete_cookie("refresh_token")
     return {'message': 'Пользователь успешно вышел из системы'}
 
 

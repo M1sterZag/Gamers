@@ -1,7 +1,7 @@
 <template>
   <div v-if="team" class="team-details pt-[88px] pr-[64px] pl-[2px]">
     <!-- Заголовок -->
-    <h1 class="text-3xl font-bold mb-6">Приятного общения!</h1>
+    <h1 class="text-s32 font-bold mb-6">Приятного общения!</h1>
 
     <!-- Верхний ряд -->
     <div class="flex items-center gap-4 mb-6">
@@ -53,11 +53,9 @@
       </div>
 
       <!-- Правая колонка (чат) -->
-      <div class="flex flex-col h-full">
-        <h3 class="text-lg font-semibold mb-4">Чат команды</h3>
-        <div class="bg-tertiary rounded-lg p-4 flex-grow flex items-center justify-center">
-          <p class="text-text/80">Компонент чата будет здесь</p>
-        </div>
+      <div class="flex flex-col h-full border-4 border-secondary p-2 rounded-lg">
+        <!--        <h3 class="text-lg font-semibold mb-4">Чат команды</h3>-->
+        <Chat :team-id="team.id"/>
       </div>
     </div>
   </div>
@@ -71,6 +69,7 @@ import {ref, onMounted} from 'vue';
 import {useRoute, useRouter} from 'vue-router';
 import {useAuthStore} from '../stores/auth';
 import api from '../api';
+import Chat from "@/components/Chat.vue";
 
 const route = useRoute();
 const router = useRouter();
