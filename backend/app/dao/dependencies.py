@@ -11,11 +11,14 @@ async def get_session_with_commit() -> AsyncGenerator[AsyncSession, None]:
         try:
             logger.info("Получение асинхронной сессии с коммитом")
             yield session
+            logger.info("Фиксация изменений в асинхронной сессии с коммитом")
             await session.commit()
         except Exception:
+            logger.info("Откат изменений асинхронной сессии с коммитом")
             await session.rollback()
             raise
         finally:
+            logger.info("Закрытие асинхронной сессии с коммитом")
             await session.close()
 
 
@@ -26,7 +29,9 @@ async def get_session_without_commit() -> AsyncGenerator[AsyncSession, None]:
             logger.info("Получение асинхронной сессии без коммита")
             yield session
         except Exception:
+            logger.info("Откат изменений асинхронной сессии без коммита")
             await session.rollback()
             raise
         finally:
+            logger.info("Закрытие асинхронной сессии без коммита")
             await session.close()

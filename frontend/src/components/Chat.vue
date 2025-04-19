@@ -59,22 +59,20 @@ let socket = null
 
 // Функция подключения к чату
 const connectToChat = (teamId) => {
-  socket = new WebSocket(`ws://localhost:8000/ws/chats/${teamId}`)
+  socket = new WebSocket(`/ws/${teamId}`)
 
   socket.onopen = () => {
     console.log('WebSocket connected')
   }
 
   socket.onmessage = (event) => {
-    // Парсим входящее сообщение из JSON
     const messageData = JSON.parse(event.data)
-
-    // Добавляем сообщение в массив
+    const isSender = messageData.sender_id === authStore.user.id
     messages.value.push({
       content: messageData.content,
-      sender: messageData.is_sender ? 'You' : 'Other',
+      sender: isSender ? 'You' : 'Other',
       time: messageData.created_at,
-      is_sender: messageData.is_sender
+      is_sender: isSender
     })
   }
 

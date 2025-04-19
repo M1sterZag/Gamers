@@ -9,14 +9,15 @@ from starlette.websockets import WebSocketDisconnect
 from app.auth.dependencies import get_current_active_user_from_token
 from app.chat.dao import ChatDAO, MessageDAO
 from app.chat.web_socket_manager import manager
-from app.dao.dependencies import get_session_with_commit
+from app.dao.database import async_session_maker
+from app.dao.dependencies import get_session_without_commit
 
 router = APIRouter()
 
 
 @router.websocket("/{team_id}")
 async def websocket_endpoint(websocket: WebSocket, team_id: int,
-                             session: AsyncSession = Depends(get_session_with_commit)):
+                             session: AsyncSession = Depends(get_session_without_commit)):
     chat = await ChatDAO.find_one_or_none(session=session, team_id=team_id)
     chat_id = chat.id
     # Извлекаем access_token из cookies WebSocket
@@ -51,19 +52,30 @@ async def websocket_endpoint(websocket: WebSocket, team_id: int,
         while True:
             data = await websocket.receive_text()
             created_at = datetime.now()
-            new_message = await MessageDAO.add(
-                session=session,
-                sender_id=current_user.id,
-                chat_id=chat_id,
-                content=data,
-                created_at=created_at
-            )
+
+            async with async_session_maker() as new_session:
+                try:
+                    new_message = await MessageDAO.add(
+                        session=new_session,
+                        sender_id=current_user.id,
+                        chat_id=chat_id,
+                        content=data,
+                        created_at=created_at
+                    )
+                    await new_session.commit()
+                except Exception:
+                    logger.info("Откат изменений асинхронной сессии функция {websocket_endpoint}")
+                    await new_session.rollback()
+                    raise
+                finally:
+                    logger.info("Закрытие асинхронной сессии функция {websocket_endpoint}")
+                    await new_session.close()
+
             formatted_time = created_at.strftime("%H:%M")
             await manager.broadcast(chat_id, json.dumps({
                 "content": data,
                 "sender_id": current_user.id,
                 "created_at": formatted_time,
-                "is_sender": True
             }))
     except WebSocketDisconnect:
         await manager.disconnect(chat_id, websocket)

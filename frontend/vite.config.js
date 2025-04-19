@@ -23,6 +23,11 @@ export default defineConfig({
                 changeOrigin: true,
                 rewrite: (path) => path.replace(/^\/api/, ''), // Убираем /api, оставляем остальной путь
             },
+            '/ws': {
+                target: 'ws://localhost:8000/ws/chats',
+                changeOrigin: true,
+                rewrite: (path) => path.replace(/^\/ws/, ''),
+            }
         },
     },
 });
