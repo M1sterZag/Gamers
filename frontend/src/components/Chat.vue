@@ -57,22 +57,24 @@ const messages = ref([])
 const newMessage = ref('')
 let socket = null
 
-const connectToChat = (chatId) => {
-  socket = new WebSocket(`ws://localhost:8000/ws/chats/${chatId}`)
+// Функция подключения к чату
+const connectToChat = (teamId) => {
+  socket = new WebSocket(`ws://localhost:8000/ws/chats/${teamId}`)
 
   socket.onopen = () => {
     console.log('WebSocket connected')
   }
 
   socket.onmessage = (event) => {
-    const now = new Date()
-    const time = `${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}`
+    // Парсим входящее сообщение из JSON
+    const messageData = JSON.parse(event.data)
 
+    // Добавляем сообщение в массив
     messages.value.push({
-      content: event.data,
-      sender: 'User',
-      time: time,
-      is_sender: true
+      content: messageData.content,
+      sender: messageData.is_sender ? 'You' : 'Other',
+      time: messageData.created_at,
+      is_sender: messageData.is_sender
     })
   }
 
@@ -85,6 +87,7 @@ const connectToChat = (chatId) => {
   }
 }
 
+// Функция отправки сообщения
 const sendMessage = () => {
   if (socket && socket.readyState === WebSocket.OPEN && newMessage.value.trim()) {
     socket.send(newMessage.value)
@@ -92,10 +95,12 @@ const sendMessage = () => {
   }
 }
 
+// Подключение к чату при монтировании компонента
 onMounted(() => {
   connectToChat(route.params.id)
 })
 
+// Закрытие соединения при размонтировании компонента
 onUnmounted(() => {
   if (socket) {
     socket.close()

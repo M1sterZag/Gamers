@@ -100,3 +100,36 @@ async def get_current_active_user(current_user: User = Depends(get_current_user)
     if current_user.is_active:
         return current_user
     raise AccountIsNotActiveException
+
+
+async def get_current_active_user_from_token(
+        token: str,
+        session: AsyncSession
+) -> User:
+    """Проверяем access_token из WebSocket и возвращаем пользователя."""
+    try:
+        # Декодируем токен
+        logger.info("Проверка текущего пользователя по токену")
+        payload = jwt.decode(token, settings.auth_jwt.SECRET_KEY, algorithms=[settings.auth_jwt.ALGORITHM])
+    except ExpiredSignatureError:
+        raise TokenExpiredException
+    except JWTError:
+        raise NoJwtException
+
+    expire: str = payload.get('exp')
+    expire_time = datetime.fromtimestamp(int(expire), tz=timezone.utc)
+    if (not expire) or (expire_time < datetime.now(timezone.utc)):
+        raise TokenExpiredException
+
+    user_id: str = payload.get('sub')
+    if not user_id:
+        raise NoUserIdException
+
+    user = await UsersDAO.find_one_or_none_by_id(session=session, data_id=int(user_id))
+    if not user:
+        raise UserNotFoundException
+
+    if not user.is_active:
+        raise AccountIsNotActiveException
+
+    return user
