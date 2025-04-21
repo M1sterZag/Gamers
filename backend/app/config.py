@@ -18,7 +18,7 @@ class DBSettings(BaseSettings):
         # postgresql+asyncpg://postgres:postgres@localhost:5432/db
         return f"postgresql+asyncpg://{self.DB_USER}:{self.DB_PASS}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
 
-    model_config = SettingsConfigDict(env_file=f"{BASE_DIR}/.env", extra="allow")
+    model_config = SettingsConfigDict(env_file=f"{BASE_DIR}/../.env", extra="allow")
 
 
 class AuthJWT(BaseSettings):
@@ -26,7 +26,7 @@ class AuthJWT(BaseSettings):
     ALGORITHM: str
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 15
 
-    model_config = SettingsConfigDict(env_file=f"{BASE_DIR}/.env", extra="allow")
+    model_config = SettingsConfigDict(env_file=f"{BASE_DIR}/../.env", extra="allow")
 
 
 class GoogleAuth(BaseSettings):
@@ -34,13 +34,13 @@ class GoogleAuth(BaseSettings):
     google_client_secret: str
     google_redirect_uri: str
 
-    model_config = SettingsConfigDict(env_file=f"{BASE_DIR}/.env", extra="allow")
+    model_config = SettingsConfigDict(env_file=f"{BASE_DIR}/../.env", extra="allow")
 
 
 class AppSettings(BaseSettings):
     app_secret_key: str
 
-    model_config = SettingsConfigDict(env_file=f"{BASE_DIR}/.env", extra="allow")
+    model_config = SettingsConfigDict(env_file=f"{BASE_DIR}/../.env", extra="allow")
 
 
 class Settings(BaseSettings):
