@@ -112,10 +112,24 @@
 
 ## 🚀 Установка и запуск
 
+Для создания миграции базы
+
+```bash
+cd backend
+alembic revision --autogenerate -m "your message"
+```
+
+Для применения последней миграции базы
+
+```bash
+cd backend
+alembic upgrade head
+```
+
 ### 📋 Требования
 
 - Python 3.13+
 - Node.js 18+
 - PostgreSQL 15+
-- Docker (опционально)
+- Docker
 - Git
