@@ -1,5 +1,5 @@
 from datetime import datetime
-from sqlalchemy import Integer, ForeignKey, String, text, Date, Text
+from sqlalchemy import Integer, ForeignKey, String, text, Date, Text, DateTime
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.dao.database import Base
@@ -12,10 +12,10 @@ class Message(Base):
     sender_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"), nullable=False)
     chat_id: Mapped[int] = mapped_column(Integer, ForeignKey("chats.id", ondelete="CASCADE"), nullable=False)
     content: Mapped[str] = mapped_column(Text, nullable=False)
-    created_at: Mapped[datetime] = mapped_column(Date, server_default=text("CURRENT_DATE"))
+    created_at: Mapped[datetime] = mapped_column(DateTime, server_default=text("CURRENT_TIMESTAMP"))
 
     chat = relationship("Chat", back_populates="messages")
-    sender = relationship("User")
+    sender = relationship("User", back_populates="messages", lazy="joined")
 
 
 class Chat(Base):

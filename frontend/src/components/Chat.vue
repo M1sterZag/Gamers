@@ -1,17 +1,24 @@
 <template>
   <div class="flex flex-col h-full">
     <!-- Область для отображения сообщений -->
-    <div class="flex-grow overflow-y-auto p-4 space-y-2">
+    <div class="flex-grow overflow-y-auto p-4 space-y-4">
       <div
           v-for="(msg, index) in messages"
           :key="index"
           :class="[
-            'message rounded-lg p-4 max-w-4/5',
-            msg.is_sender ? 'bg-accent text-secondary self-end' : 'bg-secondary text-text self-start'
+            'flex w-full',
+            msg.is_sender ? 'justify-end' : 'justify-start'
           ]"
       >
-        <strong>{{ msg.sender }}:</strong> {{ msg.content }}
-        <div class="text-s12 text-text/60 mt-1">{{ msg.time }}</div>
+        <div
+            :class="[
+              'message rounded-lg p-4 max-w-[60%]',
+              msg.is_sender ? 'bg-primary text-text' : 'bg-secondary text-text'
+            ]"
+        >
+          <strong>{{ msg.username }}:</strong> {{ msg.content }}
+          <div class="text-s12 text-text mt-1">{{ msg.created_at }}</div>
+        </div>
       </div>
     </div>
 
@@ -70,8 +77,8 @@ const connectToChat = (teamId) => {
     const isSender = messageData.sender_id === authStore.user.id
     messages.value.push({
       content: messageData.content,
-      sender: isSender ? 'You' : 'Other',
-      time: messageData.created_at,
+      username: messageData.username,
+      created_at: messageData.created_at,
       is_sender: isSender
     })
   }

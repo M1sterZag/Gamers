@@ -1,4 +1,4 @@
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.dao.database import Base
 from sqlalchemy import Boolean, Date, Integer, String, text
 
@@ -14,3 +14,5 @@ class User(Base):
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
     is_admin: Mapped[bool] = mapped_column(Boolean, default=False)
     created_at: Mapped[Date] = mapped_column(Date, server_default=text("CURRENT_DATE"))
+
+    messages = relationship("Message", back_populates="sender")

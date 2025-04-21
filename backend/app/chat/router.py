@@ -45,6 +45,7 @@ async def websocket_endpoint(websocket: WebSocket, team_id: int,
             await websocket.send_text(json.dumps({
                 "content": msg.content,
                 "sender_id": msg.sender_id,
+                "username": msg.sender.username,
                 "created_at": msg.created_at.strftime("%H:%M"),
                 "is_sender": msg.sender_id == current_user.id
             }))
@@ -75,7 +76,9 @@ async def websocket_endpoint(websocket: WebSocket, team_id: int,
             await manager.broadcast(chat_id, json.dumps({
                 "content": data,
                 "sender_id": current_user.id,
+                "username": current_user.username,
                 "created_at": formatted_time,
+                "is_sender": True
             }))
     except WebSocketDisconnect:
         await manager.disconnect(chat_id, websocket)
