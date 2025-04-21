@@ -16,5 +16,4 @@ RUN chmod +x /entrypoint.sh
 # Копирование остального кода
 COPY . .
 
-# Команда запуска
-CMD ["sh", "/entrypoint.sh"]
+CMD [ "sh", "./entrypoint.sh" ]

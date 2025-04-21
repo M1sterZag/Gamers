@@ -16,4 +16,12 @@ COPY . .
 # Сборка проекта
 RUN npm run build
 
-CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
+# Этап для nginx
+FROM nginx:stable-alpine
+
+COPY --from=builder /app/dist /usr/share/nginx/html
+
+# Кастомный конфиг для проксирования к backend
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+EXPOSE 80

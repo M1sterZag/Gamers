@@ -253,7 +253,11 @@ const loadTeamsAndFilters = async () => {
     ]);
 
     games.value = gamesRes.data;
+    console.log(gamesRes.data);
     gameTypes.value = gameTypesRes.data;
+    console.log(gameTypesRes.data);
+    console.log(gamesRes);
+
 
     teams.value = teamsRes.data.map(team => ({
       ...team,
