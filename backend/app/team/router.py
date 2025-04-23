@@ -18,7 +18,7 @@ from app.auth.dao import UsersDAO
 router = APIRouter()
 
 
-@router.post("/")
+@router.post("")
 async def create_team(team_data: STeamCreate,
                       current_user: SUserRead = Depends(get_current_active_user),
                       session: AsyncSession = Depends(get_session_with_commit)):
@@ -71,7 +71,7 @@ async def create_team(team_data: STeamCreate,
         raise HTTPException(status_code=500, detail="Ошибка при создании команды")
 
 
-@router.get("/")
+@router.get("")
 async def read_teams(session: AsyncSession = Depends(get_session_without_commit)) -> List[STeamRead]:
     # Получаем все команды
     teams = await TeamDAO.find_all(session=session)
