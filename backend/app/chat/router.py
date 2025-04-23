@@ -18,8 +18,12 @@ router = APIRouter()
 @router.websocket("/{team_id}")
 async def websocket_endpoint(websocket: WebSocket, team_id: int,
                              session: AsyncSession = Depends(get_session_without_commit)):
+    logger.info(f"WebSocket request for team_id: {team_id}")
+    logger.info(f"Cookies received: {websocket.cookies}")
+    
     chat = await ChatDAO.find_one_or_none(session=session, team_id=team_id)
     chat_id = chat.id
+
     # Извлекаем access_token из cookies WebSocket
     access_token = websocket.cookies.get("access_token")
     if not access_token:

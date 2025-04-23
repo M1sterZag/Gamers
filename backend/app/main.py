@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, Request, Response
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.auth.router import router as router_auth
@@ -10,8 +10,7 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    # allow_origins=["http://localhost:5173", "*"],
-    allow_origins=["*"],
+    allow_origins=["http://localhost:3000", "http://localhost", "http://frontend"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"]

@@ -11,7 +11,7 @@ router = APIRouter()
 
 
 # CRUD для игр
-@router.post("/")
+@router.post("")
 async def create_game(
         game_data: SGameCreate,
         admin_user=Depends(get_current_admin_user),
@@ -20,7 +20,7 @@ async def create_game(
     return await GameDAO.add(session=session, **game_data.model_dump())
 
 
-@router.get("/")
+@router.get("")
 async def read_games(session: AsyncSession = Depends(get_session_without_commit)):
     return await GameDAO.find_all(session=session)
 
