@@ -1,5 +1,7 @@
 #!/bin/sh
 
+# Если backend контейнер не может этот скрипт нужно поменять кодировку этого файла из CRLF на LF (linux система)
+
 # Ждем, пока база данных станет доступной
 echo "Waiting for database to be ready..."
 until pg_isready -h db -U ${DB_USER}; do
