@@ -194,6 +194,7 @@ async def create_team_member(
     # Добавляем пользователя в команду
     await TeamMemberDAO.add(session=session, user_id=current_user.id, team_id=team_id)
 
+    # TODO поправить вход в команду
     # Добавляем пользователя в чат команды
     await ChatMemberDAO.add(session=session, user_id=current_user.id, chat_id=team.chat_id)
 

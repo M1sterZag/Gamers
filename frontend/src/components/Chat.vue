@@ -66,7 +66,7 @@ let socket = null
 
 // Функция подключения к чату
 const connectToChat = (teamId) => {
-  socket = new WebSocket(`/ws/${teamId}`)
+  socket = new WebSocket(`/ws/chats/${teamId}`)
 
   socket.onopen = () => {
     console.log('WebSocket connected')
