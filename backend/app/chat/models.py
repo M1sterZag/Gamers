@@ -9,7 +9,7 @@ class Message(Base):
     __tablename__ = 'messages'
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    sender_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"), nullable=False)
+    sender_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     chat_id: Mapped[int] = mapped_column(Integer, ForeignKey("chats.id", ondelete="CASCADE"), nullable=False)
     content: Mapped[str] = mapped_column(Text, nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime, server_default=text("CURRENT_TIMESTAMP"))
@@ -39,4 +39,4 @@ class ChatMember(Base):
     user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
 
     chat = relationship("Chat", back_populates="members")
-    user = relationship("User")
+    user = relationship("User", back_populates="chat_memberships")
