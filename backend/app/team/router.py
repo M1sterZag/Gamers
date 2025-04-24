@@ -194,11 +194,16 @@ async def create_team_member(
     # Добавляем пользователя в команду
     await TeamMemberDAO.add(session=session, user_id=current_user.id, team_id=team_id)
 
-    # TODO поправить вход в команду
-    # Добавляем пользователя в чат команды
-    await ChatMemberDAO.add(session=session, user_id=current_user.id, chat_id=team.chat_id)
-
-    return {"message": "Пользователь успешно добавлен в команду"}
+    # Ищем чат и добавляем пользователя в чат команды
+    chat = await ChatDAO.find_one_or_none(session=session, team_id=team.id)
+    if chat:
+        await ChatMemberDAO.add(session=session, user_id=current_user.id, chat_id=chat.id)
+        return {"message": "Пользователь успешно добавлен в команду"}
+    else:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Чат команды не найден"
+        )
 
 
 @router.delete("/member/{team_id}")
