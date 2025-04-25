@@ -14,8 +14,7 @@ class Message(Base):
     content: Mapped[str] = mapped_column(Text, nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime, server_default=text("CURRENT_TIMESTAMP"))
 
-    chat = relationship("Chat", back_populates="messages")
-    sender = relationship("User", back_populates="messages", lazy="joined")
+    sender = relationship("User", lazy="joined")
 
 
 class Chat(Base):
@@ -26,10 +25,6 @@ class Chat(Base):
     team_id: Mapped[int] = mapped_column(Integer, ForeignKey('teams.id', ondelete="CASCADE"), nullable=True)
     created_at: Mapped[datetime] = mapped_column(Date, server_default=text("CURRENT_DATE"))
 
-    team = relationship("Team", back_populates="chat", uselist=False)
-    members = relationship("ChatMember", back_populates="chat", cascade="all, delete-orphan")
-    messages = relationship("Message", back_populates="chat", cascade="all, delete-orphan")
-
 
 class ChatMember(Base):
     __tablename__ = 'chat_members'
@@ -37,6 +32,3 @@ class ChatMember(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     chat_id: Mapped[int] = mapped_column(Integer, ForeignKey("chats.id", ondelete="CASCADE"), nullable=False)
     user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
-
-    chat = relationship("Chat", back_populates="members")
-    user = relationship("User", back_populates="chat_memberships")
