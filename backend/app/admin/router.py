@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy import insert, update, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 import json
 from app.admin.dao import find_all_by_table_name_with_limit, TABLE_MODEL_MAPPING
@@ -67,3 +68,61 @@ async def get_table_data(
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Ошибка сервера: {str(e)}")
+
+
+@router.post("/table/{table_name}")
+async def create_record(
+        table_name: str,
+        record_data: dict,
+        session: AsyncSession = Depends(get_session_with_commit),
+        current_admin: User = Depends(get_current_admin_user)
+):
+    if table_name not in TABLE_MODEL_MAPPING:
+        raise HTTPException(status_code=404, detail="Table not found")
+
+    model = TABLE_MODEL_MAPPING[table_name]
+    stmt = insert(model).values(**record_data)
+    await session.execute(stmt)
+
+    return {"status": "success", "message": "Record created"}
+
+
+@router.put("/table/{table_name}/{record_id}")
+async def update_record(
+        table_name: str,
+        record_id: int,
+        record_data: dict,
+        session: AsyncSession = Depends(get_session_with_commit),
+        current_admin: User = Depends(get_current_admin_user)
+):
+    if table_name not in TABLE_MODEL_MAPPING:
+        raise HTTPException(status_code=404, detail="Table not found")
+
+    model = TABLE_MODEL_MAPPING[table_name]
+    stmt = update(model).where(model.id == record_id).values(**record_data)
+    result = await session.execute(stmt)
+
+    if result.rowcount == 0:
+        raise HTTPException(status_code=404, detail="Record not found")
+
+    return {"status": "success", "message": "Record updated"}
+
+
+@router.delete("/table/{table_name}/{record_id}")
+async def delete_record(
+        table_name: str,
+        record_id: int,
+        session: AsyncSession = Depends(get_session_with_commit),
+        current_admin: User = Depends(get_current_admin_user)
+):
+    if table_name not in TABLE_MODEL_MAPPING:
+        raise HTTPException(status_code=404, detail="Table not found")
+
+    model = TABLE_MODEL_MAPPING[table_name]
+    stmt = delete(model).where(model.id == record_id)
+    result = await session.execute(stmt)
+
+    if result.rowcount == 0:
+        raise HTTPException(status_code=404, detail="Record not found")
+
+    return {"status": "success", "message": "Record deleted"}
