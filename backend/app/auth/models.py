@@ -14,8 +14,3 @@ class User(Base):
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
     is_admin: Mapped[bool] = mapped_column(Boolean, default=False)
     created_at: Mapped[Date] = mapped_column(Date, server_default=text("CURRENT_DATE"))
-
-    messages = relationship("Message", back_populates="sender", cascade="all, delete-orphan")
-    owned_teams = relationship("Team", back_populates="owner", cascade="all, delete-orphan")
-    team_memberships = relationship("TeamMember", back_populates="member", cascade="all, delete-orphan")
-    chat_memberships = relationship("ChatMember", back_populates="user", cascade="all, delete-orphan")

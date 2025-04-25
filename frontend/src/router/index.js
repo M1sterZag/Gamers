@@ -5,7 +5,6 @@ import RegistrationPage from '../views/RegistrationPage.vue';
 import ProfilePage from '../views/ProfilePage.vue';
 import TeamsPage from '../views/TeamsPage.vue';
 import TeamDetails from '../views/TeamDetails.vue';
-import ChatsPage from '../views/ChatsPage.vue';
 import PremiumPage from '../views/PremiumPage.vue';
 import Layout from '../components/Layout.vue';
 import {useAuthStore} from '../stores/auth';
@@ -43,12 +42,6 @@ const routes = [
                 meta: {requiresAuth: true},
                 props: true,
             },
-            // {
-            //   path: '/chats',
-            //   name: 'Chats',
-            //   component: ChatsPage,
-            //   meta: { requiresAuth: true },
-            // },
             {
                 path: '/profile',
                 name: 'Profile',
@@ -69,6 +62,17 @@ const routes = [
             },
         ],
     },
+    {
+        path: '/admin',
+        meta: {requiresAuth: true}, // Требуется авторизация
+        children: [
+            {
+                path: '',
+                name: 'AdminPanel',
+                component: () => import('../views/AdminPanel.vue'), // Главная страница админ-панели
+            },
+        ],
+    },
 ];
 
 const router = createRouter({
@@ -82,8 +86,8 @@ router.beforeEach(async (to, from, next) => {
 
     if (to.meta.requiresAuth && !authStore.isAuthenticated) {
         next('/login');
-    } else if (['/login', '/register'].includes(to.path) && authStore.isAuthenticated) {
-        next('/');
+    } else if (to.path.startsWith('/admin') && !authStore.user?.is_admin) {
+        next('/'); // Перенаправление обычных пользователей
     } else {
         next();
     }

@@ -4,12 +4,18 @@ from logging.config import fileConfig
 from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
+
 from app.config import settings
-from app.auth.models import User
-from app.chat.models import Chat, ChatMember, Message
-from app.team.models import Team, TeamMember
-from app.game.models import Game, GameType
 from app.dao.database import Base
+
+from app.chat.models import Message
+from app.chat.models import Chat
+from app.chat.models import ChatMember
+from app.auth.models import User
+from app.game.models import Game
+from app.game.models import GameType
+from app.team.models import Team
+from app.team.models import TeamMember
 
 from alembic import context
 

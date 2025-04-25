@@ -19,10 +19,6 @@ class Team(Base):
     game_type_id: Mapped[int] = mapped_column(Integer, ForeignKey('game_types.id'), nullable=False)
     time: Mapped[datetime] = mapped_column(DateTime, nullable=False)
 
-    owner = relationship("User", back_populates="owned_teams")
-    chat = relationship("Chat", back_populates="team", uselist=False, cascade="all, delete-orphan")
-    members = relationship("TeamMember", back_populates="team", cascade="all, delete-orphan")
-
     __table_args__ = (
         CheckConstraint('time >= CURRENT_TIMESTAMP', name='check_time_in_future'),
     )
@@ -35,6 +31,3 @@ class TeamMember(Base):
     team_id: Mapped[int] = mapped_column(Integer, ForeignKey('teams.id', ondelete="CASCADE"), nullable=False)
     user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     joined_at: Mapped[datetime] = mapped_column(Date, server_default=text("CURRENT_DATE"))
-
-    team = relationship("Team", back_populates="members")
-    member = relationship("User", back_populates="team_memberships")
