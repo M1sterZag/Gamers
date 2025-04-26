@@ -11,6 +11,8 @@ from app.dao.database import Base
 from app.chat.models import Message
 from app.chat.models import Chat
 from app.chat.models import ChatMember
+from app.subscription.models import Subscription
+from app.subscription.models import UserSubscription
 from app.auth.models import User
 from app.game.models import Game
 from app.game.models import GameType

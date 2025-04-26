@@ -24,7 +24,7 @@ class BaseDAO:
         return result.scalar_one_or_none()
 
     @classmethod
-    async def find_one_or_none(cls, session: AsyncSession, **filter_by):
+    async def find_one_or_none(cls, session: AsyncSession, custom_filter=None, **filter_by):
         """
         Асинхронно находит и возвращает один экземпляр модели по указанным критериям или None.
 
@@ -34,8 +34,16 @@ class BaseDAO:
         Возвращает:
             Экземпляр модели или None, если ничего не найдено.
         """
+
         logger.info("Ищем запись в базе: таблица={}, фильтр={}", cls.model.__tablename__, filter_by)
-        query = select(cls.model).filter_by(**filter_by)
+
+        query = select(cls.model)
+        if filter_by:
+            query = query.filter_by(**filter_by)
+        if custom_filter:
+            query = query.filter(custom_filter)
+
+        # query = select(cls.model).filter_by(**filter_by)
         result = await session.execute(query)
         return result.scalar_one_or_none()
 

@@ -48,16 +48,16 @@ const routes = [
                 component: ProfilePage,
                 meta: {requiresAuth: true},
             },
-            // {
-            //   path: '/premium',
-            //   name: 'Premium',
-            //   component: PremiumPage,
-            //   meta: { requiresAuth: true },
-            // },
             {
                 path: '/create-team',
                 name: 'CreateTeam',
                 component: TeamsPage,
+                meta: {requiresAuth: true},
+            },
+            {
+                path: '/premium',
+                name: 'Premium',
+                component: PremiumPage,
                 meta: {requiresAuth: true},
             },
         ],
