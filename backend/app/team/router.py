@@ -144,12 +144,20 @@ async def delete_team(
         current_user: SUserRead = Depends(get_current_active_user),
         session: AsyncSession = Depends(get_session_with_commit),
 ):
-    team = await TeamDAO.find_one_or_none(session=session, id=team_id, owner_id=current_user.id)
+    """
+    Удаляет команду. Только владелец команды или администратор могут её удалить.
+    """
+    # Находим команду по ID
+    team = await TeamDAO.find_one_or_none_by_id(session=session, data_id=team_id)
     if not team:
-        raise HTTPException(status_code=404, detail="Команда не найдена или вы не являетесь владельцем")
+        raise HTTPException(status_code=404, detail="Команда не найдена")
 
+    # Проверяем права пользователя
+    if not current_user.is_admin and team.owner_id != current_user.id:
+        raise HTTPException(status_code=403, detail="У вас нет прав для удаления этой команды")
+
+    # Удаляем команду
     await TeamDAO.delete(session=session, id=team_id)
-
     return {"message": "Команда и все связанные данные успешно удалены"}
 
 
