@@ -56,6 +56,7 @@ def set_tokens(response: Response, user_id: int):
         value=access_token,
         httponly=True,
         secure=True,
+        domain=None,  # нужно обновить домен
         samesite="lax"
     )
 
@@ -64,6 +65,7 @@ def set_tokens(response: Response, user_id: int):
         value=refresh_token,
         httponly=True,
         secure=True,
+        domain=None,  # нужно обновить домен
         samesite="lax"
     )
 

@@ -1,5 +1,5 @@
 # Базовый образ Python
-FROM python:3.13-slim
+FROM python:3.13
 
 # Установка зависимостей
 RUN apt-get update && apt-get install -y postgresql-client
