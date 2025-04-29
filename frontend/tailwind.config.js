@@ -6,6 +6,15 @@ export default {
     content: ["./index.html", "./src/**/*.{vue,js,ts,jsx,tsx}"],
     theme: {
         extend: {
+            keyframes: {
+                'neon-border': {
+                    '0%': {borderColor: '#8244FF'},
+                    '100%': {borderColor: '#50FA7B'},
+                },
+            },
+            animation: {
+                'neon-border': 'neon-border 2s infinite alternate',
+            },
             colors: {
                 fon: "#111214",
                 primary: "#8244FF",

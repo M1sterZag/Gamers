@@ -1,5 +1,6 @@
 from datetime import datetime
 
+from loguru import logger
 from sqlalchemy import select, and_
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -27,3 +28,23 @@ class UserSubscriptionDAO(BaseDAO):
         )
         result = await session.execute(query)
         return result.scalar_one_or_none()
+
+    @classmethod
+    async def get_all_subscribed_user_ids(
+            cls,
+            session: AsyncSession
+    ):
+        """
+        Получает список ID пользователей с активными подписками
+
+        Returns:
+            Список ID пользователей с активными подписками
+        """
+        current_time = datetime.now()
+        query = (
+            select(cls.model.user_id)
+            .where(cls.model.end_date >= current_time)
+            .distinct()
+        )
+        result = await session.execute(query)
+        return result.scalars().all()

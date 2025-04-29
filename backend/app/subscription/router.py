@@ -91,7 +91,7 @@ async def subscribe(
     return {"message": "Подписка успешно оформлена"}
 
 
-@router.post("/check_subscription")
+@router.get("/check_subscription")
 async def check_subscription(
         current_user: User = Depends(get_current_user),
         session: AsyncSession = Depends(get_session_without_commit),
@@ -103,3 +103,13 @@ async def check_subscription(
     if not subscription:
         raise HTTPException(status_code=404, detail="У вас нет активной подписки")
     return subscription
+
+
+@router.get("/subscribed_user_ids")
+async def get_subscribed_user_ids(
+        session: AsyncSession = Depends(get_session_without_commit)
+):
+    """
+    Возвращает список ID пользователей с активными подписками
+    """
+    return await UserSubscriptionDAO.get_all_subscribed_user_ids(session=session)

@@ -1,10 +1,11 @@
 // stores/subscriptionStore.js
 import {defineStore} from 'pinia';
+import api from '../api';
 
 export const useSubscriptionStore = defineStore('subscription', {
     state: () => ({
-        subscriptions: [], // All available subscriptions
-        currentSubscriptionId: null, // ID of the selected subscription
+        subscriptions: [], // Все доступные подписки
+        currentSubscriptionId: null, // ID текущей активной подписки
     }),
     actions: {
         setSubscriptions(subs) {
@@ -13,8 +14,14 @@ export const useSubscriptionStore = defineStore('subscription', {
         setCurrentSubscriptionId(id) {
             this.currentSubscriptionId = id;
         },
-        getSubscriptionById(id) {
-            return this.subscriptions.find((sub) => sub.id === id);
+        async checkCurrentSubscription() {
+            try {
+                const response = await api.get('/api/subscriptions/check_subscription');
+                this.setCurrentSubscriptionId(response.data?.id || null);
+            } catch (error) {
+                console.error('Ошибка проверки подписки:', error);
+                this.setCurrentSubscriptionId(null);
+            }
         },
     },
 });

@@ -1,5 +1,5 @@
 <template>
-  <div class="pt-[88px] pr-[64px] pl-[2px]">
+  <div class="pt-[88px] pr-[64px] pl-[5px]">
     <!-- Заголовок -->
     <h1 class="text-left text-[48px] font-semibold text-text mb-8">Преимущества подписки</h1>
 
@@ -24,7 +24,7 @@
       <div
           v-for="subscription in subscriptions"
           :key="subscription.id"
-          class="bg-secondary p-6 rounded-lg shadow-md transition-all duration-300 hover:shadow-lg hover:scale-105"
+          class="bg-secondary p-6 rounded-lg"
       >
         <h3 class="text-s24 font-bold mb-4">{{ subscription.name }}</h3>
         <p><strong>Срок действия:</strong> {{ subscription.duration }} дней</p>
@@ -80,6 +80,11 @@ const benefits = ref([
     description: "Анимированная граница вокруг профиля.",
     icon: `<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24"><path fill="currentColor" d="M2 4a2 2 0 0 1 2-2h3v2H4v3H2zm20 0v3h-2V4h-3V2h3a2 2 0 0 1 2 2m-2 16v-3h2v3a2 2 0 0 1-2 2h-3v-2zM2 20v-3h2v3h3v2H4a2 2 0 0 1-2-2m8-18h4v2h-4zm0 18h4v2h-4zm10-10h2v4h-2zM2 10h2v4H2z"/></svg>`,
   },
+  {
+    title: "Поддержка проекта",
+    description: "Ваша поддержка помогает развивать платформу.",
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M15 11v.01M5.173 8.378a3 3 0 1 1 4.656-1.377"/><path d="M16 4v3.803A6.02 6.02 0 0 1 18.658 11h1.341a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1h-1.342c-.336.95-.907 1.8-1.658 2.473V19.5a1.5 1.5 0 0 1-3 0v-.583a6 6 0 0 1-1 .083h-4a6 6 0 0 1-1-.083v.583a1.5 1.5 0 0 1-3 0v-2.027A6 6 0 0 1 8.999 7h2.5z"/></g></svg>`,
+  },
 ]);
 
 // Загрузка доступных подписок
@@ -96,7 +101,7 @@ const fetchSubscriptions = async () => {
 // Проверка текущей подписки пользователя
 const checkCurrentSubscription = async () => {
   try {
-    const response = await api.post('/api/subscriptions/check_subscription');
+    const response = await api.get('/api/subscriptions/check_subscription');
     currentSubscription.value = response.data;
   } catch (error) {
     if (error.response?.status === 403) {
@@ -110,15 +115,19 @@ const checkCurrentSubscription = async () => {
 // Оформление подписки
 const purchaseSubscription = async (subId) => {
   try {
-    const subscriptionExists = subscriptionStore.subscriptions.some(
-        (sub) => sub.id === subId && currentSubscription?.subscription_id === sub.id
-    );
-
-    if (subscriptionExists) {
-      alert('У вас уже оформлена эта подписка');
+    // Проверяем, есть ли уже активная подписка
+    if (currentSubscription.value && currentSubscription.value.subscription_id === subId) {
+      alert('У вас уже оформлена эта подписка.');
       return;
     }
 
+    // Проверяем, есть ли любая активная подписка
+    if (currentSubscription.value) {
+      alert('У вас уже есть активная подписка. Вы можете продлить её позже.');
+      return;
+    }
+
+    // Если нет активной подписки, перенаправляем на страницу оплаты
     subscriptionStore.setCurrentSubscriptionId(subId);
     window.location.href = `/payment?sub_id=${subId}`;
   } catch (error) {

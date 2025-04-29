@@ -1,19 +1,14 @@
 <template>
-  <div v-if="isLoading" class="min-h-screen flex items-center justify-center">
-    <p>Загрузка...</p>
-  </div>
-  <div v-else-if="!authStore.isAuthenticated" class="flex items-center justify-center">
-    <p>Пожалуйста, войдите в систему.
-      <router-link to="/login" class="text-primary hover:underline">Вход</router-link>
-    </p>
-  </div>
-  <div v-else class="pt-[88px] px-[20px] text-text">
+  <div class="pt-[88px] px-[30px] text-text">
     <h1 class="text-left text-[48px] font-semibold">Профиль</h1>
 
     <!-- Аватар, никнейм и кнопка выхода -->
     <div class="flex items-center mt-3">
-      <div class="items-center bg-secondary p-3 rounded-lg mr-2">
-        <div class="w-16 h-16 rounded-full overflow-hidden">
+      <div
+          class="flex items-center bg-secondary p-3 rounded-lg mr-2"
+          :class="{ 'animate-neon-border border-secondary border-4': hasSubscription }"
+      >
+        <div class="w-16 h-16 rounded-full overflow-hidden relative">
           <img
               v-if="profileUser?.avatar"
               :src="profileUser.avatar"
@@ -25,11 +20,16 @@
             {{ profileUser?.username.charAt(0).toUpperCase() }}
           </div>
         </div>
-        <span class="font-semibold text-[24px] text-primary">{{ profileUser?.username }}</span>
+        <span
+            class="font-semibold text-[24px] ml-2"
+        >
+          {{ profileUser?.username }}
+        </span>
       </div>
       <button
-          class="bg-red-500 text-secondary py-2 px-4 rounded-lg font-medium text-[16px] hover:bg-red-600"
-          @click="logout">
+          class="p-3 bg-red-500 hover:bg-red-700 text-text rounded-lg transition block font-semibold"
+          @click="logout"
+      >
         Выйти
       </button>
     </div>
@@ -61,18 +61,25 @@
 </template>
 
 <script setup>
-import {ref, onMounted} from 'vue';
+import {ref, onMounted, computed} from 'vue';
 import {useRoute, useRouter} from 'vue-router';
 import {useAuthStore} from '../stores/auth';
+import {useSubscriptionStore} from '../stores/subscriptionStore';
 import api from '../api';
 
 const route = useRoute();
 const router = useRouter();
 const authStore = useAuthStore();
+const subscriptionStore = useSubscriptionStore();
 
 const profileUser = ref(null);
 const recentTeams = ref([]);
 const isLoading = ref(true);
+
+// Проверка наличия активной подписки
+const hasSubscription = computed(() => {
+  return !!subscriptionStore.currentSubscriptionId;
+});
 
 const formatDate = (dateStr) => {
   const date = new Date(dateStr);
@@ -98,11 +105,14 @@ onMounted(async () => {
   }
 
   const userId = route.params.id;
-  const isOwnProfile = !userId || userId == authStore.user.id;
+  const isOwnProfile = !userId || userId === authStore.user.id;
 
   try {
     profileUser.value = isOwnProfile ? authStore.user : (await api.get(`/api/users/${userId}`)).data;
-    recentTeams.value = (await api.get(`/api/teams/recent/${profileUser.value.id}`)).data;
+    // recentTeams.value = (await api.get(`/api/teams/recent/${profileUser.value.id}`)).data;
+
+    // Проверяем текущую подписку пользователя
+    await subscriptionStore.checkCurrentSubscription();
   } catch (error) {
     console.error('Ошибка загрузки данных профиля:', error);
   } finally {
