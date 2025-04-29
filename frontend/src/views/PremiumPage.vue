@@ -1,33 +1,44 @@
 <template>
   <div class="pt-[88px] pr-[64px] pl-[2px]">
     <!-- Заголовок -->
-    <h1 class="text-left text-[48px] font-semibold text-text">Подписки</h1>
+    <h1 class="text-left text-[48px] font-semibold text-text mb-8">Преимущества подписки</h1>
 
-    <!-- Информация о текущей подписке -->
-    <div v-if="currentSubscription" class="bg-secondary p-6 rounded-lg mb-6">
-      <h2 class="text-s24 font-bold mb-4">Ваша текущая подписка:</h2>
-      <p><strong>Тип:</strong> {{ currentSubscription.name }}</p>
-      <p><strong>Активна до:</strong> {{ formatDate(currentSubscription.end_date) }}</p>
-    </div>
-    <div v-else class="bg-secondary p-6 rounded-lg mb-6">
-      <p class="text-s20">У вас нет активной подписки.</p>
+    <!-- Преимущества -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
+      <div
+          v-for="(benefit, index) in benefits"
+          :key="index"
+          class="bg-secondary p-6 rounded-lg flex flex-col items-center text-center transition-transform hover:scale-105"
+      >
+        <div class="mb-4">
+          <div v-html="benefit.icon" class="w-12 h-12 mx-auto"></div>
+        </div>
+        <h3 class="text-s20 font-bold mb-2">{{ benefit.title }}</h3>
+        <p class="text-s16 text-text/80">{{ benefit.description }}</p>
+      </div>
     </div>
 
     <!-- Список доступных подписок -->
-    <div>
-      <h2 class="text-s32 font-bold mb-6">Доступные подписки</h2>
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div v-for="subscription in subscriptions" :key="subscription.id" class="bg-secondary p-6 rounded-lg">
-          <h3 class="text-s24 font-bold mb-4">{{ subscription.name }}</h3>
-          <p><strong>Срок действия:</strong> {{ subscription.duration }} дней</p>
-          <p><strong>Цена:</strong> {{ subscription.price }} ₽</p>
-          <button
-              class="mt-4 bg-accent !text-secondary py-2 px-4 rounded-lg font-medium text-s20 hover:bg-accent_hover transition"
-              @click="purchaseSubscription(subscription.id)"
-          >
-            Оформить подписку
-          </button>
+    <h2 class="text-left text-[32px] font-semibold text-text mb-6">Выберите тариф</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div
+          v-for="subscription in subscriptions"
+          :key="subscription.id"
+          class="bg-secondary p-6 rounded-lg shadow-md transition-all duration-300 hover:shadow-lg hover:scale-105"
+      >
+        <h3 class="text-s24 font-bold mb-4">{{ subscription.name }}</h3>
+        <p><strong>Срок действия:</strong> {{ subscription.duration }} дней</p>
+        <p><strong>Цена:</strong> {{ subscription.price }} ₽</p>
+        <div v-if="currentSubscription?.subscription_id === subscription.id" class="mt-4">
+          <p class="text-accent">У вас есть данная подписка</p>
         </div>
+        <button
+            v-else
+            class="mt-4 bg-accent !text-secondary py-2 px-4 rounded-lg font-medium text-s20 hover:bg-accent_hover transition w-full"
+            @click="purchaseSubscription(subscription.id)"
+        >
+          Оформить подписку
+        </button>
       </div>
     </div>
   </div>
@@ -36,25 +47,47 @@
 <script setup>
 import {ref, onMounted} from 'vue';
 import api from '@/api';
+import {useSubscriptionStore} from '@/stores/subscriptionStore';
 
+const subscriptionStore = useSubscriptionStore();
 const subscriptions = ref([]);
 const currentSubscription = ref(null);
 
-// Функция для форматирования даты
-const formatDate = (dateStr) => {
-  const date = new Date(dateStr);
-  return new Intl.DateTimeFormat('ru-RU', {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-  }).format(date);
-};
+// Преимущества подписки с новыми SVG-иконками
+const benefits = ref([
+  {
+    title: "Увеличенное количество участников",
+    description: "Создавайте команды с более чем 5 участниками.",
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 28 28"><path fill="currentColor" d="M17.754 11c.966 0 1.75.784 1.75 1.75v6.749a5.501 5.501 0 0 1-11.002 0V12.75c0-.966.783-1.75 1.75-1.75zM3.75 11l4.382-.002a2.73 2.73 0 0 0-.621 1.532l-.01.22v6.749c0 1.133.291 2.199.8 3.127A4.5 4.5 0 0 1 2 18.499V12.75A1.75 1.75 0 0 1 3.751 11m16.124-.002L24.25 11c.966 0 1.75.784 1.75 1.75v5.75a4.5 4.5 0 0 1-6.298 4.127l.056-.102c.429-.813.69-1.729.738-2.7l.008-.326V12.75c0-.666-.237-1.276-.63-1.752M14 3a3.5 3.5 0 1 1 0 7a3.5 3.5 0 0 1 0-7m8.003 1a3 3 0 1 1 0 6a3 3 0 0 1 0-6M5.997 4a3 3 0 1 1 0 6a3 3 0 0 1 0-6"/></svg>`,
+  },
+  {
+    title: "Больше активных команд",
+    description: "Создавайте неограниченное количество команд.",
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24"><path fill="currentColor" d="M3 3h8v8H3zm6 6V5H5v4zm9 4h-2v3h-3v2h3v3h2v-3h3v-2h-3zM15 3h6v8h-8V3zm4 6V5h-4v4zM5 13h6v8H3v-8zm4 6v-4H5v4z"/></svg>`,
+  },
+  {
+    title: "Поиск и рекомендации",
+    description: "Команды выше в списке поиска.",
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="4"><path d="M21 38c9.389 0 17-7.611 17-17S30.389 4 21 4S4 11.611 4 21s7.611 17 17 17Z"/><path stroke-linecap="round" d="M26.657 14.343A7.98 7.98 0 0 0 21 12a7.98 7.98 0 0 0-5.657 2.343m17.879 18.879l8.485 8.485"/></g></svg>`,
+  },
+  {
+    title: "Статистика в профиле",
+    description: "Отображение последних команд в профиле.",
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path stroke-miterlimit="5.759" d="M3 3v16a2 2 0 0 0 2 2h16"/><path stroke-miterlimit="5.759" d="m7 14l4-4l4 4l6-6"/><path d="M18 8h3v3"/></g></svg>`,
+  },
+  {
+    title: "Выделение никнейма",
+    description: "Анимированная граница вокруг профиля.",
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24"><path fill="currentColor" d="M2 4a2 2 0 0 1 2-2h3v2H4v3H2zm20 0v3h-2V4h-3V2h3a2 2 0 0 1 2 2m-2 16v-3h2v3a2 2 0 0 1-2 2h-3v-2zM2 20v-3h2v3h3v2H4a2 2 0 0 1-2-2m8-18h4v2h-4zm0 18h4v2h-4zm10-10h2v4h-2zM2 10h2v4H2z"/></svg>`,
+  },
+]);
 
 // Загрузка доступных подписок
 const fetchSubscriptions = async () => {
   try {
     const response = await api.get('/api/subscriptions');
     subscriptions.value = response.data;
+    subscriptionStore.setSubscriptions(response.data);
   } catch (error) {
     console.error('Ошибка загрузки подписок:', error);
   }
@@ -77,9 +110,17 @@ const checkCurrentSubscription = async () => {
 // Оформление подписки
 const purchaseSubscription = async (subId) => {
   try {
-    await api.post(`/api/subscribe/${subId}`);
-    await checkCurrentSubscription(); // Обновляем информацию о текущей подписке
-    alert('Подписка успешно оформлена!');
+    const subscriptionExists = subscriptionStore.subscriptions.some(
+        (sub) => sub.id === subId && currentSubscription?.subscription_id === sub.id
+    );
+
+    if (subscriptionExists) {
+      alert('У вас уже оформлена эта подписка');
+      return;
+    }
+
+    subscriptionStore.setCurrentSubscriptionId(subId);
+    window.location.href = `/payment?sub_id=${subId}`;
   } catch (error) {
     console.error('Ошибка оформления подписки:', error);
     alert('Произошла ошибка при оформлении подписки.');
@@ -92,5 +133,3 @@ onMounted(async () => {
   await checkCurrentSubscription();
 });
 </script>
-
-<style scoped></style>

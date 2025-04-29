@@ -60,6 +60,12 @@ const routes = [
                 component: PremiumPage,
                 meta: {requiresAuth: true},
             },
+            {
+                path: '/payment',
+                name: 'Payment',
+                component: () => import('../views/PaymentPage.vue'),
+                meta: {requiresAuth: true},
+            },
         ],
     },
     {

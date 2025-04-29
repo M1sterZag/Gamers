@@ -10,7 +10,6 @@ from app.dao.dependencies import get_session_with_commit, get_session_without_co
 router = APIRouter()
 
 
-# CRUD для игр
 @router.post("")
 async def create_game(
         game_data: SGameCreate,

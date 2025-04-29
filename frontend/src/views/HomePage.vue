@@ -71,7 +71,7 @@
         <hr class="w-full h-[2px] bg-primary border-0 my-3">
         <div class="flex items-center gap-2 my-auto">
           <p class="text-s16">Общайтесь и находите друзей</p>
-          <router-link to="/chats">
+          <router-link to="/teams">
             <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
