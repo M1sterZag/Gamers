@@ -57,21 +57,17 @@
 
 <script setup>
 import {ref, computed, onMounted} from 'vue';
-import api from '@/api';
 import {useRouter} from 'vue-router';
 import {useSubscriptionStore} from '@/stores/subscriptionStore';
+import api from "@/api/index.js";
 
 const router = useRouter();
 const subscriptionStore = useSubscriptionStore();
 
-// Получаем ID подписки из URL
 const subId = new URLSearchParams(window.location.search).get('sub_id');
-
-// Выбранная подписка
 const selectedSubscription = computed(() => {
   return subscriptionStore.getSubscriptionById(Number(subId));
 });
-
 
 const form = ref({
   cardNumber: '',
@@ -80,7 +76,6 @@ const form = ref({
 });
 const errors = ref({});
 
-// Валидация формы
 const validateForm = () => {
   errors.value = {};
   let valid = true;
@@ -101,14 +96,12 @@ const validateForm = () => {
   return valid;
 };
 
-// Отправка данных
 const submitPayment = async () => {
   if (!validateForm()) return;
 
   try {
     await api.post(`/api/subscriptions/subscribe/${subId}`, form.value);
-
-    // Перенаправляем обратно на страницу подписок
+    await subscriptionStore.checkCurrentSubscription();
     router.push('/premium');
   } catch (error) {
     console.error('Ошибка при оплате:', error);
@@ -116,18 +109,14 @@ const submitPayment = async () => {
   }
 };
 
-const fetchSubscriptions = async () => {
-  try {
-    const response = await api.get('/api/subscriptions');
-    subscriptionStore.setSubscriptions(response.data);
-  } catch (error) {
-    console.error('Ошибка загрузки подписок:', error);
-  }
-};
-
 onMounted(async () => {
   if (!subscriptionStore.subscriptions.length) {
-    await fetchSubscriptions();
+    try {
+      const response = await api.get('/api/subscriptions');
+      subscriptionStore.setSubscriptions(response.data);
+    } catch (error) {
+      console.error('Ошибка загрузки подписок:', error);
+    }
   }
 });
 </script>

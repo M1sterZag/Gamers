@@ -4,8 +4,8 @@ import api from '../api';
 
 export const useSubscriptionStore = defineStore('subscription', {
     state: () => ({
-        subscriptions: [], // Все доступные подписки
-        currentSubscriptionId: null, // ID текущей активной подписки
+        subscriptions: [],
+        currentSubscriptionId: null,
     }),
     actions: {
         setSubscriptions(subs) {
@@ -24,4 +24,9 @@ export const useSubscriptionStore = defineStore('subscription', {
             }
         },
     },
+    getters: {
+        getSubscriptionById: (state) => (id) => {
+            return state.subscriptions.find(sub => sub.id === id);
+        }
+    }
 });
