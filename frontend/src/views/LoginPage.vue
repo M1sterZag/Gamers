@@ -1,43 +1,57 @@
 <template>
-  <div class="min-h-screen flex items-center justify-center">
-    <div class="p-8 rounded-brs w-full max-w-sm">
-      <h1 class="text-s32 font-montserrat mb-2 text-center font-semibold">Вход</h1>
+  <main class="min-h-screen flex items-center justify-center bg-fon">
+    <!-- Семантический контейнер -->
+    <section class="p-6 sm:p-8 rounded-lg w-full max-w-sm bg-background">
+      <h1 class="text-s32 font-montserrat text-center font-semibold text-text mb-6">Вход</h1>
+
+      <!-- Форма входа -->
       <form @submit.prevent="submitForm" class="space-y-4">
+        <!-- Поле Email -->
         <div>
-          <label class="block mb-1" for="email">Email</label>
+          <label for="email" class="block mb-1 text-s16 font-medium text-text">Email</label>
           <input
               v-model="form.email"
               type="email"
               id="email"
-              class="w-full p-2 rounded-brs !bg-secondary focus:outline-none focus:outline-accent border-2 border-secondary"
+              placeholder="Введите email"
+              class="w-full p-3 rounded-lg bg-secondary focus:outline-none focus:border-accent border-2 border-secondary transition"
           />
-          <p v-if="errors.email" class="text-red-500 text-s12">{{ errors.email }}</p>
+          <p v-if="errors.email" class="text-red-500 text-s12 mt-1">{{ errors.email }}</p>
         </div>
+
+        <!-- Поле Пароль -->
         <div>
-          <label class="block mb-1" for="password">Пароль</label>
+          <label for="password" class="block mb-1 text-s16 font-medium text-text">Пароль</label>
           <input
               v-model="form.password"
               type="password"
               id="password"
-              class="w-full p-2 rounded-brs !bg-secondary focus:outline-none focus:outline-accent"
+              placeholder="Введите пароль"
+              class="w-full p-3 rounded-lg bg-secondary focus:outline-none focus:border-accent border-2 border-secondary transition"
           />
-          <p v-if="errors.password" class="text-red-500 text-s12">{{ errors.password }}</p>
+          <p v-if="errors.password" class="text-red-500 text-s12 mt-1">{{ errors.password }}</p>
         </div>
+
+        <!-- Кнопка Войти -->
         <button
             type="submit"
-            class="w-32 p-2 bg-accent hover:bg-accent_hover !text-secondary rounded-brs transition mx-auto block font-semibold"
+            class="w-full py-3 bg-accent hover:bg-accent_hover text-secondary rounded-lg font-semibold text-s16 transition"
         >
           Войти
         </button>
       </form>
-      <div class="mt-4 text-center">
-        <p>Нет аккаунта?
-          <router-link to="/register" class="text-primary hover:underline visited:text-primary">Регистрация
+
+      <!-- Ссылка на регистрацию -->
+      <div class="mt-6 text-center">
+        <p class="text-s14 text-text/80">
+          Нет аккаунта?
+          <router-link to="/register" class="text-primary hover:underline visited:text-primary font-medium">
+            Регистрация
           </router-link>
         </p>
       </div>
-    </div>
-  </div>
+    </section>
+  </main>
 </template>
 
 <script setup>
@@ -48,16 +62,19 @@ import {useAuthStore} from '../stores/auth';
 const router = useRouter();
 const authStore = useAuthStore();
 
+// Реактивная форма
 const form = reactive({
   email: '',
   password: '',
 });
 
+// Ошибки валидации
 const errors = reactive({
   email: '',
   password: '',
 });
 
+// Валидация формы
 function validateForm() {
   let valid = true;
   errors.email = '';
@@ -79,6 +96,7 @@ function validateForm() {
   return valid;
 }
 
+// Отправка формы
 async function submitForm() {
   if (validateForm()) {
     try {

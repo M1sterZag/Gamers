@@ -1,47 +1,61 @@
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-fon">
-    <div class="p-8 rounded-brs w-full max-w-sm">
-      <h1 class="text-s32 font-montserrat mb-2 text-center font-semibold">Регистрация</h1>
+  <main class="min-h-screen flex items-center justify-center bg-fon">
+    <!-- Семантический контейнер -->
+    <section class="p-6 sm:p-8 rounded-lg w-full max-w-sm bg-background">
+      <h1 class="text-s32 font-montserrat text-center font-semibold text-text mb-6">Регистрация</h1>
+
+      <!-- Форма регистрации -->
       <form @submit.prevent="submitForm" class="space-y-4">
+        <!-- Поле Email -->
         <div>
-          <label class="block mb-1" for="email">Email</label>
+          <label for="email" class="block mb-1 text-s16 font-medium text-text">Email</label>
           <input
               v-model="form.email"
               type="email"
               id="email"
-              class="w-full p-2 rounded-brs !bg-secondary focus:outline-none focus:outline-accent border-2 border-secondary"
+              placeholder="Введите email"
+              class="w-full p-3 rounded-lg bg-secondary focus:outline-none focus:border-accent border-2 border-secondary transition"
           />
-          <p v-if="errors.email" class="text-red-500 text-s12">{{ errors.email }}</p>
+          <p v-if="errors.email" class="text-red-500 text-s12 mt-1">{{ errors.email }}</p>
         </div>
+
+        <!-- Поле Имя пользователя -->
         <div>
-          <label class="block mb-1" for="username">Имя пользователя</label>
+          <label for="username" class="block mb-1 text-s16 font-medium text-text">Имя пользователя</label>
           <input
               v-model="form.username"
               type="text"
               id="username"
-              class="w-full p-2 rounded-brs !bg-secondary focus:outline-none focus:outline-accent"
+              placeholder="Введите имя пользователя"
+              class="w-full p-3 rounded-lg bg-secondary focus:outline-none focus:border-accent border-2 border-secondary transition"
           />
-          <p v-if="errors.username" class="text-red-500 text-s12">{{ errors.username }}</p>
+          <p v-if="errors.username" class="text-red-500 text-s12 mt-1">{{ errors.username }}</p>
         </div>
+
+        <!-- Поле Пароль -->
         <div>
-          <label class="block mb-1" for="password">Пароль</label>
+          <label for="password" class="block mb-1 text-s16 font-medium text-text">Пароль</label>
           <input
               v-model="form.password"
               type="password"
               id="password"
-              class="w-full p-2 rounded-brs !bg-secondary focus:outline-none focus:outline-accent"
+              placeholder="Введите пароль"
+              class="w-full p-3 rounded-lg bg-secondary focus:outline-none focus:border-accent border-2 border-secondary transition"
           />
-          <p v-if="errors.password" class="text-red-500 text-s12">{{ errors.password }}</p>
+          <p v-if="errors.password" class="text-red-500 text-s12 mt-1">{{ errors.password }}</p>
         </div>
+
+        <!-- Поле Подтверждение пароля -->
         <div>
-          <label class="block mb-1" for="confirmPassword">Подтверждение пароля</label>
+          <label for="confirmPassword" class="block mb-1 text-s16 font-medium text-text">Подтверждение пароля</label>
           <input
               v-model="form.confirmPassword"
               type="password"
               id="confirmPassword"
-              class="w-full p-2 rounded-brs !bg-secondary focus:outline-none focus:outline-accent"
+              placeholder="Подтвердите пароль"
+              class="w-full p-3 rounded-lg bg-secondary focus:outline-none focus:border-accent border-2 border-secondary transition"
           />
-          <p v-if="errors.confirmPassword" class="text-red-500 text-s12">{{ errors.confirmPassword }}</p>
+          <p v-if="errors.confirmPassword" class="text-red-500 text-s12 mt-1">{{ errors.confirmPassword }}</p>
         </div>
 
         <!-- Чекбокс -->
@@ -52,30 +66,38 @@
               class="rounded border-accent text-accent focus:ring-accent"
               required
           />
-          <label class="text-s12">
+          <label class="text-s12 text-text/80">
             Я принимаю
-            <a href="/static/privacy_policy.pdf" download class="text-accent underline">политику
-              конфиденциальности</a>
+            <a href="/static/privacy_policy.pdf" download class="text-primary underline hover:text-primary_hover">
+              политику конфиденциальности
+            </a>
             и
-            <a href="/static/terms_of_service.pdf" download class="text-accent underline">пользовательское
-              соглашение</a>.
+            <a href="/static/terms_of_service.pdf" download class="text-primary underline hover:text-primary_hover">
+              пользовательское соглашение
+            </a>.
           </label>
         </div>
 
+        <!-- Кнопка Зарегистрироваться -->
         <button
             type="submit"
-            class="max-w-60 p-2 bg-accent hover:bg-accent_hover !text-secondary rounded-brs transition mx-auto block font-semibold"
+            class="w-full py-3 bg-accent hover:bg-accent_hover text-secondary rounded-lg font-semibold text-s16 transition"
         >
           Зарегистрироваться
         </button>
       </form>
-      <div class="mt-4 text-center">
-        <p>Уже есть аккаунт?
-          <router-link to="/login" class="text-primary hover:underline visited:text-primary">Вход</router-link>
+
+      <!-- Ссылка на вход -->
+      <div class="mt-6 text-center">
+        <p class="text-s14 text-text/80">
+          Уже есть аккаунт?
+          <router-link to="/login" class="text-primary hover:underline visited:text-primary font-medium">
+            Вход
+          </router-link>
         </p>
       </div>
-    </div>
-  </div>
+    </section>
+  </main>
 </template>
 
 <script setup>
@@ -86,6 +108,7 @@ import {useAuthStore} from '../stores/auth';
 const router = useRouter();
 const authStore = useAuthStore();
 
+// Реактивная форма
 const form = reactive({
   email: '',
   username: '',
@@ -93,8 +116,10 @@ const form = reactive({
   confirmPassword: '',
 });
 
-const acceptTerms = ref(false); // Состояние чекбокса
+// Состояние чекбокса
+const acceptTerms = ref(false);
 
+// Ошибки валидации
 const errors = reactive({
   email: '',
   username: '',
@@ -102,6 +127,7 @@ const errors = reactive({
   confirmPassword: '',
 });
 
+// Валидация формы
 function validateForm() {
   let valid = true;
   errors.email = '';
@@ -146,6 +172,7 @@ function validateForm() {
   return valid;
 }
 
+// Отправка формы
 async function submitForm() {
   if (validateForm()) {
     try {

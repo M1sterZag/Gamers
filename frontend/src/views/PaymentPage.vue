@@ -1,58 +1,63 @@
 <template>
-  <div class="min-h-screen flex items-center justify-center">
-    <div class="p-8 bg-secondary rounded-lg w-full max-w-sm">
-      <h1 class="text-s32 font-semibold text-center mb-6">Оплата подписки</h1>
+  <main class="">
+    <!-- Заголовок -->
+    <h1 class="text-3xl font-semibold text-text text-center mb-3">
+      Оплата подписки
+    </h1>
 
-      <!-- Информация о подписке -->
-      <div v-if="selectedSubscription" class="mb-6">
+    <!-- Информация о подписке -->
+    <section class="mb-5">
+      <div v-if="selectedSubscription" class="bg-secondary p-4 lg:p-6 rounded-lg shadow-md max-w-sm mx-auto">
         <p><strong>Подписка:</strong> {{ selectedSubscription.name }}</p>
         <p><strong>Цена:</strong> {{ selectedSubscription.price }} ₽</p>
         <p><strong>Длительность:</strong> {{ selectedSubscription.duration }} дней</p>
       </div>
+      <p v-else class="text-center text-text/80">Выберите подписку для продолжения.</p>
+    </section>
 
-      <form @submit.prevent="submitPayment" class="space-y-4">
-        <div>
-          <label for="cardNumber" class="block text-s16 font-medium">Номер карты</label>
-          <input
-              type="text"
-              id="cardNumber"
-              v-model="form.cardNumber"
-              placeholder="1234 5678 9012 3456"
-              class="w-full p-2 rounded-brs !bg-secondary focus:outline-none focus:outline-accent border-2 border-fon focus:border-none"
-          />
-          <p v-if="errors.cardNumber" class="text-red-500 text-s12">{{ errors.cardNumber }}</p>
-        </div>
-        <div>
-          <label for="expiryDate" class="block text-s16 font-medium">Срок действия</label>
-          <input
-              type="text"
-              id="expiryDate"
-              v-model="form.expiryDate"
-              placeholder="MM/YY"
-              class="w-full p-2 rounded-brs !bg-secondary focus:outline-none focus:outline-accent border-2 border-fon focus:border-none"
-          />
-          <p v-if="errors.expiryDate" class="text-red-500 text-s12">{{ errors.expiryDate }}</p>
-        </div>
-        <div>
-          <label for="cvv" class="block text-s16 font-medium">CVV</label>
-          <input
-              type="text"
-              id="cvv"
-              v-model="form.cvv"
-              placeholder="123"
-              class="w-full p-2 rounded-brs !bg-secondary focus:outline-none focus:outline-accent border-2 border-fon focus:border-none"
-          />
-          <p v-if="errors.cvv" class="text-red-500 text-s12">{{ errors.cvv }}</p>
-        </div>
-        <button
-            type="submit"
-            class="w-full p-2 bg-accent text-secondary rounded-lg font-medium text-s20 hover:bg-accent_hover transition"
-        >
-          Оплатить
-        </button>
-      </form>
-    </div>
-  </div>
+    <!-- Форма оплаты -->
+    <form @submit.prevent="submitPayment" class="max-w-sm mx-auto space-y-4">
+      <div>
+        <label for="cardNumber" class="block text-sm lg:text-base font-medium text-text">Номер карты</label>
+        <input
+            type="text"
+            id="cardNumber"
+            v-model="form.cardNumber"
+            placeholder="1234 5678 9012 3456"
+            class="w-full p-2 lg:p-3 bg-secondary focus:outline-none focus:ring-2 focus:ring-accent border-2 border-fon rounded-lg text-sm lg:text-base"
+        />
+        <p v-if="errors.cardNumber" class="text-red-500 text-xs lg:text-sm">{{ errors.cardNumber }}</p>
+      </div>
+      <div>
+        <label for="expiryDate" class="block text-sm lg:text-base font-medium text-text">Срок действия</label>
+        <input
+            type="text"
+            id="expiryDate"
+            v-model="form.expiryDate"
+            placeholder="MM/YY"
+            class="w-full p-2 lg:p-3 bg-secondary focus:outline-none focus:ring-2 focus:ring-accent border-2 border-fon rounded-lg text-sm lg:text-base"
+        />
+        <p v-if="errors.expiryDate" class="text-red-500 text-xs lg:text-sm">{{ errors.expiryDate }}</p>
+      </div>
+      <div>
+        <label for="cvv" class="block text-sm lg:text-base font-medium text-text">CVV</label>
+        <input
+            type="text"
+            id="cvv"
+            v-model="form.cvv"
+            placeholder="123"
+            class="w-full p-2 lg:p-3 bg-secondary focus:outline-none focus:ring-2 focus:ring-accent border-2 border-fon rounded-lg text-sm lg:text-base"
+        />
+        <p v-if="errors.cvv" class="text-red-500 text-xs lg:text-sm">{{ errors.cvv }}</p>
+      </div>
+      <button
+          type="submit"
+          class="w-full py-2 lg:py-3 bg-accent text-secondary rounded-lg font-medium text-sm lg:text-base hover:bg-accent_hover transition-colors"
+      >
+        Оплатить
+      </button>
+    </form>
+  </main>
 </template>
 
 <script setup>
@@ -64,11 +69,13 @@ import api from "@/api/index.js";
 const router = useRouter();
 const subscriptionStore = useSubscriptionStore();
 
+// Извлечение ID подписки из параметров URL
 const subId = new URLSearchParams(window.location.search).get('sub_id');
 const selectedSubscription = computed(() => {
   return subscriptionStore.getSubscriptionById(Number(subId));
 });
 
+// Данные формы
 const form = ref({
   cardNumber: '',
   expiryDate: '',
@@ -76,6 +83,7 @@ const form = ref({
 });
 const errors = ref({});
 
+// Валидация формы
 const validateForm = () => {
   errors.value = {};
   let valid = true;
@@ -96,6 +104,7 @@ const validateForm = () => {
   return valid;
 };
 
+// Отправка данных формы
 const submitPayment = async () => {
   if (!validateForm()) return;
 
@@ -109,6 +118,7 @@ const submitPayment = async () => {
   }
 };
 
+// Загрузка подписок при монтировании компонента
 onMounted(async () => {
   if (!subscriptionStore.subscriptions.length) {
     try {

@@ -6,6 +6,18 @@ export default {
     content: ["./index.html", "./src/**/*.{vue,js,ts,jsx,tsx}"],
     theme: {
         extend: {
+            lineClamp: {
+                3: '3',
+            },
+            screens: {
+                'xs': '320px',    // iPhone 5/SE
+                'sm': '640px',    // Small tablets
+                'md': '768px',    // Tablets
+                'lg': '1024px',   // Laptops
+                'xl': '1280px',   // Desktops
+                'wide': '1440px',
+                '2xl': '1536px',  // Large desktops
+            },
             keyframes: {
                 'neon-border': {
                     '0%': {borderColor: '#8244FF'},
