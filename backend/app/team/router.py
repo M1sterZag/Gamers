@@ -254,3 +254,54 @@ async def delete_team_member(
         raise HTTPException(status_code=404, detail="Участник не найден в команде")
 
     return {"message": "Участник успешно удален из команды"}
+
+
+@router.get("/recent/{user_id}")
+async def get_user_recent_teams(
+        user_id: int,
+        session: AsyncSession = Depends(get_session_without_commit)
+):
+    """
+    Получает последние команды пользователя
+
+    Args:
+        user_id: ID пользователя
+        session: Асинхронная сессия SQLAlchemy
+
+    Returns:
+        Список последних команд пользователя
+    """
+    try:
+        # Получаем команды пользователя
+        teams = await TeamMemberDAO.find_user_teams(session=session, user_id=user_id)
+
+        # Формируем результат
+        result = []
+        for team in teams:
+            # Получаем количество участников для каждой команды
+            members_count = await session.execute(
+                select(func.count()).where(TeamMember.team_id == team.id)
+            )
+            members_count = members_count.scalar()
+
+            # Получаем информацию об игре
+            game = await GameDAO.find_one_or_none_by_id(session=session, data_id=team.game_id)
+            game_type = await GameTypeDAO.find_one_or_none_by_id(session=session, data_id=team.game_type_id)
+
+            team_data = {
+                "id": team.id,
+                "name": team.name,
+                "description": team.description,
+                "game": game.name if game else "Unknown",
+                "game_type": game_type.name if game_type else "Unknown",
+                "time": team.time,
+                "members_count": members_count,
+                "owner_id": team.owner_id
+            }
+            result.append(team_data)
+
+        return result
+
+    except Exception as e:
+        logger.error(f"Ошибка при получении команд пользователя: {str(e)}")
+        raise HTTPException(status_code=500, detail="Ошибка при получении списка команд")

@@ -34,6 +34,7 @@ class BaseDAO:
         Возвращает:
             Экземпляр модели или None, если ничего не найдено.
         """
+
         logger.info("Ищем запись в базе: таблица={}, фильтр={}", cls.model.__tablename__, filter_by)
         query = select(cls.model).filter_by(**filter_by)
         result = await session.execute(query)

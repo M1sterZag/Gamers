@@ -37,6 +37,16 @@
           <span class="leading-none">Профиль</span>
         </router-link>
       </li>
+      <li>
+        <router-link to="/premium"
+                     class="inline-flex items-center gap-2 py-2 text-text text-s16 font-semibold visited:text-text hover:text-accent hover:no-underline focus:no-underline focus:ring-0 focus:shadow-none ">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" class="w-[25px] h-[25px]">
+            <path fill="currentColor" fill-rule="evenodd"
+                  d="M3.75 2a.75.75 0 0 0-.662.397l-2 3.75a.75.75 0 0 0 .071.815l6.25 8a.75.75 0 0 0 1.182 0l6.25-8a.75.75 0 0 0 .07-.815l-2-3.75A.75.75 0 0 0 12.25 2zm-.883 4L4.2 3.5h1.277L4.852 6zm.616 1.5h1.544l1.029 3.293zm3.115 0h2.804L8 11.986zm4.375 0h1.544l-2.573 3.293zm2.16-1.5h-1.985l-.625-2.5H11.8zM9.602 6H6.398l.625-2.5h1.954z"/>
+          </svg>
+          <span class="leading-none">Подписки</span>
+        </router-link>
+      </li>
     </ul>
 
     <!-- Нижние ссылки -->

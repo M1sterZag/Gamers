@@ -5,6 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.auth.models import User
 from app.chat.models import Message, Chat, ChatMember
 from app.game.models import Game, GameType
+from app.subscription.models import Subscription, UserSubscription
 from app.team.models import Team, TeamMember
 
 TABLE_MODEL_MAPPING = {
@@ -16,6 +17,8 @@ TABLE_MODEL_MAPPING = {
     "game_types": GameType,
     "teams": Team,
     "team_members": TeamMember,
+    "subscriptions": Subscription,
+    "user_subscriptions": UserSubscription
 }
 
 

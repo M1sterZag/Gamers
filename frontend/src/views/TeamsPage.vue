@@ -22,7 +22,8 @@
       </div>
       <button
           class="bg-accent !text-secondary py-2 px-4 rounded-lg font-medium text-s20 hover:bg-accent_hover ml-4"
-          @click="openCreateTeamForm">
+          @click="openCreateTeamForm"
+          :title="!hasSubscription ? 'Без подписки можно создать команду до 5 участников' : ''">
         Создать
       </button>
     </div>
@@ -61,7 +62,8 @@
 
     <div class="teams mt-10 grid grid-cols-1 lg:grid-cols-3 xl:grid-cols-4 gap-6">
       <div v-for="team in filteredTeams" :key="team.id"
-           class="team-card bg-secondary text-text p-5 rounded-lg shadow-md flex flex-col items-center text-center">
+           class="team-card bg-secondary text-text p-5 rounded-lg shadow-md flex flex-col items-center text-center border-2 border-secondary"
+           :class="{ 'animate-neon-border': team.ownerHasSubscription }">
         <h2 class="text-xl font-semibold">{{ team.name }}</h2>
         <p class="text-s16 text-text/80 mt-1">{{ team.game }}</p>
         <p class="text-s16 text-text/80 mt-1">{{ team.gameType }}</p>
@@ -147,14 +149,27 @@
               <option v-for="type in gameTypes" :key="type.id" :value="type.id">{{ type.name }}</option>
             </select>
           </div>
-          <div>
+          <div class="relative">
             <label class="block text-text mb-1">Кол-во участников</label>
             <input
                 type="number"
-                v-model="newTeam.maxMembers"
+                v-model.number="newTeam.maxMembers"
+                :max="hasSubscription ? null : 5"
+                min="1"
                 class="w-full p-2 rounded-brs !bg-secondary focus:outline-none focus:outline-accent border-2 border-secondary"
                 required
+                @input="validateMaxMembers"
             />
+            <div v-if="!hasSubscription && newTeam.maxMembers >= 5"
+                 class="absolute right-0 top-0 transform translate-x-full bg-secondary text-text p-2 rounded-lg shadow-lg text-sm w-64">
+              Для создания команды с более чем 5 участниками требуется подписка
+            </div>
+            <p v-if="!hasSubscription" class="text-sm text-text/80 mt-1">
+              Максимальное количество участников без подписки: 5
+            </p>
+            <p v-else class="text-sm text-accent mt-1">
+              У вас есть подписка, можно создать команду с любым количеством участников
+            </p>
           </div>
           <div>
             <label class="block text-text mb-1">Дата и время</label>
@@ -176,6 +191,7 @@
             <button
                 type="submit"
                 class="p-2 bg-accent hover:bg-accent_hover !text-secondary rounded-brs transition block font-semibold"
+                :disabled="!hasSubscription && newTeam.maxMembers > 5"
             >
               Создать
             </button>
@@ -195,12 +211,16 @@
 import {ref, computed, onMounted} from 'vue';
 import {useRouter} from 'vue-router';
 import {useAuthStore} from '../stores/auth';
+import {useSubscriptionStore} from '../stores/subscriptionStore';
 import api from '../api';
 
 const router = useRouter();
 const authStore = useAuthStore();
+const subscriptionStore = useSubscriptionStore();
+
 const teams = ref([]);
 const games = ref([]);
+const subscribedUserIds = ref([]);
 const gameTypes = ref([]);
 const searchQuery = ref('');
 const selectedGame = ref('');
@@ -214,8 +234,12 @@ const newTeam = ref({
   description: '',
   game: '',
   gameType: '',
-  maxMembers: 0,
+  maxMembers: 1,
   time: '',
+});
+
+const hasSubscription = computed(() => {
+  return !!subscriptionStore.currentSubscriptionId;
 });
 
 const formatDate = (dateStr) => {
@@ -241,19 +265,23 @@ onMounted(async () => {
     router.push('/login');
     return;
   }
+  await subscriptionStore.checkCurrentSubscription();
   await loadTeamsAndFilters();
 });
 
 const loadTeamsAndFilters = async () => {
   try {
-    const [teamsRes, gamesRes, gameTypesRes] = await Promise.all([
+    const [teamsRes, gamesRes, gameTypesRes, subscribedRes] = await Promise.all([
       api.get('/api/teams'),
       api.get('/api/games'),
       api.get('/api/games/types'),
+      api.get('/api/subscriptions/subscribed_user_ids')
     ]);
 
     games.value = gamesRes.data;
     gameTypes.value = gameTypesRes.data;
+
+    subscribedUserIds.value = subscribedRes.data;
 
     teams.value = teamsRes.data.map(team => ({
       ...team,
@@ -261,7 +289,8 @@ const loadTeamsAndFilters = async () => {
       game: games.value.find(game => game.id === team.game_id)?.name || 'Неизвестно',
       gameType: gameTypes.value.find(type => type.id === team.game_type_id)?.name || 'Неизвестно',
       isMyTeam: team.owner_id === authStore.user?.id,
-      members: team.members || []
+      members: team.members || [],
+      ownerHasSubscription: subscribedUserIds.value.includes(team.owner_id)
     }));
   } catch (error) {
     console.error('Ошибка загрузки данных:', error);
@@ -269,7 +298,7 @@ const loadTeamsAndFilters = async () => {
 };
 
 const filteredTeams = computed(() => {
-  return teams.value.filter(team => {
+  const filtered = teams.value.filter(team => {
     let matches = true;
 
     if (searchQuery.value && !team.name.toLowerCase().includes(searchQuery.value.toLowerCase()) &&
@@ -316,26 +345,46 @@ const filteredTeams = computed(() => {
 
     return matches;
   });
+
+  // Сортируем после фильтрации
+  return [...filtered].sort((a, b) => {
+    if (a.ownerHasSubscription && !b.ownerHasSubscription) return -1;
+    if (!a.ownerHasSubscription && b.ownerHasSubscription) return 1;
+    return 0;
+  });
 });
 
 const openCreateTeamForm = () => {
   isCreateTeamModalOpen.value = true;
-};
-
-const closeCreateTeamModal = () => {
-  isCreateTeamModalOpen.value = false;
+  // Сброс значений при открытии формы
   newTeam.value = {
     name: '',
     description: '',
     game: '',
     gameType: '',
-    maxMembers: 0,
+    maxMembers: 1,
     time: '',
   };
 };
 
+const closeCreateTeamModal = () => {
+  isCreateTeamModalOpen.value = false;
+};
+
+const validateMaxMembers = () => {
+  if (!hasSubscription.value && newTeam.value.maxMembers > 5) {
+    newTeam.value.maxMembers = 5;
+  }
+};
+
 const createTeam = async () => {
   try {
+    // Проверка ограничения на количество участников
+    if (!hasSubscription.value && newTeam.value.maxMembers > 5) {
+      alert('Без подписки можно создать команду только до 5 участников. Пожалуйста, оформите подписку.');
+      return;
+    }
+
     const teamData = {
       name: newTeam.value.name,
       description: newTeam.value.description,
@@ -344,11 +393,15 @@ const createTeam = async () => {
       max_members: parseInt(newTeam.value.maxMembers),
       time: new Date(newTeam.value.time).toISOString(),
     };
+
     await api.post('/api/teams', teamData);
     await loadTeamsAndFilters();
     closeCreateTeamModal();
   } catch (error) {
     console.error('Ошибка создания команды:', error);
+    if (error.response?.data?.detail) {
+      alert(error.response.data.detail);
+    }
   }
 };
 

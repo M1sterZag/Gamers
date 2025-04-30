@@ -19,8 +19,15 @@
           </router-link>
         </template>
         <template v-else>
-          <router-link to="/profile" class="flex items-center gap-2 bg-secondary rounded-lg p-2">
-            <div class="w-10 h-10 rounded-full overflow-hidden">
+          <router-link
+              to="/profile"
+              class="flex items-center gap-2 bg-secondary rounded-lg p-2 border-2 border-secondary"
+              :class="{ 'animate-neon-border': hasSubscription }"
+          >
+            <!-- Иконка профиля -->
+            <div
+                class="w-10 h-10 rounded-full overflow-hidden relative"
+            >
               <img
                   v-if="authStore.user?.avatar"
                   :src="authStore.user.avatar"
@@ -34,7 +41,13 @@
                 {{ authStore.user?.username.charAt(0).toUpperCase() }}
               </div>
             </div>
-            <span class="text-text font-medium text-[20px]">{{ authStore.user?.username }}</span>
+
+            <!-- Никнейм -->
+            <span
+                class="text-text font-medium text-[20px]"
+            >
+      {{ authStore.user?.username }}
+    </span>
           </router-link>
         </template>
       </div>
@@ -71,7 +84,7 @@
         <hr class="w-full h-[2px] bg-primary border-0 my-3">
         <div class="flex items-center gap-2 my-auto">
           <p class="text-s16">Общайтесь и находите друзей</p>
-          <router-link to="/chats">
+          <router-link to="/teams">
             <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
@@ -322,15 +335,19 @@
 </template>
 
 <script setup>
-import {onMounted} from 'vue';
+import {computed, onMounted} from 'vue';
 import {useAuthStore} from '../stores/auth';
+import {useSubscriptionStore} from '../stores/subscriptionStore';
 
 const authStore = useAuthStore();
+const subscriptionStore = useSubscriptionStore();
+
+const hasSubscription = computed(() => {
+  return !!subscriptionStore.currentSubscriptionId;
+});
 
 onMounted(async () => {
   await authStore.checkAuth(); // Проверяем авторизацию при загрузке страницы
+  await subscriptionStore.checkCurrentSubscription();
 });
 </script>
-
-<style scoped>
-</style>
