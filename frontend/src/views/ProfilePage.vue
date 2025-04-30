@@ -48,6 +48,8 @@
           >
             <h4 class="text-lg font-semibold">{{ team.name }}</h4>
             <p class="text-s16 text-text/80 mt-1">{{ team.game }}</p>
+            <p class="text-s16 text-text/80 mt-1">{{ team.game_type }}</p>
+            <p class="text-s16 text-text/80 mt-1">{{ team.description }}</p>
             <p class="text-s16 text-text/80 mt-1">{{ formatDate(team.time) }}</p>
 
             <div class="flex items-center mt-2">
@@ -149,7 +151,10 @@ const loadRecentTeams = async () => {
   try {
     if (hasSubscription.value) {
       const response = await api.get(`/api/teams/recent/${profileUser.value.id}`);
-      recentTeams.value = response.data;
+      recentTeams.value = response.data.map(team => ({
+        ...team,
+        formattedTime: formatDate(team.time),
+      }));
     }
   } catch (error) {
     console.error('Ошибка загрузки последних команд:', error);

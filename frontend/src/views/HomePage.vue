@@ -348,5 +348,6 @@ const hasSubscription = computed(() => {
 
 onMounted(async () => {
   await authStore.checkAuth(); // Проверяем авторизацию при загрузке страницы
+  await subscriptionStore.checkCurrentSubscription();
 });
 </script>

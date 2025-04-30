@@ -291,6 +291,7 @@ async def get_user_recent_teams(
             team_data = {
                 "id": team.id,
                 "name": team.name,
+                "description": team.description,
                 "game": game.name if game else "Unknown",
                 "game_type": game_type.name if game_type else "Unknown",
                 "time": team.time,
