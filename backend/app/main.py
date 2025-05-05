@@ -13,7 +13,13 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://localhost", "http://frontend", "http://77.95.201.26"],
+    allow_origins=[
+        "http://localhost:3000",  # Локальная разработка
+        "http://localhost",  # Локальный сервер
+        "http://frontend",  # Docker-контейнер фронтенда
+        "http://77.95.201.26",  # IP-адрес сервера
+        "https://gamers-team.ru"  # Новый домен
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"]
