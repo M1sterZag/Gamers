@@ -1,7 +1,7 @@
 <template>
   <main class="">
     <header>
-      <div class="flex flex-col lg:flex-row justify-between xs:items-center items-start gap-3 mb-4 lg:mb-[30px]">
+      <div class="flex flex-col lg:flex-row justify-between items-center items-start gap-3 mb-4 lg:mb-[30px]">
         <h1 class="text-2xl lg:text-4xl font-semibold text-text leading-tight">
           Добро пожаловать в Gamers!
         </h1>

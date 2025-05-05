@@ -20,6 +20,8 @@
       />
       <router-view/>
     </main>
+
+    <CookieNotice/>
   </div>
 </template>
 
@@ -28,6 +30,7 @@ import SideBar from '@/components/SideBar.vue';
 import MobileNav from '@/components/MobileNav.vue';
 import Notification from "@/components/Notification.vue";
 import {useNotificationStore} from "@/stores/notificationStore.js";
+import CookieNotice from "@/components/CookieNotice.vue";
 
 const notificationStore = useNotificationStore();
 </script>
