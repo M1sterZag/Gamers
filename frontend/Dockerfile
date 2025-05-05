@@ -1,5 +1,5 @@
 # Базовый образ Node.js
-FROM node:22.14-alpine AS builder
+FROM node:alpine AS build
 
 # Установка рабочей директории
 WORKDIR /app
@@ -19,9 +19,8 @@ RUN npm run build
 # Этап для nginx
 FROM nginx:stable-alpine
 
-COPY --from=builder /app/dist /usr/share/nginx/html
+COPY --from=build /dist /usr/share/nginx/html
+COPY --from=build nginx.conf /etc/nginx/conf.d/default.conf
 
-# Кастомный конфиг для проксирования к backend
-COPY nginx.conf /etc/nginx/conf.d/default.conf
-
-EXPOSE 80
+EXPOSE 3000
+CMD [ "nginx", "-g", "daemon off;" ]
