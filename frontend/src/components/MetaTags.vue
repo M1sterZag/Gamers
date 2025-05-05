@@ -12,39 +12,32 @@ const meta = {
   '/': {
     title: 'Главная',
     description: defaultDescription,
-    // image: '/og-image-home.jpg'
   },
   '/teams': {
     title: 'Команды',
     description: 'Найдите или создайте команду для совместной игры',
-    // image: '/og-image-teams.jpg'
   },
   '/profile': {
     title: 'Профиль',
     description: 'Ваш профиль в Gamers',
-    // image: '/og-image-profile.jpg'
   },
   '/premium': {
     title: 'Премиум подписка',
     description: 'Преимущества премиум подписки Gamers+',
-    // image: '/og-image-premium.jpg'
   },
   '/login': {
     title: 'Вход',
     description: 'Войдите в свой аккаунт Gamers',
-    // image: '/og-image-login.jpg'
   },
   '/register': {
     title: 'Регистрация',
     description: 'Создайте новый аккаунт Gamers',
-    // image: '/og-image-register.jpg'
   }
 }
 
 const currentMeta = meta[route.path] || {
   title: defaultTitle,
   description: defaultDescription,
-  // image: '/og-image-default.jpg'
 }
 </script>
 
