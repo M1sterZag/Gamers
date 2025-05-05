@@ -25,3 +25,4 @@ class UserSubscription(Base):
     start_date: Mapped[datetime] = mapped_column(DateTime, nullable=False)
     end_date: Mapped[datetime] = mapped_column(DateTime, nullable=False)
     is_active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
+    payment_id: Mapped[int] = mapped_column(Integer, nullable=False)

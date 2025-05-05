@@ -49,7 +49,7 @@
 </template>
 
 <script setup>
-import {ref, onMounted} from 'vue';
+import {onMounted, ref} from 'vue';
 import api from '@/api';
 import {useSubscriptionStore} from '@/stores/subscriptionStore';
 import {useNotificationStore} from '@/stores/notificationStore';
@@ -127,9 +127,10 @@ const purchaseSubscription = async (subId) => {
       return;
     }
 
-    // Если нет активной подписки, перенаправляем на страницу оплаты
-    subscriptionStore.setCurrentSubscriptionId(subId);
-    window.location.href = `/payment?sub_id=${subId}`;
+    // Создаем платеж
+    const response = await api.post('/api/subscriptions/create_payment', {sub_id: subId});
+    // Перенаправляем пользователя на страницу оплаты
+    window.location.href = response.data.confirmation_url;
   } catch (error) {
     console.error('Ошибка оформления подписки:', error);
     notificationStore.showNotification('error', 'Произошла ошибка при оформлении подписки.');
