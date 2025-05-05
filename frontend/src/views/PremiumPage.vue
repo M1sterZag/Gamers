@@ -65,7 +65,7 @@ const subscriptions = ref([]);
 const currentSubscription = ref(null);
 
 // Преимущества подписки с новыми SVG-иконками
-const benefits = ref([
+const benefits = [
   {
     title: "Больше союзников",
     description: "Создавайте команды с более чем 5 участниками.",
@@ -86,7 +86,7 @@ const benefits = ref([
     description: "Анимированная граница вокруг профиля и команды.",
     icon: UsernameStyleIcon
   },
-]);
+];
 
 // Загрузка доступных подписок
 const fetchSubscriptions = async () => {
