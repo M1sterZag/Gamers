@@ -12,6 +12,12 @@
     <main
         class="flex-1 wide:ml-[80px] px-4 wide:px-0 wide:pr-[64px] pb-20 wide:pb-[20px] pt-16 wide:pt-[88px] overflow-y-auto"
     >
+      <Notification
+          v-if="notificationStore.isVisible"
+          :type="notificationStore.type"
+          :message="notificationStore.message"
+          @close="notificationStore.hideNotification"
+      />
       <router-view/>
     </main>
   </div>
@@ -20,4 +26,8 @@
 <script setup>
 import SideBar from '@/components/SideBar.vue';
 import MobileNav from '@/components/MobileNav.vue';
+import Notification from "@/components/Notification.vue";
+import {useNotificationStore} from "@/stores/notificationStore.js";
+
+const notificationStore = useNotificationStore();
 </script>

@@ -52,8 +52,11 @@
 import {ref, onMounted} from 'vue';
 import api from '@/api';
 import {useSubscriptionStore} from '@/stores/subscriptionStore';
+import {useNotificationStore} from '@/stores/notificationStore';
 
 const subscriptionStore = useSubscriptionStore();
+const notificationStore = useNotificationStore();
+
 const subscriptions = ref([]);
 const currentSubscription = ref(null);
 
@@ -89,6 +92,7 @@ const fetchSubscriptions = async () => {
     subscriptionStore.setSubscriptions(response.data);
   } catch (error) {
     console.error('Ошибка загрузки подписок:', error);
+    notificationStore.showNotification('error', 'Не удалось загрузить данные о подписках.');
   }
 };
 
@@ -100,8 +104,6 @@ const checkCurrentSubscription = async () => {
   } catch (error) {
     if (error.response?.status === 403) {
       currentSubscription.value = null; // Нет активной подписки
-    } else {
-      console.error('Ошибка проверки подписки:', error);
     }
   }
 };
@@ -111,13 +113,13 @@ const purchaseSubscription = async (subId) => {
   try {
     // Проверяем, есть ли уже активная подписка
     if (currentSubscription.value && currentSubscription.value.subscription_id === subId) {
-      alert('У вас уже оформлена эта подписка.');
+      notificationStore.showNotification('info', 'У вас уже оформлена эта подписка.');
       return;
     }
 
     // Если есть любая активная подписка, запрещаем оформление новой
     if (currentSubscription.value) {
-      alert('У вас уже есть активная подписка. Вы можете продлить её позже.');
+      notificationStore.showNotification('warning', 'У вас уже есть активная подписка. Вы можете продлить её позже.');
       return;
     }
 
@@ -126,7 +128,7 @@ const purchaseSubscription = async (subId) => {
     window.location.href = `/payment?sub_id=${subId}`;
   } catch (error) {
     console.error('Ошибка оформления подписки:', error);
-    alert('Произошла ошибка при оформлении подписки.');
+    notificationStore.showNotification('error', 'Произошла ошибка при оформлении подписки.');
   }
 };
 

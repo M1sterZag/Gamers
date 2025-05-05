@@ -2,7 +2,7 @@
   <main class="">
     <template v-if="team">
       <header class="mb-6 lg:mb-8">
-        <div class="flex flex-col lg:flex-row justify-between xs:items-center items-start gap-4 mb-4 lg:mb-6">
+        <div class="flex flex-col lg:flex-row justify-between xs:items-center gap-4 mb-4 lg:mb-6">
           <h1 class="text-2xl lg:text-4xl font-bold text-text">
             Приятного общения!
           </h1>
@@ -18,7 +18,7 @@
 
             <button
                 class="bg-accent text-secondary py-2 px-2 rounded-lg font-medium text-base lg:text-lg hover:bg-accent_hover transition whitespace-nowrap"
-                @click="leaveTeam"
+                @click="openLeaveModal"
             >
               Покинуть
             </button>
@@ -108,6 +108,39 @@
           </footer>
         </article>
       </div>
+
+      <!-- Модальное окно покидания команды -->
+      <div
+          v-if="isLeaveModalOpen"
+          class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4"
+      >
+        <article class="bg-fon p-6 rounded-lg w-full max-w-md">
+          <header class="mb-4">
+            <h2 class="text-xl lg:text-2xl font-semibold text-text text-center">
+              Вы уверены, что хотите покинуть команду?
+            </h2>
+          </header>
+
+          <p class="text-center text-text mb-6">
+            После покидания команды вы не сможете вернуться, если она будет заполнена.
+          </p>
+
+          <footer class="flex justify-center gap-4">
+            <button
+                class="bg-red-600 text-white py-2 px-4 rounded-lg font-semibold hover:bg-red-700 transition"
+                @click="leaveTeamConfirmed"
+            >
+              Да, покинуть
+            </button>
+            <button
+                class="bg-secondary hover:bg-secondary_hover text-text py-2 px-4 rounded-lg font-semibold transition"
+                @click="closeLeaveModal"
+            >
+              Отмена
+            </button>
+          </footer>
+        </article>
+      </div>
     </template>
 
     <div v-else class="flex items-center justify-center min-h-[60vh]">
@@ -129,6 +162,7 @@ const authStore = useAuthStore();
 
 const team = ref(null);
 const isDeleteModalOpen = ref(false);
+const isLeaveModalOpen = ref(false);
 
 const isOwner = computed(() => team.value?.owner_id === authStore.user.id);
 const isAdmin = computed(() => authStore.user?.is_admin);
@@ -149,6 +183,9 @@ const fetchTeam = async () => {
 const openDeleteModal = () => isDeleteModalOpen.value = true;
 const closeDeleteModal = () => isDeleteModalOpen.value = false;
 
+const openLeaveModal = () => isLeaveModalOpen.value = true;
+const closeLeaveModal = () => isLeaveModalOpen.value = false;
+
 const deleteTeam = async () => {
   try {
     await api.delete(`/api/teams/${team.value.id}`);
@@ -158,14 +195,12 @@ const deleteTeam = async () => {
   }
 };
 
-const leaveTeam = async () => {
-  if (confirm('Вы уверены, что хотите покинуть команду?')) {
-    try {
-      await api.delete(`/api/teams/member/${team.value.id}`);
-      router.push('/teams');
-    } catch (error) {
-      console.error('Ошибка при выходе из команды:', error);
-    }
+const leaveTeamConfirmed = async () => {
+  try {
+    await api.delete(`/api/teams/member/${team.value.id}`);
+    router.push('/teams');
+  } catch (error) {
+    console.error('Ошибка при выходе из команды:', error);
   }
 };
 
