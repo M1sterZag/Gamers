@@ -1,9 +1,6 @@
 # Базовый образ Node.js
 FROM node:alpine AS build
 
-# Установка рабочей директории
-WORKDIR /app
-
 # Копирование package.json и package-lock.json
 COPY package*.json ./
 
