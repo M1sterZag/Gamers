@@ -29,10 +29,9 @@ class AuthJWT(BaseSettings):
     model_config = SettingsConfigDict(env_file=f"{BASE_DIR}/../.env", extra="allow")
 
 
-class GoogleAuth(BaseSettings):
-    google_client_id: str
-    google_client_secret: str
-    google_redirect_uri: str
+class UKassa(BaseSettings):
+    UKASSA_KEY: str
+    UKASSA_SHOP_ID: str
 
     model_config = SettingsConfigDict(env_file=f"{BASE_DIR}/../.env", extra="allow")
 
@@ -47,7 +46,7 @@ class Settings(BaseSettings):
     BASE_DIR: str = BASE_DIR
     db: DBSettings = DBSettings()
     auth_jwt: AuthJWT = AuthJWT()
-    google_auth: GoogleAuth = GoogleAuth()
+    ukassa: UKassa = UKassa()
     app_settings: AppSettings = AppSettings()
 
     model_config = SettingsConfigDict(extra="allow")

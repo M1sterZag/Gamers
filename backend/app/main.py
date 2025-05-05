@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from starlette.responses import RedirectResponse
 
 from app.auth.router import router as router_auth
 from app.team.router import router as router_teams
@@ -27,5 +28,5 @@ app.include_router(router_subscriptions, prefix='/subscriptions', tags=['Subscri
 
 
 @app.get("/")
-async def hello():
-    return {"message": "ok"}
+async def root():
+    return RedirectResponse(url="/docs")

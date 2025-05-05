@@ -176,7 +176,7 @@ const fetchTeam = async () => {
     team.value = response.data;
   } catch (error) {
     console.error('Ошибка загрузки команды:', error);
-    router.push('/teams');
+    await router.push('/teams');
   }
 };
 
@@ -189,7 +189,7 @@ const closeLeaveModal = () => isLeaveModalOpen.value = false;
 const deleteTeam = async () => {
   try {
     await api.delete(`/api/teams/${team.value.id}`);
-    router.push('/teams');
+    await router.push('/teams');
   } catch (error) {
     console.error('Ошибка удаления команды:', error);
   }
@@ -198,7 +198,7 @@ const deleteTeam = async () => {
 const leaveTeamConfirmed = async () => {
   try {
     await api.delete(`/api/teams/member/${team.value.id}`);
-    router.push('/teams');
+    await router.push('/teams');
   } catch (error) {
     console.error('Ошибка при выходе из команды:', error);
   }
