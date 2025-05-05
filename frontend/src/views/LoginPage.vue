@@ -91,6 +91,9 @@ function validateForm() {
   if (!form.password) {
     errors.password = 'Пароль обязателен';
     valid = false;
+  } else if (form.password.length < 8) {
+    errors.password = 'Пароль должен содержать минимум 8 символов';
+    valid = false;
   }
 
   return valid;
@@ -98,19 +101,40 @@ function validateForm() {
 
 // Отправка формы
 async function submitForm() {
-  if (validateForm()) {
-    try {
-      await authStore.login(form.email, form.password);
-      await router.push('/'); // Перенаправление на главную страницу
-    } catch (error) {
-      const errorMessage = error.response?.data?.detail || 'Ошибка авторизации';
-      if (errorMessage.includes('Incorrect email or password')) {
+  if (!validateForm()) return;
+
+  try {
+    await authStore.login(form.email, form.password);
+    await router.push('/'); // Перенаправление на главную страницу
+  } catch (error) {
+    console.error('Ошибка авторизации:', error);
+
+    // Очистка предыдущих ошибок
+    errors.email = '';
+    errors.password = '';
+
+    const errorData = error.response?.data;
+
+    if (Array.isArray(errorData)) {
+      // Обработка ошибок валидации с сервера
+      errorData.forEach((err) => {
+        if (err.loc.includes('email')) {
+          errors.email = err.msg || 'Некорректный email';
+        } else if (err.loc.includes('password')) {
+          errors.password = err.msg || 'Некорректный пароль';
+        }
+      });
+    } else if (errorData?.detail) {
+      // Обработка других ошибок
+      if (errorData.detail.includes('Incorrect email or password')) {
         errors.password = 'Неверный email или пароль';
-      } else if (errorMessage.includes('Account is not active')) {
+      } else if (errorData.detail.includes('Account is not active')) {
         errors.email = 'Аккаунт не активирован';
       } else {
-        errors.password = errorMessage;
+        errors.password = errorData.detail || 'Произошла ошибка авторизации';
       }
+    } else {
+      errors.password = 'Неизвестная ошибка авторизации';
     }
   }
 }

@@ -111,7 +111,7 @@ const submitPayment = async () => {
   try {
     await api.post(`/api/subscriptions/subscribe/${subId}`, form.value);
     await subscriptionStore.checkCurrentSubscription();
-    router.push('/premium');
+    await router.push('/premium');
   } catch (error) {
     console.error('Ошибка при оплате:', error);
     alert('Произошла ошибка при оплате.');

@@ -145,7 +145,7 @@
               <input
                   v-model="newTeam.name"
                   type="text"
-                  class="w-full p-2 text-sm lg:text-base rounded-lg bg-secondary border-2 border-fon focus:outline-none focus:ring-2 focus:ring-primary"
+                  class="w-full p-2 text-sm lg:text-base rounded-lg bg-secondary border-2 border-fon focus:outline-none focus:ring-2 focus:ring-accent"
                   required
               />
             </div>
@@ -154,7 +154,7 @@
               <label class="block text-sm lg:text-base text-text mb-1">Описание</label>
               <textarea
                   v-model="newTeam.description"
-                  class="w-full p-2 text-sm lg:text-base rounded-lg bg-secondary border-2 border-fon focus:outline-none focus:ring-2 focus:ring-primary"
+                  class="w-full p-2 text-sm lg:text-base rounded-lg bg-secondary border-2 border-fon focus:outline-none focus:ring-2 focus:ring-accent"
                   required
               ></textarea>
             </div>
@@ -164,7 +164,7 @@
                 <label class="block text-sm lg:text-base text-text mb-1">Игра</label>
                 <select
                     v-model="newTeam.game"
-                    class="w-full p-2 text-sm lg:text-base rounded-lg bg-secondary border-2 border-fon focus:outline-none focus:ring-2 focus:ring-primary"
+                    class="w-full p-2 text-sm lg:text-base rounded-lg bg-secondary border-2 border-fon focus:outline-none focus:ring-2 focus:ring-accent"
                     required
                 >
                   <option v-for="game in games" :key="game.id" :value="game.id">{{ game.name }}</option>
@@ -175,7 +175,7 @@
                 <label class="block text-sm lg:text-base text-text mb-1">Тип игры</label>
                 <select
                     v-model="newTeam.gameType"
-                    class="w-full p-2 text-sm lg:text-base rounded-lg bg-secondary border-2 border-fon focus:outline-none focus:ring-2 focus:ring-primary"
+                    class="w-full p-2 text-sm lg:text-base rounded-lg bg-secondary border-2 border-fon focus:outline-none focus:ring-2 focus:ring-accent"
                     required
                 >
                   <option v-for="type in gameTypes" :key="type.id" :value="type.id">{{ type.name }}</option>
@@ -190,7 +190,7 @@
                   v-model.number="newTeam.maxMembers"
                   :max="hasSubscription ? null : 5"
                   min="1"
-                  class="w-full p-2 text-sm lg:text-base rounded-lg bg-secondary border-2 border-fon focus:outline-none focus:ring-2 focus:ring-primary"
+                  class="w-full p-2 text-sm lg:text-base rounded-lg bg-secondary border-2 border-fon focus:outline-none focus:ring-2 focus:ring-accent"
                   required
                   @input="validateMaxMembers"
               />
@@ -207,7 +207,7 @@
               <input
                   type="datetime-local"
                   v-model="newTeam.time"
-                  class="w-full p-2 text-sm lg:text-base rounded-lg bg-secondary border-2 border-fon focus:outline-none focus:ring-2 focus:ring-primary"
+                  class="w-full p-2 text-sm lg:text-base rounded-lg bg-secondary border-2 border-fon focus:outline-none focus:ring-2 focus:ring-accent"
                   required
               />
             </div>
@@ -250,15 +250,15 @@
 </template>
 
 <script setup>
-import {ref, computed, onMounted} from 'vue';
-import {useRouter} from 'vue-router';
-import {useAuthStore} from '../stores/auth';
-import {useSubscriptionStore} from '../stores/subscriptionStore';
-import api from '../api';
+import {ref, onMounted, computed} from 'vue';
+import api from '@/api';
+import {useAuthStore} from '@/stores/auth';
+import {useSubscriptionStore} from '@/stores/subscriptionStore';
+import {useNotificationStore} from '@/stores/notificationStore';
 
-const router = useRouter();
 const authStore = useAuthStore();
 const subscriptionStore = useSubscriptionStore();
+const notificationStore = useNotificationStore();
 
 const teams = ref([]);
 const games = ref([]);
@@ -271,6 +271,7 @@ const selectedDate = ref('');
 const selectedPlayers = ref('');
 const onlyMyTeams = ref(false);
 const isCreateTeamModalOpen = ref(false);
+
 const newTeam = ref({
   name: '',
   description: '',
@@ -297,8 +298,7 @@ const formatDate = (dateStr) => {
 
 const isTeamMember = (team) => {
   if (!authStore.user?.id) return false;
-  return team.owner_id === authStore.user.id ||
-      team.members?.some(member => member.user_id === authStore.user.id);
+  return team.owner_id === authStore.user.id || team.members?.some(member => member.user_id === authStore.user.id);
 };
 
 onMounted(async () => {
@@ -315,13 +315,11 @@ const loadTeamsAndFilters = async () => {
       api.get('/api/teams'),
       api.get('/api/games'),
       api.get('/api/games/types'),
-      api.get('/api/subscriptions/subscribed_user_ids')
+      api.get('/api/subscriptions/subscribed_user_ids'),
     ]);
-
     games.value = gamesRes.data;
     gameTypes.value = gameTypesRes.data;
     subscribedUserIds.value = subscribedRes.data;
-
     teams.value = teamsRes.data.map(team => ({
       ...team,
       formattedTime: formatDate(team.time),
@@ -329,62 +327,40 @@ const loadTeamsAndFilters = async () => {
       gameType: gameTypes.value.find(type => type.id === team.game_type_id)?.name || 'Неизвестно',
       isMyTeam: team.owner_id === authStore.user?.id,
       members: team.members || [],
-      ownerHasSubscription: subscribedUserIds.value.includes(team.owner_id)
+      ownerHasSubscription: subscribedUserIds.value.includes(team.owner_id),
     }));
   } catch (error) {
     console.error('Ошибка загрузки данных:', error);
+    notificationStore.showNotification('error', 'Не удалось загрузить данные.');
   }
 };
 
 const filteredTeams = computed(() => {
   const filtered = teams.value.filter(team => {
     let matches = true;
-
     if (searchQuery.value && !team.name.toLowerCase().includes(searchQuery.value.toLowerCase()) &&
         !team.game.toLowerCase().includes(searchQuery.value.toLowerCase()) &&
         !team.gameType.toLowerCase().includes(searchQuery.value.toLowerCase())) {
       matches = false;
     }
-
     if (selectedGame.value && team.game_id !== selectedGame.value) {
       matches = false;
     }
-
     if (selectedGameType.value && team.game_type_id !== selectedGameType.value) {
       matches = false;
     }
-
     if (selectedDate.value) {
       const now = new Date();
       const teamDate = new Date(team.time);
-      if (selectedDate.value === 'today' && teamDate.toDateString() !== now.toDateString()) {
-        matches = false;
-      }
-      if (selectedDate.value === 'week' && (teamDate.getTime() < now.getTime() - 7 * 24 * 60 * 60 * 1000)) {
-        matches = false;
-      }
-      if (selectedDate.value === 'month' && (teamDate.getTime() < now.getTime() - 30 * 24 * 60 * 60 * 1000)) {
+      if (teamDate < now) {
         matches = false;
       }
     }
-
-    if (selectedPlayers.value === 'small' && team.max_members > 5) {
-      matches = false;
-    }
-    if (selectedPlayers.value === 'medium' && (team.max_members <= 5 || team.max_members > 10)) {
-      matches = false;
-    }
-    if (selectedPlayers.value === 'large' && team.max_members <= 10) {
-      matches = false;
-    }
-
     if (onlyMyTeams.value && !team.isMyTeam) {
       matches = false;
     }
-
     return matches;
   });
-
   return [...filtered].sort((a, b) => {
     if (a.ownerHasSubscription && !b.ownerHasSubscription) return -1;
     if (!a.ownerHasSubscription && b.ownerHasSubscription) return 1;
@@ -394,11 +370,12 @@ const filteredTeams = computed(() => {
 
 const openCreateTeamForm = () => {
   isCreateTeamModalOpen.value = true;
+  // Сброс значений при открытии формы
   newTeam.value = {
     name: '',
     description: '',
-    game: games.value[0]?.id || '',
-    gameType: gameTypes.value[0]?.id || '',
+    game: '',
+    gameType: '',
     maxMembers: 1,
     time: '',
   };
@@ -417,10 +394,9 @@ const validateMaxMembers = () => {
 const createTeam = async () => {
   try {
     if (!hasSubscription.value && newTeam.value.maxMembers > 5) {
-      alert('Без подписки можно создать команду только до 5 участников. Пожалуйста, оформите подписку.');
+      notificationStore.showNotification('warning', 'Без подписки можно создать команду только до 5 участников. Пожалуйста, оформите подписку.');
       return;
     }
-
     const teamData = {
       name: newTeam.value.name,
       description: newTeam.value.description,
@@ -429,14 +405,14 @@ const createTeam = async () => {
       max_members: parseInt(newTeam.value.maxMembers),
       time: new Date(newTeam.value.time).toISOString(),
     };
-
     await api.post('/api/teams', teamData);
     await loadTeamsAndFilters();
     closeCreateTeamModal();
+    notificationStore.showNotification('success', 'Команда успешно создана!');
   } catch (error) {
     console.error('Ошибка создания команды:', error);
     if (error.response?.data?.detail) {
-      alert(error.response.data.detail);
+      notificationStore.showNotification('error', error.response.data.detail);
     }
   }
 };
@@ -445,10 +421,11 @@ const joinTeam = async (teamId) => {
   try {
     await api.post(`/api/teams/member/${teamId}`);
     await loadTeamsAndFilters();
+    notificationStore.showNotification('success', 'Вы успешно присоединились к команде!');
   } catch (error) {
     console.error('Ошибка при вступлении в команду:', error);
     if (error.response?.data?.detail) {
-      alert(error.response.data.detail);
+      notificationStore.showNotification('error', error.response.data.detail);
     }
   }
 };

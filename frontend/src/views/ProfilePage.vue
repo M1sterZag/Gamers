@@ -142,7 +142,7 @@ const formatDate = (dateStr) => {
 
 const logout = async () => {
   await authStore.logout();
-  router.push('/login');
+  await router.push('/login');
 };
 
 const loadRecentTeams = async () => {
@@ -162,7 +162,7 @@ const loadRecentTeams = async () => {
 onMounted(async () => {
   await authStore.checkAuth();
   if (!authStore.isAuthenticated) {
-    router.push('/login');
+    await router.push('/login');
     return;
   }
 
