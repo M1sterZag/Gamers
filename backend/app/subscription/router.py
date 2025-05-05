@@ -126,6 +126,7 @@ async def create_payment(
     """
     Создает платеж в ЮKassa и возвращает ссылку для оплаты.
     """
+    logger.info(f"Пытаюсь найти подписку {sub_id}")
     subscription = await SubscriptionDAO.find_one_or_none_by_id(session=session, data_id=sub_id)
     if not subscription:
         raise HTTPException(status_code=404, detail="Подписка не найдена")
@@ -145,6 +146,7 @@ async def create_payment(
     }
 
     # Отправляем запрос в ЮKassa
+    logger.info(f"Отпраялю запрос на  {settings.ukassa.UKASSA_SHOP_ID} and {settings.ukassa.UKASSA_KEY}")
     response = requests.post(
         "https://api.yookassa.ru/v3/payments",
         json=payment_data,
@@ -168,6 +170,7 @@ async def create_payment(
         end_date=datetime.now(),
     )
 
+    logger.info(f"Ссылка для подтверждения оплаты {confirmation_url}")
     return {"confirmation_url": confirmation_url}
 
 
@@ -180,6 +183,7 @@ async def yookassa_webhook(request: Request, session: AsyncSession = Depends(get
     event = data.get("event")
     payment = data.get("object")
 
+    logger.info(f"Проверяем ответный платеж {payment["id"]}")
     if event == "payment.succeeded":
         # Проверяем, что платеж успешно завершен
         payment_id = payment["id"]
@@ -194,6 +198,7 @@ async def yookassa_webhook(request: Request, session: AsyncSession = Depends(get
             end_date = start_date + timedelta(days=user_subscription.subscription.duration)
 
             # Обновляем запись о подписке
+            logger.info(f"Обновляем оплаченную подписку")
             updated_count = await UserSubscriptionDAO.update(
                 filter_by={
                     "user_id": user_subscription.user_id,
