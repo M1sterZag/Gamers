@@ -63,30 +63,16 @@ async def get_current_user(
         token: str = Depends(get_access_token),
         session: AsyncSession = Depends(get_session_without_commit)
 ) -> User:
-    """Проверяем access_token и возвращаем пользователя."""
-    try:
-        # Декодируем токен
-        logger.info("Проверка текущего пользователя")
-        payload = jwt.decode(token, settings.auth_jwt.public_key, algorithms=[settings.auth_jwt.ALGORITHM])
-    except ExpiredSignatureError:
-        raise TokenExpiredException
-    except JWTError:
-        # Общая ошибка для токенов
-        raise NoJwtException
+    """Проверяем access_token и возвращаем пользователя"""
+    return await _verify_token_and_get_user(token, session)
 
-    expire: str = payload.get('exp')
-    expire_time = datetime.fromtimestamp(int(expire), tz=timezone.utc)
-    if (not expire) or (expire_time < datetime.now(timezone.utc)):
-        raise TokenExpiredException
 
-    user_id: str = payload.get('sub')
-    if not user_id:
-        raise NoUserIdException
-
-    user = await UsersDAO.find_one_or_none_by_id(session=session, data_id=int(user_id))
-    if not user:
-        raise UserNotFoundException
-    return user
+async def get_current_active_user_from_token(
+        token: str,
+        session: AsyncSession
+) -> User:
+    """Проверяем access_token из WebSocket и возвращаем активного пользователя"""
+    return await _verify_token_and_get_user(token, session, check_active=True)
 
 
 async def get_current_admin_user(current_user: User = Depends(get_current_user)) -> User:
@@ -104,34 +90,38 @@ async def get_current_active_user(current_user: User = Depends(get_current_user)
     raise AccountIsNotActiveException
 
 
-async def get_current_active_user_from_token(
+async def _verify_token_and_get_user(
         token: str,
-        session: AsyncSession
+        session: AsyncSession,
+        check_active: bool = False
 ) -> User:
-    """Проверяем access_token из WebSocket и возвращаем пользователя."""
+    """Общая функция для проверки токена и получения пользователя"""
     try:
-        # Декодируем токен
-        logger.info("Проверка текущего пользователя по токену")
+        logger.info("Проверка токена")
         payload = jwt.decode(token, settings.auth_jwt.public_key, algorithms=[settings.auth_jwt.ALGORITHM])
     except ExpiredSignatureError:
         raise TokenExpiredException
     except JWTError:
         raise NoJwtException
 
+    # Проверка срока действия
     expire: str = payload.get('exp')
     expire_time = datetime.fromtimestamp(int(expire), tz=timezone.utc)
     if (not expire) or (expire_time < datetime.now(timezone.utc)):
         raise TokenExpiredException
 
+    # Получение user_id
     user_id: str = payload.get('sub')
     if not user_id:
         raise NoUserIdException
 
+    # Поиск пользователя
     user = await UsersDAO.find_one_or_none_by_id(session=session, data_id=int(user_id))
     if not user:
         raise UserNotFoundException
 
-    if not user.is_active:
+    # Дополнительная проверка активности
+    if check_active and not user.is_active:
         raise AccountIsNotActiveException
 
     return user
