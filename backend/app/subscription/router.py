@@ -229,6 +229,7 @@ async def yookassa_webhook(request: Request, session: AsyncSession = Depends(get
                     filter_by={
                         "user_id": user_subscription.user_id,
                         "subscription_id": user_subscription.subscription_id,
+                        "payment_id": payment_id
                     },
                     session=session,
                     start_date=start_date,
