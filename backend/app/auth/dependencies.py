@@ -1,6 +1,8 @@
 from datetime import datetime, timezone
 from fastapi import Request, Depends
-from jose import jwt, JWTError, ExpiredSignatureError
+import jwt
+from jose import JWTError
+from jwt import ExpiredSignatureError
 from loguru import logger
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -41,7 +43,7 @@ async def check_refresh_token(
         logger.info("Проверка рефреш токена")
         payload = jwt.decode(
             token,
-            settings.auth_jwt.SECRET_KEY,
+            settings.auth_jwt.public_key,  # settings.auth_jwt.SECRET_KEY
             algorithms=[settings.auth_jwt.ALGORITHM]
         )
         user_id = payload.get("sub")
@@ -65,7 +67,7 @@ async def get_current_user(
     try:
         # Декодируем токен
         logger.info("Проверка текущего пользователя")
-        payload = jwt.decode(token, settings.auth_jwt.SECRET_KEY, algorithms=[settings.auth_jwt.ALGORITHM])
+        payload = jwt.decode(token, settings.auth_jwt.public_key, algorithms=[settings.auth_jwt.ALGORITHM])
     except ExpiredSignatureError:
         raise TokenExpiredException
     except JWTError:
@@ -110,7 +112,7 @@ async def get_current_active_user_from_token(
     try:
         # Декодируем токен
         logger.info("Проверка текущего пользователя по токену")
-        payload = jwt.decode(token, settings.auth_jwt.SECRET_KEY, algorithms=[settings.auth_jwt.ALGORITHM])
+        payload = jwt.decode(token, settings.auth_jwt.public_key, algorithms=[settings.auth_jwt.ALGORITHM])
     except ExpiredSignatureError:
         raise TokenExpiredException
     except JWTError:

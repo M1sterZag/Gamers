@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 
 from loguru import logger
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -23,8 +24,20 @@ class DBSettings(BaseSettings):
 
 class AuthJWT(BaseSettings):
     SECRET_KEY: str
-    ALGORITHM: str
+    ALGORITHM: str = "RS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 15
+    private_key_path: Path = Path(BASE_DIR) / "certs" / "jwt-private.pem"
+    public_key_path: Path = Path(BASE_DIR) / "certs" / "jwt-public.pem"
+
+    @property
+    def private_key(self) -> bytes:
+        with open(self.private_key_path, "rb") as f:
+            return f.read()
+
+    @property
+    def public_key(self) -> bytes:
+        with open(self.public_key_path, "rb") as f:
+            return f.read()
 
     model_config = SettingsConfigDict(env_file=f"{BASE_DIR}/../.env", extra="allow")
 

@@ -1,6 +1,6 @@
 from loguru import logger
 from passlib.context import CryptContext
-from jose import jwt
+import jwt
 from datetime import datetime, timedelta, timezone
 from fastapi.responses import Response
 from pydantic import EmailStr
@@ -21,7 +21,7 @@ def create_tokens(data: dict) -> dict:
     access_payload.update({"exp": int(access_expire.timestamp()), "type": "access"})
     access_token = jwt.encode(
         access_payload,
-        settings.auth_jwt.SECRET_KEY,
+        settings.auth_jwt.private_key,  # settings.auth_jwt.SECRET_KEY
         algorithm=settings.auth_jwt.ALGORITHM
     )
 
@@ -31,7 +31,7 @@ def create_tokens(data: dict) -> dict:
     refresh_payload.update({"exp": int(refresh_expire.timestamp()), "type": "refresh"})
     refresh_token = jwt.encode(
         refresh_payload,
-        settings.auth_jwt.SECRET_KEY,
+        settings.auth_jwt.private_key,  # settings.auth_jwt.SECRET_KEY
         algorithm=settings.auth_jwt.ALGORITHM
     )
     return {"access_token": access_token, "refresh_token": refresh_token}
