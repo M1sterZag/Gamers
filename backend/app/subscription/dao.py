@@ -22,7 +22,7 @@ class UserSubscriptionDAO(BaseDAO):
         query = select(cls.model).filter(
             and_(
                 cls.model.user_id == user_id,
-                cls.model.is_active == True,
+                cls.model.is_active.is_(True),
                 cls.model.end_date > datetime.now()
             )
         )

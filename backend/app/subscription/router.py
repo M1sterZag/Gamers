@@ -137,6 +137,16 @@ async def create_payment(
     if not subscription:
         raise HTTPException(status_code=404, detail="Подписка не найдена")
 
+    active_sub = await UserSubscriptionDAO.find_active_subscription(
+        session=session,
+        user_id=current_user.id
+    )
+    if active_sub:
+        raise HTTPException(
+            status_code=400,
+            detail="У вас уже есть активная подписка"
+        )
+
     # Генерация уникального idempotence_key
     idempotence_key = str(uuid.uuid4())
 
