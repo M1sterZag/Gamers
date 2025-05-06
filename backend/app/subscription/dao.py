@@ -16,18 +16,15 @@ class UserSubscriptionDAO(BaseDAO):
     model = UserSubscription
 
     @classmethod
-    async def find_active_subscription(
-            cls, session: AsyncSession, user_id: int
-    ):
-        query = select(cls.model).filter(
-            and_(
-                cls.model.user_id == user_id,
-                cls.model.is_active.is_(True),
-                cls.model.end_date > datetime.now()
-            )
-        )
+    async def find_active_subscription(cls, session: AsyncSession, user_id: int):
+        query = select(cls.model).where(
+            cls.model.user_id == user_id,
+            cls.model.is_active.is_(True),
+            cls.model.end_date > datetime.now()
+        ).order_by(cls.model.end_date.desc()).limit(1)  # Сортируем и берем последнюю
+
         result = await session.execute(query)
-        return result.scalar_one_or_none()
+        return result.scalars().first()  # Возвращает None если нет результатов
 
     @classmethod
     async def get_all_subscribed_user_ids(
