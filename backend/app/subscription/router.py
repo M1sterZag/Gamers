@@ -204,7 +204,14 @@ async def yookassa_webhook(request: Request, session: AsyncSession = Depends(get
             if user_subscription:
                 # Рассчитываем даты начала и окончания подписки
                 start_date = datetime.now()
-                end_date = start_date + timedelta(days=user_subscription.subscription.duration)
+                subscription = await SubscriptionDAO.find_one_or_none_by_id(
+                    session=session,
+                    data_id=user_subscription.subscription_id
+                )
+                if not subscription:
+                    raise HTTPException(status_code=404, detail="Подписка не найдена")
+
+                end_date = start_date + timedelta(days=subscription.duration)
 
                 # Обновляем запись о подписке
                 logger.info(f"Обновляем оплаченную подписку")
