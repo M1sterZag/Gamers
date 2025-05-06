@@ -128,7 +128,7 @@ const purchaseSubscription = async (subId) => {
     }
 
     // Создаем платеж
-    const response = await api.post('/api/subscriptions/create_payment', {sub_id: subId});
+    const response = await api.post('/api/subscriptions/create_payment', {sub_id: Number(subId)});
     // Перенаправляем пользователя на страницу оплаты
     window.location.href = response.data.confirmation_url;
   } catch (error) {
