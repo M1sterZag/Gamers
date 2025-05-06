@@ -1,6 +1,8 @@
+import uuid
 from datetime import datetime
 
 from sqlalchemy import Integer, String, Float, DateTime, Boolean, ForeignKey
+from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.dao.database import Base
@@ -25,4 +27,4 @@ class UserSubscription(Base):
     start_date: Mapped[datetime] = mapped_column(DateTime, nullable=False)
     end_date: Mapped[datetime] = mapped_column(DateTime, nullable=False)
     is_active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
-    payment_id: Mapped[int] = mapped_column(Integer, nullable=False)
+    payment_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), nullable=False)
