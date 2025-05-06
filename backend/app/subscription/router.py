@@ -123,9 +123,8 @@ async def get_subscribed_user_ids(
     return await UserSubscriptionDAO.get_all_subscribed_user_ids(session=session)
 
 
-@router.post("/create_payment")
+@router.post("/create_payment/{sub_id}")
 async def create_payment(
-        request: Request,  # Добавляем для логирования
         sub_id: int,
         current_user: User = Depends(get_current_user),
         session: AsyncSession = Depends(get_session_with_commit)
@@ -133,7 +132,6 @@ async def create_payment(
     """
     Создает платеж в ЮKassa и возвращает ссылку для оплаты.
     """
-    logger.info(f"Request body: {await request.body()}")
     logger.info(f"Пытаюсь найти подписку {sub_id}")
     subscription = await SubscriptionDAO.find_one_or_none_by_id(session=session, data_id=sub_id)
     if not subscription:
