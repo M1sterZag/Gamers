@@ -338,29 +338,76 @@ const loadTeamsAndFilters = async () => {
 const filteredTeams = computed(() => {
   const filtered = teams.value.filter(team => {
     let matches = true;
+    const now = new Date();
+    const teamDate = new Date(team.time);
+
+    // Поиск по тексту
     if (searchQuery.value && !team.name.toLowerCase().includes(searchQuery.value.toLowerCase()) &&
         !team.game.toLowerCase().includes(searchQuery.value.toLowerCase()) &&
         !team.gameType.toLowerCase().includes(searchQuery.value.toLowerCase())) {
       matches = false;
     }
+
+    // Фильтр по игре
     if (selectedGame.value && team.game_id !== selectedGame.value) {
       matches = false;
     }
+
+    // Фильтр по типу игры
     if (selectedGameType.value && team.game_type_id !== selectedGameType.value) {
       matches = false;
     }
+
+    // Фильтр по дате
     if (selectedDate.value) {
-      const now = new Date();
-      const teamDate = new Date(team.time);
-      if (teamDate < now) {
-        matches = false;
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      const endOfWeek = new Date();
+      endOfWeek.setDate(endOfWeek.getDate() + (6 - endOfWeek.getDay()));
+      endOfWeek.setHours(23, 59, 59, 999);
+
+      const endOfMonth = new Date();
+      endOfMonth.setMonth(endOfMonth.getMonth() + 1);
+      endOfMonth.setDate(0);
+      endOfMonth.setHours(23, 59, 59, 999);
+
+      switch (selectedDate.value) {
+        case 'today':
+          matches = teamDate >= today && teamDate <= new Date(today.getTime() + 86400000);
+          break;
+        case 'week':
+          matches = teamDate >= today && teamDate <= endOfWeek;
+          break;
+        case 'month':
+          matches = teamDate >= today && teamDate <= endOfMonth;
+          break;
       }
     }
+
+    // Фильтр по количеству участников
+    if (selectedPlayers.value) {
+      switch (selectedPlayers.value) {
+        case 'small':
+          matches = team.max_members <= 5;
+          break;
+        case 'medium':
+          matches = team.max_members > 5 && team.max_members <= 10;
+          break;
+        case 'large':
+          matches = team.max_members > 10;
+          break;
+      }
+    }
+
+    // Фильтр "Мои команды"
     if (onlyMyTeams.value && !team.isMyTeam) {
       matches = false;
     }
+
     return matches;
   });
+
   return [...filtered].sort((a, b) => {
     if (a.ownerHasSubscription && !b.ownerHasSubscription) return -1;
     if (!a.ownerHasSubscription && b.ownerHasSubscription) return 1;
