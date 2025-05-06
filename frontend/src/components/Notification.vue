@@ -2,7 +2,7 @@
   <transition name="fade">
     <div
         v-if="isVisible"
-        class="fixed bottom-4 left-1/2 transform -translate-x-1/2 w-full max-w-[400px] sm:max-w-[500px] p-4 rounded-lg shadow-lg flex items-center justify-between bg-secondary"
+        class="fixed top-8 left-1/2 transform -translate-x-1/2 w-full max-w-[400px] sm:max-w-[500px] p-4 rounded-lg shadow-lg flex items-center justify-between bg-secondary"
         :class="notificationClass"
     >
       <!-- Иконка -->
