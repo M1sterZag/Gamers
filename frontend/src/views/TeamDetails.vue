@@ -38,10 +38,9 @@
         </div>
       </header>
 
-      <!-- Остальной код остается без изменений -->
       <div class="grid grid-cols-1 lg:grid-cols-[1fr_2fr] gap-6">
         <!-- Левая колонка -->
-        <section class="space-y-4">
+        <section class="space-y-4 max-h-[500px] overflow-y-auto">
           <article class="bg-secondary p-4 rounded-lg">
             <h3 class="text-lg font-semibold mb-2">Описание команды</h3>
             <p class="line-clamp-4">{{ team.description }}</p>
@@ -71,8 +70,8 @@
         </section>
 
         <!-- Правая колонка (чат) -->
-        <section class="flex flex-col h-full border-2 border-secondary rounded-lg overflow-hidden">
-          <Chat :team-id="team.id" class="flex-grow"/>
+        <section class="h-[500px] border-2 border-secondary rounded-lg overflow-hidden">
+          <Chat :team-id="team.id" class="h-full"/>
         </section>
       </div>
 

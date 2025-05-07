@@ -1,7 +1,10 @@
 <template>
-  <div class="flex flex-col h-full min-h-[300px]">
+  <div class="flex flex-col h-full">
     <!-- Область сообщений -->
-    <div class="flex-grow overflow-y-auto p-2 sm:p-4 space-y-4">
+    <div
+        ref="messagesContainer"
+        class="flex-grow overflow-y-auto p-2 sm:p-4 space-y-4 h-[calc(600px-80px)]"
+    >
       <article
           v-for="(msg, index) in sortedMessages"
           :key="index"
@@ -19,7 +22,7 @@
           <header>
             <strong>{{ msg.username }}</strong>
           </header>
-          <p class="mt-1 text-sm sm:text-base">{{ msg.content }}</p>
+          <p class="mt-1 text-sm sm:text-base break-words whitespace-pre-wrap">{{ msg.content }}</p>
           <footer class="text-xs text-text/80 mt-1 sm:mt-2">
             {{ formatDateTime(msg.created_at) }}
           </footer>
@@ -59,7 +62,7 @@
 </template>
 
 <script setup>
-import {ref, computed, onMounted, onUnmounted} from 'vue'
+import {ref, computed, onMounted, onUnmounted, nextTick} from 'vue'
 import {useRoute} from 'vue-router'
 import {useAuthStore} from '@/stores/auth.js'
 
@@ -67,6 +70,7 @@ const route = useRoute()
 const authStore = useAuthStore()
 const messages = ref([])
 const newMessage = ref('')
+const messagesContainer = ref(null)
 let socket = null
 
 const sortedMessages = computed(() => {
@@ -74,6 +78,14 @@ const sortedMessages = computed(() => {
     return new Date(a.created_at) - new Date(b.created_at)
   })
 })
+
+const scrollToBottom = () => {
+  nextTick(() => {
+    if (messagesContainer.value) {
+      messagesContainer.value.scrollTop = messagesContainer.value.scrollHeight
+    }
+  })
+}
 
 const formatDateTime = (datetimeStr) => {
   const date = new Date(datetimeStr)
@@ -97,6 +109,7 @@ const connectToChat = (teamId) => {
       created_at: messageData.created_at,
       is_sender: messageData.sender_id === authStore.user.id
     })
+    scrollToBottom()
   }
 }
 
@@ -104,9 +117,14 @@ const sendMessage = () => {
   if (socket?.readyState === WebSocket.OPEN && newMessage.value.trim()) {
     socket.send(newMessage.value)
     newMessage.value = ''
+    scrollToBottom()
   }
 }
 
-onMounted(() => connectToChat(route.params.id))
+onMounted(() => {
+  connectToChat(route.params.id)
+  scrollToBottom() // Прокрутка вниз при загрузке компонента
+})
+
 onUnmounted(() => socket?.close())
 </script>
