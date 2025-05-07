@@ -31,10 +31,15 @@ async def update_game(
         admin_user=Depends(get_current_admin_user),
         session: AsyncSession = Depends(get_session_with_commit)
 ):
-    updated_game = await GameDAO.update(session=session, id=game_id, **game_data.model_dump())
-    if not updated_game:
+    updated_count = await GameDAO.update(
+        filter_by={"id": game_id},
+        session=session,
+        **game_data.model_dump()
+    )
+    if updated_count == 0:
         raise HTTPException(status_code=404, detail="Игра не найдена")
-    return updated_game
+
+    return {"message": "success"}
 
 
 @router.delete("/{game_id}")
@@ -71,10 +76,16 @@ async def update_game_type(
         admin_user=Depends(get_current_admin_user),
         session: AsyncSession = Depends(get_session_with_commit)
 ):
-    updated_game_type = await GameTypeDAO.update(session=session, id=game_type_id, **game_type_data.model_dump())
-    if not updated_game_type:
+    # Исправленный вызов update с правильными параметрами
+    updated_count = await GameTypeDAO.update(
+        filter_by={"id": game_type_id},
+        session=session,
+        **game_type_data.model_dump()
+    )
+    if updated_count == 0:
         raise HTTPException(status_code=404, detail="Тип игры не найден")
-    return updated_game_type
+
+    return {"message": "success"}
 
 
 @router.delete("/types/{game_type_id}")

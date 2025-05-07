@@ -1,16 +1,15 @@
 from typing import List
-from fastapi import APIRouter, Response, Depends
+from fastapi import APIRouter, Response, Depends, HTTPException
 from loguru import logger
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.auth.models import User
-from app.auth.utils import authenticate_user, set_tokens, create_tokens
+from app.auth.utils import authenticate_user, set_tokens
 from app.auth.dependencies import get_current_user, get_current_admin_user, check_refresh_token
 from app.dao.dependencies import get_session_with_commit, get_session_without_commit
-from app.exceptions import UserAlreadyExistsException, IncorrectEmailOrPasswordException, AccountIsNotActiveException, \
-    ForbiddenException
+from app.exceptions import UserAlreadyExistsException, IncorrectEmailOrPasswordException, AccountIsNotActiveException
 from app.auth.dao import UsersDAO
-from app.auth.schemas import SUserRegister, SUserAuth, SUserRead
+from app.auth.schemas import SUserRegister, SUserAuth, SUserRead, SUserUpdate
 
 router = APIRouter()
 
@@ -68,10 +67,8 @@ async def get_me(user_data: User = Depends(get_current_user)) -> SUserRead:
 
 
 @router.get("/users")
-async def get_all_users(user_data: User = Depends(get_current_admin_user),
+async def get_all_users(admin: User = Depends(get_current_admin_user),
                         session: AsyncSession = Depends(get_session_without_commit)) -> List[SUserRead]:
-    if not user_data.is_admin:
-        raise ForbiddenException
     return await UsersDAO.find_all(session=session)
 
 
@@ -83,3 +80,31 @@ async def process_refresh_token(
     logger.info("Запуск обновления токенов")
     set_tokens(response, user.id)
     return {"message": "Токены успешно обновлены"}
+
+
+@router.delete("/users/{user_id}")
+async def delete_user_by_id(user_id: int,
+                            admin: User = Depends(get_current_admin_user),
+                            session: AsyncSession = Depends(get_session_with_commit)):
+    deleted = await UsersDAO.delete(session=session, id=user_id)
+    if not deleted:
+        raise HTTPException(status_code=404, detail="Пользователь не найден")
+    return {"message": "Пользователь удален"}
+
+
+@router.put("/users/{user_id}")
+async def update_user_by_id(
+        user_id: int,
+        user_data: SUserUpdate,
+        admin: User = Depends(get_current_admin_user),
+        session: AsyncSession = Depends(get_session_with_commit)
+):
+    update_data = user_data.model_dump(exclude_unset=True)
+    updated_count = await UsersDAO.update(
+        filter_by={"id": user_id},
+        session=session,
+        **update_data
+    )
+    if updated_count == 0:
+        raise HTTPException(status_code=404, detail="Пользователь не найден")
+    return {"message": "success"}

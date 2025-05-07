@@ -61,9 +61,6 @@ async def update_subscription(
         admin_user=Depends(get_current_admin_user),
         session: AsyncSession = Depends(get_session_with_commit)
 ):
-    """
-    Обновляет данные существующей подписки.
-    """
     updated_count = await SubscriptionDAO.update(
         filter_by={"id": sub_id},
         session=session,
@@ -71,32 +68,8 @@ async def update_subscription(
     )
     if updated_count == 0:
         raise HTTPException(status_code=404, detail="Подписка не найдена")
-    return {"message": "Подписка успешно обновлена"}
 
-
-# @router.post("/subscribe/{sub_id}")
-# async def subscribe(
-#         sub_id: int,
-#         payment_data: dict,
-#         current_user: User = Depends(get_current_user),
-#         session: AsyncSession = Depends(get_session_with_commit)
-# ):
-#     subscription = await SubscriptionDAO.find_one_or_none_by_id(session=session, data_id=sub_id)
-#     if not subscription:
-#         raise HTTPException(status_code=404, detail="Подписка не найдена")
-#
-#     # Создаем запись о подписке пользователя
-#     start_date = datetime.now()
-#     end_date = start_date + timedelta(days=subscription.duration)
-#     await UserSubscriptionDAO.add(
-#         session=session,
-#         user_id=current_user.id,
-#         subscription_id=subscription.id,
-#         start_date=start_date,
-#         end_date=end_date,
-#     )
-#
-#     return {"message": "Подписка успешно оформлена"}
+    return {"message": "success"}
 
 
 @router.get("/check_subscription")

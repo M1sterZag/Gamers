@@ -30,8 +30,18 @@ class SUserAuth(User):
 
 class SUserRead(User):
     id: int = Field(..., description="Идентификатор пользователя")
+    email: EmailStr = Field(..., description="Электронная почта")
     username: str = Field(..., min_length=3, max_length=60, description="Имя, от 3 до 60 символов")
     avatar: str | None = None
     is_active: bool = Field(..., description="Отстранение пользователя")
     is_admin: bool = Field(..., description="Права пользователя")
     created_at: date = Field(..., description="Дата создания аккаунта")
+
+
+class SUserUpdate(BaseModel):
+    username: str = Field(None, min_length=3, max_length=60)
+    email: EmailStr = Field(None)
+    avatar: str | None = Field(None)
+    is_active: bool = Field(None)
+    is_admin: bool = Field(None)
+    model_config = ConfigDict(from_attributes=True)

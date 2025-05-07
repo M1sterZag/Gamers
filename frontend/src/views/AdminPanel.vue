@@ -1,19 +1,25 @@
 <template>
   <main class="min-h-screen bg-fon p-4 sm:p-8">
-    <h1 class="text-2xl sm:text-3xl font-bold text-text mb-6">Администрирование базы данных</h1>
+    <Notification
+        v-if="notificationStore.isVisible"
+        :type="notificationStore.type"
+        :message="notificationStore.message"
+        @close="notificationStore.hideNotification"
+    />
+    <h1 class="text-2xl sm:text-3xl font-bold text-text mb-6">Админ панель Gamers</h1>
 
     <div class="grid grid-cols-1 lg:grid-cols-[250px_1fr] gap-5">
       <!-- Левая колонка - навигация по таблицам -->
       <nav aria-label="Навигация по таблицам" class="bg-secondary rounded-lg p-4 h-fit">
         <h2 class="text-xl font-semibold mb-4">Таблицы</h2>
         <ul class="space-y-2">
-          <li v-for="table in tables" :key="table">
+          <li v-for="table in tables" :key="table.value">
             <button
                 class="block w-full p-2 bg-primary hover:bg-primary_hover text-text rounded-lg transition text-left"
                 @click="selectTable(table)"
-                :aria-current="selectedTable === table ? 'page' : null"
+                :aria-current="selectedTable?.value === table.value ? 'page' : null"
             >
-              {{ table }}
+              {{ table.label }}
             </button>
           </li>
         </ul>
@@ -22,9 +28,9 @@
       <!-- Правая колонка - содержимое таблицы -->
       <section class="bg-secondary rounded-lg p-4 overflow-x-auto">
         <header class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
-          <h2 class="text-xl font-semibold">{{ selectedTable }}</h2>
+          <h2 class="text-xl font-semibold">{{ selectedTable?.label }}</h2>
           <button
-              v-if="selectedTable"
+              v-if="selectedTable?.canCreate !== false"
               @click="openCreateModal"
               class="p-2 bg-accent hover:bg-accent_hover text-secondary rounded-lg transition font-semibold whitespace-nowrap"
               aria-label="Добавить новую запись"
@@ -44,10 +50,10 @@
               <tr>
                 <th
                     v-for="column in displayColumns"
-                    :key="column"
+                    :key="column.field"
                     class="p-2 sm:p-3 text-left border border-text/70"
                 >
-                  {{ column }}
+                  {{ column.label }}
                 </th>
                 <th class="p-2 sm:p-3 text-left border border-text/70">Действия</th>
               </tr>
@@ -56,10 +62,10 @@
               <tr v-for="(row, index) in data" :key="index" class="hover:bg-primary/10">
                 <td
                     v-for="column in displayColumns"
-                    :key="column"
+                    :key="column.field"
                     class="p-2 sm:p-3 border border-text/70 align-middle break-words max-w-[200px]"
                 >
-                  {{ row[column] }}
+                  {{ row[column.field] }}
                 </td>
                 <td class="p-2 sm:p-3 border border-text/70 align-middle">
                   <div class="flex gap-2 items-center">
@@ -111,25 +117,38 @@
         </div>
 
         <form @submit.prevent="submitForm" class="space-y-4">
-          <div v-for="column in filteredColumns" :key="column">
-            <label class="block text-sm lg:text-base text-text mb-1">{{ column }}</label>
+          <div v-for="column in formColumns" :key="column.field">
+            <label class="block text-sm lg:text-base text-text mb-1">{{ column.label }}</label>
 
-            <!-- Поле выбора времени -->
+            <!-- Текстовое поле -->
             <input
-                v-if="column.toLowerCase() === 'time'"
-                v-model="currentRecord[column]"
-                type="time"
-                class="w-full p-2 text-sm lg:text-base rounded-lg bg-secondary border-2 border-fon focus:outline-none focus:ring-2 focus:ring-primary text-text"
-                :required="true"
-            />
-
-            <!-- Обычное текстовое поле -->
-            <input
-                v-else
-                v-model="currentRecord[column]"
+                v-if="column.type === 'text'"
+                v-model="currentRecord[column.field]"
                 type="text"
                 class="w-full p-2 text-sm lg:text-base rounded-lg bg-secondary border-2 border-fon focus:outline-none focus:ring-2 focus:ring-primary text-text"
-                :required="true"
+                :required="column.required"
+                :minlength="column.minLength"
+                :maxlength="column.maxLength"
+            />
+
+            <!-- Числовое поле -->
+            <input
+                v-else-if="column.type === 'number'"
+                v-model.number="currentRecord[column.field]"
+                type="number"
+                class="w-full p-2 text-sm lg:text-base rounded-lg bg-secondary border-2 border-fon focus:outline-none focus:ring-2 focus:ring-primary text-text"
+                :required="column.required"
+                :min="column.min"
+                :step="column.step"
+            />
+
+            <!-- Стандартное поле -->
+            <input
+                v-else
+                v-model="currentRecord[column.field]"
+                :type="column.type || 'text'"
+                class="w-full p-2 text-sm lg:text-base rounded-lg bg-secondary border-2 border-fon focus:outline-none focus:ring-2 focus:ring-primary text-text"
+                :required="column.required"
             />
           </div>
 
@@ -187,31 +206,170 @@
 <script setup>
 import {ref, onMounted, computed} from 'vue';
 import api from '@/api';
+import Notification from "@/components/Notification.vue";
+import {useNotificationStore} from '@/stores/notificationStore';
 
-const tables = ref([]);
-const selectedTable = ref('games');
-const columns = ref([]);
+const notificationStore = useNotificationStore();
+
+const tables = ref([
+  {
+    value: 'users',
+    label: 'Пользователи',
+    endpoint: '/api/auth/users',
+    canCreate: false,
+    columns: [
+      {field: 'id', label: 'ID', type: 'number', showInTable: true, showInForm: false},
+      {
+        field: 'username',
+        label: 'Имя пользователя',
+        type: 'text',
+        showInTable: true,
+        showInForm: true,
+        required: true,
+        minLength: 3,
+        maxLength: 60
+      },
+      {
+        field: 'email',
+        label: 'Email',
+        type: 'email',
+        showInTable: true,
+        showInForm: true,
+        required: true
+      },
+      {
+        field: 'avatar',
+        label: 'Аватар',
+        type: 'text',
+        showInTable: false,
+        showInForm: true
+      },
+      {
+        field: 'is_active',
+        label: 'Активен',
+        type: 'checkbox',
+        showInTable: true,
+        showInForm: true
+      },
+      {
+        field: 'is_admin',
+        label: 'Админ',
+        type: 'checkbox',
+        showInTable: true,
+        showInForm: true
+      },
+      {
+        field: 'created_at',
+        label: 'Дата создания',
+        type: 'date',
+        showInTable: true,
+        showInForm: false
+      }
+    ]
+  },
+  {
+    value: 'games',
+    label: 'Игры',
+    endpoint: '/api/games',
+    columns: [
+      {field: 'id', label: 'ID', type: 'number', showInTable: true, showInForm: false},
+      {
+        field: 'name',
+        label: 'Название',
+        type: 'text',
+        showInTable: true,
+        showInForm: true,
+        required: true,
+        minLength: 1,
+        maxLength: 100
+      },
+      {
+        field: 'avatar',
+        label: 'Аватар',
+        type: 'text',
+        showInTable: false,
+        showInForm: true,
+        description: "URL аватара игры"
+      }
+    ]
+  },
+  {
+    value: 'game_types',
+    label: 'Типы игр',
+    endpoint: '/api/games/types',
+    columns: [
+      {field: 'id', label: 'ID', type: 'number', showInTable: true, showInForm: false},
+      {
+        field: 'name',
+        label: 'Название',
+        type: 'text',
+        showInTable: true,
+        showInForm: true,
+        required: true,
+        minLength: 1,
+        maxLength: 100
+      }
+    ]
+  },
+  {
+    value: 'subscriptions',
+    label: 'Подписки',
+    endpoint: '/api/subscriptions',
+    columns: [
+      {field: 'id', label: 'ID', type: 'number', showInTable: true, showInForm: false},
+      {
+        field: 'name',
+        label: 'Название',
+        type: 'text',
+        showInTable: true,
+        showInForm: true,
+        required: true,
+        minLength: 1,
+        maxLength: 100
+      },
+      {
+        field: 'price',
+        label: 'Цена',
+        type: 'number',
+        showInTable: true,
+        showInForm: true,
+        required: true,
+        min: 0.01,
+        step: 0.01
+      },
+      {
+        field: 'duration',
+        label: 'Длительность (дни)',
+        type: 'number',
+        showInTable: true,
+        showInForm: true,
+        required: true,
+        min: 1,
+        step: 1
+      }
+    ]
+  }
+]);
+
+const selectedTable = ref(tables.value[0]);
 const data = ref([]);
 const isModalOpen = ref(false);
 const isDeleteConfirmOpen = ref(false);
 const isEditing = ref(false);
 const currentRecord = ref({});
 const recordToDelete = ref(null);
-const columnTypes = ref({});
 const isLoading = ref(false);
 
-// Фильтруем колонки, исключая created_at, updated_at и id (при создании)
-const filteredColumns = computed(() => {
-  return columns.value.filter(column =>
-      !['created_at', 'updated_at'].includes(column.toLowerCase())
-  );
+// Колонки для отображения в таблице
+const displayColumns = computed(() => {
+  if (!selectedTable.value) return [];
+  return selectedTable.value.columns.filter(column => column.showInTable);
 });
 
-// Колонки для отображения в таблице (включая id)
-const displayColumns = computed(() => {
-  return columns.value.filter(column =>
-      !['created_at', 'updated_at'].includes(column.toLowerCase())
-  );
+// Колонки для формы
+const formColumns = computed(() => {
+  if (!selectedTable.value) return [];
+  return selectedTable.value.columns.filter(column => column.showInForm);
 });
 
 // Закрытие модального окна
@@ -220,18 +378,9 @@ const closeModal = () => {
   currentRecord.value = {};
 };
 
-// Загрузка списка таблиц
+// Загрузка данных при монтировании
 onMounted(async () => {
-  try {
-    const response = await api.get('/api/admin/tables');
-    tables.value = response.data.tables;
-
-    if (selectedTable.value) {
-      await fetchTableData(selectedTable.value);
-    }
-  } catch (error) {
-    console.error('Ошибка загрузки таблиц:', error);
-  }
+  await fetchTableData(selectedTable.value);
 });
 
 // Выбор таблицы
@@ -244,17 +393,11 @@ const selectTable = async (table) => {
 const fetchTableData = async (table) => {
   isLoading.value = true;
   try {
-    const response = await api.get(`/api/admin/table/${table}`, {
-      params: {limit: 10, offset: 0}
-    });
-    columns.value = response.data.columns;
-    data.value = response.data.data;
-
-    if (response.data.column_types) {
-      columnTypes.value = response.data.column_types;
-    }
+    const response = await api.get(table.endpoint);
+    data.value = response.data;
   } catch (error) {
     console.error('Ошибка загрузки данных:', error);
+    notificationStore.showNotification('error', 'Ошибка загрузки данных');
   } finally {
     isLoading.value = false;
   }
@@ -262,11 +405,11 @@ const fetchTableData = async (table) => {
 
 // Открытие модального окна создания
 const openCreateModal = () => {
-  currentRecord.value = Object.fromEntries(
-      filteredColumns.value
-          .filter(col => col.toLowerCase() !== 'id')
-          .map(col => [col, ''])
-  );
+  currentRecord.value = {};
+  formColumns.value.forEach(column => {
+    currentRecord.value[column.field] = column.type === 'number' ? 0 :
+        column.type === 'checkbox' ? false : '';
+  });
   isEditing.value = false;
   isModalOpen.value = true;
 };
@@ -292,57 +435,53 @@ const closeDeleteModal = () => {
 // Удаление записи
 const deleteRecord = async () => {
   try {
-    await api.delete(`/api/admin/table/${selectedTable.value}/${recordToDelete.value.id}`);
+    await api.delete(`${selectedTable.value.endpoint}/${recordToDelete.value.id}`);
     await fetchTableData(selectedTable.value);
     isDeleteConfirmOpen.value = false;
+    notificationStore.showNotification('success', 'Запись успешно удалена');
   } catch (error) {
+    notificationStore.showNotification('error', 'Ошибка при удалении записи');
     console.error('Ошибка удаления:', error);
   }
-};
-
-// Подготовка данных формы перед отправкой
-const prepareFormData = (formData) => {
-  const result = {};
-
-  for (const column of filteredColumns.value) {
-    const value = formData[column];
-
-    if (value === 'null') {
-      result[column] = null;
-    } else if (value === '' && !columnTypes.value[column]?.required) {
-      result[column] = null;
-    } else {
-      result[column] = value;
-    }
-  }
-
-  return result;
 };
 
 // Отправка формы
 const submitForm = async () => {
   try {
-    const dataToSend = prepareFormData(currentRecord.value);
+    const payload = {};
+    formColumns.value.forEach(column => {
+      if (currentRecord.value[column.field] !== undefined) {
+        payload[column.field] = currentRecord.value[column.field];
+      }
+    });
 
+    if (selectedTable.value.value === 'users') {
+      delete payload.password;
+      delete payload.confirm_password;
+    }
+
+    let actionMessage = '';
     if (isEditing.value) {
       await api.put(
-          `/api/admin/table/${selectedTable.value}/${dataToSend.id}`,
-          dataToSend
+          `${selectedTable.value.endpoint}/${currentRecord.value.id}`,
+          payload
       );
+      actionMessage = 'Запись успешно обновлена';
     } else {
-      delete dataToSend.id;
       await api.post(
-          `/api/admin/table/${selectedTable.value}`,
-          dataToSend
+          selectedTable.value.endpoint,
+          payload
       );
+      actionMessage = 'Запись успешно создана';
     }
+
     await fetchTableData(selectedTable.value);
+    notificationStore.showNotification('success', actionMessage);
     closeModal();
   } catch (error) {
     console.error('Ошибка сохранения:', error);
-    if (error.response) {
-      console.error('Детали ошибки:', error.response.data);
-    }
+    let errorMessage = 'Ошибка при сохранении данных';
+    notificationStore.showNotification('error', errorMessage);
   }
 };
 </script>
