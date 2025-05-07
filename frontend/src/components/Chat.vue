@@ -3,7 +3,7 @@
     <!-- Область сообщений -->
     <div class="flex-grow overflow-y-auto p-2 sm:p-4 space-y-4">
       <article
-          v-for="(msg, index) in messages"
+          v-for="(msg, index) in sortedMessages"
           :key="index"
           :class="[
           'flex w-full',
@@ -21,7 +21,7 @@
           </header>
           <p class="mt-1 text-sm sm:text-base">{{ msg.content }}</p>
           <footer class="text-xs text-text/80 mt-1 sm:mt-2">
-            {{ msg.created_at }}
+            {{ formatDateTime(msg.created_at) }}
           </footer>
         </div>
       </article>
@@ -59,7 +59,7 @@
 </template>
 
 <script setup>
-import {ref, onMounted, onUnmounted} from 'vue'
+import {ref, computed, onMounted, onUnmounted} from 'vue'
 import {useRoute} from 'vue-router'
 import {useAuthStore} from '@/stores/auth.js'
 
@@ -68,6 +68,23 @@ const authStore = useAuthStore()
 const messages = ref([])
 const newMessage = ref('')
 let socket = null
+
+const sortedMessages = computed(() => {
+  return [...messages.value].sort((a, b) => {
+    return new Date(a.created_at) - new Date(b.created_at)
+  })
+})
+
+const formatDateTime = (datetimeStr) => {
+  const date = new Date(datetimeStr)
+  return date.toLocaleString('ru-RU', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  })
+}
 
 const connectToChat = (teamId) => {
   socket = new WebSocket(`/ws/${teamId}`)

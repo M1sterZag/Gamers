@@ -3,11 +3,13 @@ from datetime import datetime
 
 from fastapi import APIRouter, WebSocket, Depends
 from loguru import logger
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.websockets import WebSocketDisconnect
 
 from app.auth.dependencies import get_current_active_user_from_token
 from app.chat.dao import ChatDAO, MessageDAO
+from app.chat.models import Message
 from app.chat.web_socket_manager import manager
 from app.dao.database import async_session_maker
 from app.dao.dependencies import get_session_without_commit
@@ -42,14 +44,19 @@ async def websocket_endpoint(websocket: WebSocket, team_id: int,
     await manager.connect(chat_id, websocket)
 
     try:
-        message_history = await MessageDAO.find_all(session=session, chat_id=chat_id)
+        message_history = await session.execute(
+            select(Message)
+            .where(Message.chat_id == chat_id)
+            .order_by(Message.created_at.asc())
+        )
+        message_history = message_history.scalars().all()
         logger.info(f"Получено сообщений: {len(message_history)}")
         for msg in message_history:
             await websocket.send_text(json.dumps({
                 "content": msg.content,
                 "sender_id": msg.sender_id,
                 "username": msg.sender.username,
-                "created_at": msg.created_at.strftime("%H:%M"),
+                "created_at": msg.created_at.isoformat(),
                 "is_sender": msg.sender_id == current_user.id
             }))
 
@@ -75,7 +82,7 @@ async def websocket_endpoint(websocket: WebSocket, team_id: int,
                     logger.info("Закрытие асинхронной сессии функция {websocket_endpoint}")
                     await new_session.close()
 
-            formatted_time = created_at.strftime("%H:%M")
+            formatted_time = created_at.isoformat()
             await manager.broadcast(chat_id, json.dumps({
                 "content": data,
                 "sender_id": current_user.id,
