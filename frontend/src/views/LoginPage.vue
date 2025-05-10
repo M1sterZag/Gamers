@@ -78,7 +78,7 @@ const errors = reactive({
 
 onMounted(() => {
   const script = document.createElement('script');
-  script.src = 'https://yastatic.net/s3/passport-auth-widget/auth-widget.js';
+  script.src = 'https://yastatic.net/s3/passport-sdk/autofill/v1/sdk-suggest-with-polyfills-latest.js';
   script.onload = () => {
     window.YaAuthSuggest.init({
       client_id: 'e0bc580e804241e5ba995640c9acd8d2',
