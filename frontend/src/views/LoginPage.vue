@@ -88,7 +88,8 @@ onMounted(() => {
       view: 'button',
       parentId: 'yandex-login-button',
       buttonTheme: 'dark',
-      buttonSize: 'm'
+      buttonSize: 'm',
+      buttonBorderRadius: "8",
     }).then(({handler}) => handler())
   };
   document.body.appendChild(script);
