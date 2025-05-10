@@ -27,8 +27,8 @@ async def yandex_code(
             data={
                 "grant_type": "authorization_code",
                 "code": code,
-                "client_id": settings.yandex.CLIENT_ID,
-                "client_secret": settings.yandex.CLIENT_SECRET
+                "client_id": settings.yandex.YANDEX_CLIENT_ID,
+                "client_secret": settings.yandex.YANDEX_CLIENT_SECRET,
             },
             headers={"Content-Type": "application/x-www-form-urlencoded"}
         )
