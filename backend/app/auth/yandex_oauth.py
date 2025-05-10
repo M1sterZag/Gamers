@@ -1,6 +1,7 @@
-from fastapi import APIRouter, Response, HTTPException, Depends
+from fastapi import APIRouter, Response, HTTPException, Depends, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 import httpx
+from starlette.responses import RedirectResponse
 
 from app.auth.dao import UsersDAO
 from app.auth.utils import set_tokens
@@ -10,13 +11,13 @@ from app.config import settings
 router = APIRouter()
 
 
-@router.post("/yandex/code")
+@router.get("/yandex/callback")
 async def yandex_code(
-        data: dict,
+        request: Request,
         response: Response,
         session: AsyncSession = Depends(get_session_with_commit)
 ):
-    code = data.get("code")
+    code = request.query_params.get("code")
     if not code:
         raise HTTPException(status_code=400, detail="Missing code")
 
@@ -66,5 +67,6 @@ async def yandex_code(
             }
             user = await UsersDAO.add(session=session, **user_data)
 
-        set_tokens(response, user.id)
-        return {"message": "ok"}
+        redirect = RedirectResponse(url="https://gamers-team.ru")
+        set_tokens(redirect, user.id)
+        return redirect

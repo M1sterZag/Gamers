@@ -32,7 +32,7 @@ app.include_router(router_teams, prefix='/teams', tags=['Teams'])
 app.include_router(router_games, prefix="/games", tags=["Games"])
 app.include_router(router_admin, prefix='/admin', tags=['Admin'])
 app.include_router(router_subscriptions, prefix='/subscriptions', tags=['Subscriptions'])
-app.include_router(router_yandex_oauth, prefix='/auth', tags=['Yandex'])
+app.include_router(router_yandex_oauth, prefix='/oauth', tags=['Yandex'])
 
 
 @app.get("/")

@@ -83,14 +83,15 @@ onMounted(() => {
     window.YaAuthSuggest.init({
       client_id: 'e0bc580e804241e5ba995640c9acd8d2',
       response_type: 'code',
-      redirect_uri: 'https://gamers-team.ru/redirect.html'
-    }, 'https://gamers-team.ru/redirect.html', {
+      redirect_uri: 'https://gamers-team.ru/api/oauth/yandex/callback'
+    }, 'https://gamers-team.ru', {
       view: 'button',
       parentId: 'yandex-login-button',
       buttonTheme: 'dark',
       buttonSize: 'm',
       buttonBorderRadius: "8",
     }).then(({handler}) => handler())
+        .catch(error => router.push("/login"))
   };
   document.body.appendChild(script);
 });
