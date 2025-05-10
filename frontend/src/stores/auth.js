@@ -8,7 +8,7 @@ export const useAuthStore = defineStore('auth', () => {
 
     async function fetchUser() {
         try {
-            const response = await api.get('/auth/me');
+            const response = await api.get('/api/auth/me');
             user.value = response.data;
             isAuthenticated.value = true;
         } catch (error) {
@@ -18,12 +18,12 @@ export const useAuthStore = defineStore('auth', () => {
     }
 
     async function login(email, password) {
-        await api.post('/auth/login', {email, password});
+        await api.post('/api/auth/login', {email, password});
         await fetchUser();
     }
 
     async function logout() {
-        await api.post('/auth/logout');
+        await api.post('/api/auth/logout');
         user.value = null;
         isAuthenticated.value = false;
     }

@@ -1,7 +1,6 @@
 import axios from 'axios'
 
 const api = axios.create({
-    baseURL: '/api',
     withCredentials: true // Обязательно для отправки кук
 })
 
@@ -38,7 +37,7 @@ api.interceptors.response.use(
             isRefreshing = true
 
             try {
-                await api.post('/auth/refresh')
+                await api.post('/api/auth/refresh')
                 processQueue(null)
                 return api(originalRequest)
             } catch (err) {
