@@ -1,8 +1,8 @@
-"""add yandex_id to user
+"""add yandex_id
 
-Revision ID: 7e54740dc9c1
-Revises: 665a1d497755
-Create Date: 2025-05-10 14:49:42.216288
+Revision ID: 0843216cb684
+Revises: 5e94d1e732a1
+Create Date: 2025-05-10 20:43:14.203215
 
 """
 from typing import Sequence, Union
@@ -12,8 +12,8 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '7e54740dc9c1'
-down_revision: Union[str, None] = '665a1d497755'
+revision: str = '0843216cb684'
+down_revision: Union[str, None] = '5e94d1e732a1'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
