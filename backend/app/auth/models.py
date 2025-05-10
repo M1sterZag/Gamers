@@ -13,4 +13,5 @@ class User(Base):
     avatar: Mapped[str] = mapped_column(String, nullable=True)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
     is_admin: Mapped[bool] = mapped_column(Boolean, default=False)
+    yandex_id: Mapped[str] = mapped_column(String(255), unique=True, nullable=True)
     created_at: Mapped[Date] = mapped_column(Date, server_default=text("CURRENT_DATE"))

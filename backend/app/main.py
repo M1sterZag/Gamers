@@ -8,6 +8,7 @@ from app.game.router import router as router_games
 from app.chat.router import router as router_chats
 from app.admin.router import router as router_admin
 from app.subscription.router import router as router_subscriptions
+from app.auth.yandex_oauth import router as router_yandex_oauth
 
 app = FastAPI()
 
@@ -31,6 +32,7 @@ app.include_router(router_teams, prefix='/teams', tags=['Teams'])
 app.include_router(router_games, prefix="/games", tags=["Games"])
 app.include_router(router_admin, prefix='/admin', tags=['Admin'])
 app.include_router(router_subscriptions, prefix='/subscriptions', tags=['Subscriptions'])
+app.include_router(router_yandex_oauth, prefix='/auth', tags=['Yandex'])
 
 
 @app.get("/")

@@ -16,7 +16,7 @@ export const useSubscriptionStore = defineStore('subscription', {
         },
         async checkCurrentSubscription() {
             try {
-                const response = await api.get('/api/subscriptions/check_subscription');
+                const response = await api.get('/subscriptions/check_subscription');
                 this.setCurrentSubscriptionId(response.data?.id || null);
             } catch (error) {
                 console.error('Ошибка проверки подписки:', error);

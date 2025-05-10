@@ -41,6 +41,8 @@
         </button>
       </form>
 
+      <div id="yandex-login-button" class="mt-4"></div>
+
       <!-- Ссылка на регистрацию -->
       <div class="mt-6 text-center">
         <p class="text-s14 text-text/80">
@@ -55,7 +57,7 @@
 </template>
 
 <script setup>
-import {reactive} from 'vue';
+import {onMounted, reactive} from 'vue';
 import {useRouter} from 'vue-router';
 import {useAuthStore} from '../stores/auth';
 
@@ -72,6 +74,24 @@ const form = reactive({
 const errors = reactive({
   email: '',
   password: '',
+});
+
+onMounted(() => {
+  const script = document.createElement('script');
+  script.src = 'https://yastatic.net/s3/passport-auth-widget/auth-widget.js';
+  script.onload = () => {
+    window.YaAuthSuggest.init({
+      client_id: 'e0bc580e804241e5ba995640c9acd8d2',
+      response_type: 'code',
+      redirect_uri: 'https://gamers-team.ru/redirect.html'
+    }, 'https://gamers-team.ru/redirect.html', {
+      view: 'button',
+      parentId: 'yandex-login-button',
+      buttonTheme: 'dark',
+      buttonSize: 'm'
+    }).then(({handler}) => handler())
+  };
+  document.body.appendChild(script);
 });
 
 // Валидация формы
