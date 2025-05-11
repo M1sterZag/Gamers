@@ -56,8 +56,20 @@ async def auth_user(
 @router.post("/logout")
 async def logout(response: Response):
     logger.info("Очистка токенов (выход)")
-    response.delete_cookie("access_token")
-    response.delete_cookie("refresh_token")
+    # для сервера
+    response.delete_cookie(
+        key="access_token",
+        path="/",
+        domain="gamers-team.ru"
+    )
+    response.delete_cookie(
+        key="refresh_token",
+        path="/",
+        domain="gamers-team.ru"
+    )
+    # для localhost
+    # response.delete_cookie("access_token")
+    # response.delete_cookie("refresh_token")
     return {'message': 'Пользователь успешно вышел из системы'}
 
 
