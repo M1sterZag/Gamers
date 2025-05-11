@@ -41,7 +41,7 @@
         </button>
       </form>
 
-      <div id="yandex-login-button" class="mt-4"></div>
+      <!--      <div id="yandex-login-button" class="mt-4"></div>-->
 
       <div class="mt-4 text-center">
         <a
@@ -91,24 +91,24 @@ const oauthUrl = computed(() =>
     `https://oauth.yandex.ru/authorize?response_type=code&client_id=${clientId}&redirect_uri=${redirectUri}`
 );
 
-onMounted(() => {
-  const script = document.createElement('script');
-  script.src = 'https://yastatic.net/s3/passport-sdk/autofill/v1/sdk-suggest-with-polyfills-latest.js';
-  script.onload = () => {
-    window.YaAuthSuggest.init({
-      client_id: 'e0bc580e804241e5ba995640c9acd8d2',
-      response_type: 'code',
-      redirect_uri: 'https://gamers-team.ru/api/oauth/yandex/callback'
-    }).then(({handler, open}) => {
-      // вместо handler() вызываем open в том же окне
-      open(null, '_self');
-    }).catch(() => {
-      // на ошибку просто редирект на /login
-      window.location.href = '/login';
-    });
-  };
-  document.body.appendChild(script);
-});
+// onMounted(() => {
+//   const script = document.createElement('script');
+//   script.src = 'https://yastatic.net/s3/passport-sdk/autofill/v1/sdk-suggest-with-polyfills-latest.js';
+//   script.onload = () => {
+//     window.YaAuthSuggest.init({
+//       client_id: 'e0bc580e804241e5ba995640c9acd8d2',
+//       response_type: 'code',
+//       redirect_uri: 'https://gamers-team.ru/api/oauth/yandex/callback'
+//     }).then(({handler, open}) => {
+//       // вместо handler() вызываем open в том же окне
+//       open(null, '_self');
+//     }).catch(() => {
+//       // на ошибку просто редирект на /login
+//       window.location.href = '/login';
+//     });
+//   };
+//   document.body.appendChild(script);
+// });
 
 // Валидация формы
 function validateForm() {
