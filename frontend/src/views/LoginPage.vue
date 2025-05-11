@@ -43,6 +43,15 @@
 
       <div id="yandex-login-button" class="mt-4"></div>
 
+      <div class="mt-4 text-center">
+        <a
+            :href="oauthUrl"
+            class="inline-block py-3 px-6 bg-accent hover:bg-accent_hover text-secondary rounded-lg font-semibold text-s16 transition"
+        >
+          Войти через Яндекс
+        </a>
+      </div>
+
       <!-- Ссылка на регистрацию -->
       <div class="mt-6 text-center">
         <p class="text-s14 text-text/80">
@@ -57,7 +66,7 @@
 </template>
 
 <script setup>
-import {onMounted, reactive} from 'vue';
+import {computed, onMounted, reactive} from 'vue';
 import {useRouter} from 'vue-router';
 import {useAuthStore} from '../stores/auth';
 
@@ -76,6 +85,12 @@ const errors = reactive({
   password: '',
 });
 
+const clientId = 'e0bc580e804241e5ba995640c9acd8d2';
+const redirectUri = encodeURIComponent('https://gamers-team.ru/api/auth/yandex/callback');
+const oauthUrl = computed(() =>
+    `https://oauth.yandex.ru/authorize?response_type=code&client_id=${clientId}&redirect_uri=${redirectUri}`
+);
+
 onMounted(() => {
   const script = document.createElement('script');
   script.src = 'https://yastatic.net/s3/passport-sdk/autofill/v1/sdk-suggest-with-polyfills-latest.js';
@@ -83,7 +98,7 @@ onMounted(() => {
     window.YaAuthSuggest.init({
       client_id: 'e0bc580e804241e5ba995640c9acd8d2',
       response_type: 'code',
-      redirect_uri: 'https://gamers-team.ru/api/auth/yandex/callback'
+      redirect_uri: 'https://gamers-team.ru/api/oauth/yandex/callback'
     }).then(({handler, open}) => {
       // вместо handler() вызываем open в том же окне
       open(null, '_self');
