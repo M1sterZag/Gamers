@@ -86,7 +86,7 @@ const errors = reactive({
 });
 
 const clientId = 'e0bc580e804241e5ba995640c9acd8d2';
-const redirectUri = encodeURIComponent('https://gamers-team.ru/api/auth/yandex/callback');
+const redirectUri = encodeURIComponent('https://gamers-team.ru/api/oauth/yandex/callback');
 const oauthUrl = computed(() =>
     `https://oauth.yandex.ru/authorize?response_type=code&client_id=${clientId}&redirect_uri=${redirectUri}`
 );
