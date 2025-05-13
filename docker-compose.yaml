@@ -1,6 +1,7 @@
 services:
   nginx:
     image: nginx:stable-alpine
+    container_name: nginx_container
     ports:
       - "80:80"
       - "443:443"
@@ -15,8 +16,13 @@ services:
       - app
   
   backend:
+    container_name: backend
     build:
       context: ./backend
+    command: >
+      bash -c "alembic upgrade head 
+      && python admin_cli.py --username="$$ADMIN_USERNAME" --email="$$ADMIN_EMAIL" --password="$$ADMIN_PASS" 
+      && uvicorn app.main:app --host 0.0.0.0 --port 8000"
     ports:
       - "8000:8000"
     networks:
@@ -24,10 +30,13 @@ services:
     env_file:
       - .env
     depends_on:
-      - db
+      db:
+        condition: service_healthy
+    restart: on-failure
 
 
   frontend:
+    container_name: frontend
     build:
       context: ./frontend
     ports:
@@ -39,7 +48,8 @@ services:
 
 
   db:
-    image: postgres:17-alpine
+    image: postgres:alpine
+    container_name: db
     ports:
       - "5432:5432"
     networks:
@@ -47,11 +57,16 @@ services:
     env_file:
       - .env
     environment:
-      POSTGRES_USER: ${DB_USER}
+      PGUSER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASS}
       POSTGRES_DB: ${DB_NAME}
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready", "-d", "db_prod" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
 
 volumes:
