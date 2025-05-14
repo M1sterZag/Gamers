@@ -90,7 +90,7 @@ const fetchSubscriptions = async () => {
     subscriptions.value = response.data;
     subscriptionStore.setSubscriptions(response.data);
   } catch (error) {
-    console.error('Ошибка загрузки подписок:', error);
+    console.error('Ошибка загрузки подписок');
     notificationStore.showNotification('error', 'Не удалось загрузить данные о подписках.');
   }
 };
@@ -121,7 +121,7 @@ const purchaseSubscription = async (subId) => {
     const response = await api.post(`/api/subscriptions/create_payment/${subId}`);
     window.location.href = response.data.confirmation_url;
   } catch (error) {
-    console.error('Ошибка оформления подписки:', error);
+    console.error('Ошибка оформления подписки');
     notificationStore.showNotification('error', 'Произошла ошибка при оформлении подписки.');
   }
 };

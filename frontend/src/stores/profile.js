@@ -26,17 +26,5 @@ export const useProfileStore = defineStore('profile', {
                 this.loading = false;
             }
         },
-
-        async updateProfile(profileData) {
-            this.loading = true;
-            try {
-                const response = await axios.put('/api/profile', profileData);
-                this.profile = response.data;
-            } catch (error) {
-                this.error = error.message;
-            } finally {
-                this.loading = false;
-            }
-        },
     }
 });

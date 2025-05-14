@@ -186,7 +186,7 @@ const deleteTeam = async () => {
     await api.delete(`/api/teams/${team.value.id}`);
     await router.push('/teams');
   } catch (error) {
-    console.error('Ошибка удаления команды:', error);
+    console.error('Ошибка удаления команды');
   }
 };
 
@@ -195,7 +195,7 @@ const leaveTeamConfirmed = async () => {
     await api.delete(`/api/teams/member/${team.value.id}`);
     await router.push('/teams');
   } catch (error) {
-    console.error('Ошибка при выходе из команды:', error);
+    console.error('Ошибка при выходе из команды');
   }
 };
 

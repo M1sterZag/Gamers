@@ -383,7 +383,7 @@ const fetchTableData = async (table) => {
     const response = await api.get(table.endpoint);
     data.value = response.data;
   } catch (error) {
-    console.error('Ошибка загрузки данных:', error);
+    console.error('Ошибка загрузки данных');
     notificationStore.showNotification('error', 'Ошибка загрузки данных');
   } finally {
     isLoading.value = false;
@@ -423,7 +423,7 @@ const deleteRecord = async () => {
     notificationStore.showNotification('success', 'Запись успешно удалена');
   } catch (error) {
     notificationStore.showNotification('error', 'Ошибка при удалении записи');
-    console.error('Ошибка удаления:', error);
+    console.error('Ошибка удаления');
   }
 };
 
@@ -460,7 +460,7 @@ const submitForm = async () => {
     notificationStore.showNotification('success', actionMessage);
     closeModal();
   } catch (error) {
-    console.error('Ошибка сохранения:', error);
+    console.error('Ошибка сохранения:');
     let errorMessage = 'Ошибка при сохранении данных';
     notificationStore.showNotification('error', errorMessage);
   }

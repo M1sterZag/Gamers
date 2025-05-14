@@ -153,11 +153,6 @@ function validateForm() {
     valid = false;
   }
 
-  if (!acceptTerms.value) {
-    alert('Вы должны принять политику конфиденциальности и пользовательское соглашение.');
-    valid = false;
-  }
-
   return valid;
 }
 

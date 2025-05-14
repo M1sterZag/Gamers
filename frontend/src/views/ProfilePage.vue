@@ -1,15 +1,5 @@
 <template>
   <main class="">
-    <section class="flex flex-col xs:flex-row items-center justify-between gap-4 mb-5">
-      <h1 class="text-3xl lg:text-5xl font-semibold text-text leading-tight">Профиль</h1>
-      <button
-          class="p-3 lg:p-4 bg-red-500 hover:bg-red-700 text-white rounded-lg transition block font-medium text-s20"
-          @click="logout"
-      >
-        Выйти
-      </button>
-    </section>
-
     <section class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8">
       <div
           class="flex flex-col sm:flex-row items-center bg-secondary p-3 rounded-lg border-4 border-secondary w-full gap-2 sm:w-auto"
@@ -117,7 +107,6 @@ const subscriptionStore = useSubscriptionStore();
 
 const profileUser = ref(null);
 const recentTeams = ref([]);
-const isLoading = ref(true);
 
 const hasSubscription = computed(() => {
   return !!subscriptionStore.currentSubscriptionId;
@@ -149,7 +138,7 @@ const loadRecentTeams = async () => {
       }));
     }
   } catch (error) {
-    console.error('Ошибка загрузки последних команд:', error);
+    console.error('Ошибка загрузки последних команд');
   }
 };
 
@@ -160,17 +149,12 @@ onMounted(async () => {
     return;
   }
 
-  const userId = route.params.id;
-  const isOwnProfile = !userId || userId === authStore.user.id;
-
   try {
     profileUser.value = authStore.user;
     await subscriptionStore.checkCurrentSubscription();
     await loadRecentTeams();
   } catch (error) {
-    console.error('Ошибка загрузки данных профиля:', error);
-  } finally {
-    isLoading.value = false;
+    console.error('Ошибка загрузки данных профиля');
   }
 });
 </script>

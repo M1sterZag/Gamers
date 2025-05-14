@@ -131,7 +131,7 @@ async function submitForm() {
     await authStore.login(form.email, form.password);
     await router.push('/');
   } catch (error) {
-    console.error('Ошибка авторизации:', error);
+    console.error('Ошибка авторизации');
 
     errors.email = '';
     errors.password = '';

@@ -329,7 +329,7 @@ const loadTeamsAndFilters = async () => {
       ownerHasSubscription: subscribedUserIds.value.includes(team.owner_id),
     }));
   } catch (error) {
-    console.error('Ошибка загрузки данных:', error);
+    console.error('Ошибка загрузки данных');
     notificationStore.showNotification('error', 'Не удалось загрузить данные.');
   }
 };
@@ -449,7 +449,7 @@ const createTeam = async () => {
     closeCreateTeamModal();
     notificationStore.showNotification('success', 'Команда успешно создана!');
   } catch (error) {
-    console.error('Ошибка создания команды:', error);
+    console.error('Ошибка создания команды');
     if (error.response?.data?.detail) {
       notificationStore.showNotification('error', error.response.data.detail);
     }
@@ -462,7 +462,7 @@ const joinTeam = async (teamId) => {
     await loadTeamsAndFilters();
     notificationStore.showNotification('success', 'Вы успешно присоединились к команде!');
   } catch (error) {
-    console.error('Ошибка при вступлении в команду:', error);
+    console.error('Ошибка при вступлении в команду');
     if (error.response?.data?.detail) {
       notificationStore.showNotification('error', error.response.data.detail);
     }
