@@ -19,30 +19,29 @@ body {
 }
 
 ::-webkit-scrollbar {
-    width: 8px; /* Ширина полосы */
+    width: 8px;
 }
 
 ::-webkit-scrollbar-track {
-    background: #1B1C1E; /* Фон дорожки */
+    background: #1B1C1E;
     border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb {
-    background: #8244FF; /* Цвет бегунка */
+    background: #8244FF;
     border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: #8E5FEC; /* Цвет при наведении */
+    background: #8E5FEC;
 }
 
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
-    /* display: none; <- Crashes Chrome on hover */
     -webkit-appearance: none;
-    margin: 0; /* <-- Apparently some margin are still there even though it's hidden */
+    margin: 0;
 }
 
 input[type=number] {
-    -moz-appearance: textfield; /* Firefox */
+    -moz-appearance: textfield;
 }

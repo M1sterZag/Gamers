@@ -115,12 +115,10 @@ async def _verify_token_and_get_user(
     if not user_id:
         raise NoUserIdException
 
-    # Поиск пользователя
     user = await UsersDAO.find_one_or_none_by_id(session=session, data_id=int(user_id))
     if not user:
         raise UserNotFoundException
 
-    # Дополнительная проверка активности
     if check_active and not user.is_active:
         raise AccountIsNotActiveException
 

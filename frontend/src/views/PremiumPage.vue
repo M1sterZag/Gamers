@@ -1,11 +1,9 @@
 <template>
   <main class="">
-    <!-- Заголовок -->
     <h1 class="text-3xl lg:text-5xl font-semibold text-text leading-tight mb-8">
       Преимущества подписки Gamers+
     </h1>
 
-    <!-- Преимущества -->
     <section class="grid grid-cols-1 sm:grid-cols-2 gap-4 lg:gap-6 mb-5">
       <div
           v-for="(benefit, index) in benefits"
@@ -20,7 +18,6 @@
       </div>
     </section>
 
-    <!-- Список доступных подписок -->
     <h2 class="text-2xl lg:text-4xl font-semibold text-text mb-6">Выберите тариф</h2>
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
       <div
@@ -64,7 +61,6 @@ const notificationStore = useNotificationStore();
 const subscriptions = ref([]);
 const currentSubscription = ref(null);
 
-// Преимущества подписки с новыми SVG-иконками
 const benefits = [
   {
     title: "Больше союзников",
@@ -88,7 +84,6 @@ const benefits = [
   },
 ];
 
-// Загрузка доступных подписок
 const fetchSubscriptions = async () => {
   try {
     const response = await api.get('/api/subscriptions');
@@ -100,7 +95,6 @@ const fetchSubscriptions = async () => {
   }
 };
 
-// Проверка текущей подписки пользователя
 const checkCurrentSubscription = async () => {
   try {
     const response = await api.get('/api/subscriptions/check_subscription');
@@ -112,24 +106,19 @@ const checkCurrentSubscription = async () => {
   }
 };
 
-// Оформление подписки
 const purchaseSubscription = async (subId) => {
   try {
-    // Проверяем, есть ли уже активная подписка
     if (currentSubscription.value && currentSubscription.value.subscription_id === subId) {
       notificationStore.showNotification('info', 'У вас уже оформлена эта подписка.');
       return;
     }
 
-    // Если есть любая активная подписка, запрещаем оформление новой
     if (currentSubscription.value) {
       notificationStore.showNotification('warning', 'У вас уже есть активная подписка. Вы можете продлить её позже.');
       return;
     }
 
-    // Создаем платеж
     const response = await api.post(`/api/subscriptions/create_payment/${subId}`);
-    // Перенаправляем пользователя на страницу оплаты
     window.location.href = response.data.confirmation_url;
   } catch (error) {
     console.error('Ошибка оформления подписки:', error);
@@ -137,7 +126,6 @@ const purchaseSubscription = async (subId) => {
   }
 };
 
-// Загрузка данных при монтировании компонента
 onMounted(async () => {
   await fetchSubscriptions();
   await checkCurrentSubscription();

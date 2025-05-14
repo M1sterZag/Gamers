@@ -1,12 +1,9 @@
 <template>
   <main class="min-h-screen flex items-center justify-center bg-fon">
-    <!-- Семантический контейнер -->
     <section class="p-6 sm:p-8 rounded-lg w-full max-w-sm bg-background">
       <h1 class="text-s32 font-montserrat text-center font-semibold text-text mb-6">Регистрация</h1>
 
-      <!-- Форма регистрации -->
       <form @submit.prevent="submitForm" class="space-y-4">
-        <!-- Поле Email -->
         <div>
           <label for="email" class="block mb-1 text-s16 font-medium text-text">Email</label>
           <input
@@ -19,7 +16,6 @@
           <p v-if="errors.email" class="text-red-500 text-s12 mt-1">{{ errors.email }}</p>
         </div>
 
-        <!-- Поле Имя пользователя -->
         <div>
           <label for="username" class="block mb-1 text-s16 font-medium text-text">Имя пользователя</label>
           <input
@@ -32,7 +28,6 @@
           <p v-if="errors.username" class="text-red-500 text-s12 mt-1">{{ errors.username }}</p>
         </div>
 
-        <!-- Поле Пароль -->
         <div>
           <label for="password" class="block mb-1 text-s16 font-medium text-text">Пароль</label>
           <input
@@ -45,7 +40,6 @@
           <p v-if="errors.password" class="text-red-500 text-s12 mt-1">{{ errors.password }}</p>
         </div>
 
-        <!-- Поле Подтверждение пароля -->
         <div>
           <label for="confirmPassword" class="block mb-1 text-s16 font-medium text-text">Подтверждение пароля</label>
           <input
@@ -58,7 +52,6 @@
           <p v-if="errors.confirmPassword" class="text-red-500 text-s12 mt-1">{{ errors.confirmPassword }}</p>
         </div>
 
-        <!-- Чекбокс -->
         <div class="flex items-center space-x-2">
           <input
               v-model="acceptTerms"
@@ -78,7 +71,6 @@
           </label>
         </div>
 
-        <!-- Кнопка Зарегистрироваться -->
         <button
             type="submit"
             class="w-full py-3 bg-accent hover:bg-accent_hover text-secondary rounded-lg font-semibold text-s16 transition"
@@ -87,7 +79,6 @@
         </button>
       </form>
 
-      <!-- Ссылка на вход -->
       <div class="mt-6 text-center">
         <p class="text-s14 text-text/80">
           Уже есть аккаунт?
@@ -108,7 +99,6 @@ import {useAuthStore} from '../stores/auth';
 const router = useRouter();
 const authStore = useAuthStore();
 
-// Реактивная форма
 const form = reactive({
   email: '',
   username: '',
@@ -116,10 +106,8 @@ const form = reactive({
   confirmPassword: '',
 });
 
-// Состояние чекбокса
 const acceptTerms = ref(false);
 
-// Ошибки валидации
 const errors = reactive({
   email: '',
   username: '',
@@ -127,7 +115,6 @@ const errors = reactive({
   confirmPassword: '',
 });
 
-// Валидация формы
 function validateForm() {
   let valid = true;
   errors.email = '';
@@ -172,7 +159,6 @@ function validateForm() {
   return valid;
 }
 
-// Отправка формы
 async function submitForm() {
   if (validateForm()) {
     try {

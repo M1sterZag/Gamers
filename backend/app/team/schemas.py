@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field, field_validator
 from typing import Optional, List
-from datetime import datetime, timezone
+from datetime import datetime
 
 
 class STeamMemberBase(BaseModel):
@@ -31,9 +31,8 @@ class STeamBase(BaseModel):
     @field_validator("time")
     @classmethod
     def validate_time(cls, value: datetime) -> datetime:
-        """Проверяет, что время находится в будущем и убирает временную зону"""
         if value.tzinfo is not None:
-            value = value.replace(tzinfo=None)  # Убираем временную зону
+            value = value.replace(tzinfo=None)
 
         if value <= datetime.now():
             raise ValueError("Время должно быть в будущем")

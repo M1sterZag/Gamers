@@ -25,7 +25,6 @@ async def websocket_endpoint(websocket: WebSocket, team_id: int,
     chat = await ChatDAO.find_one_or_none(session=session, team_id=team_id)
     chat_id = chat.id
 
-    # Извлекаем access_token из cookies WebSocket
     access_token = websocket.cookies.get("access_token")
     if not access_token:
         logger.error("Access token not found in WebSocket cookies")
@@ -33,14 +32,12 @@ async def websocket_endpoint(websocket: WebSocket, team_id: int,
         return
 
     try:
-        # Проверяем токен и получаем текущего пользователя
         current_user = await get_current_active_user_from_token(access_token, session)
     except Exception as e:
         logger.error(f"Error validating user: {str(e)}")
         await websocket.close(code=4001, reason="Invalid token")
         return
 
-    # Подключаем пользователя к чату
     await manager.connect(chat_id, websocket)
 
     try:

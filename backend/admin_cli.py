@@ -21,13 +21,11 @@ def create_admin(username, email, password):
 
         async for session in get_session_with_commit():
             try:
-                # Проверяем, существует ли уже пользователь с таким email или username
                 existing_user = await UsersDAO.find_one_or_none(session=session, email=email, username=username)
                 if existing_user:
                     click.echo("Пользователь с таким email или username уже существует.")
                     return
 
-                # Создаем нового администратора
                 await UsersDAO.add(
                     session=session,
                     username=username,

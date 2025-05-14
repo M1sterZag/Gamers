@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const api = axios.create({
-    withCredentials: true // Обязательно для отправки кук
+    withCredentials: true
 })
 
 let isRefreshing = false

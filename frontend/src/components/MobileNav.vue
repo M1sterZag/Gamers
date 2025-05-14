@@ -1,5 +1,4 @@
 <template>
-  <!-- Мобильное меню (бургер) -->
   <button
       @click="toggleMobileMenu"
       class="wide:hidden fixed top-4 left-4 z-50 p-2 rounded-md bg-secondary text-text focus:outline-none"
@@ -20,7 +19,6 @@
       />
     </svg>
   </button>
-  <!-- Мобильное меню (содержимое) -->
   <transition
       enter-active-class="transition ease-out duration-200"
       enter-from-class="opacity-0 -translate-x-full"

@@ -9,7 +9,6 @@
     <h1 class="text-2xl sm:text-3xl font-bold text-text mb-6">Админ панель Gamers</h1>
 
     <div class="grid grid-cols-1 lg:grid-cols-[250px_1fr] gap-5">
-      <!-- Левая колонка - навигация по таблицам -->
       <nav aria-label="Навигация по таблицам" class="bg-secondary rounded-lg p-4 h-fit">
         <h2 class="text-xl font-semibold mb-4">Таблицы</h2>
         <ul class="space-y-2">
@@ -25,7 +24,6 @@
         </ul>
       </nav>
 
-      <!-- Правая колонка - содержимое таблицы -->
       <section class="bg-secondary rounded-lg p-4 overflow-x-auto">
         <header class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
           <h2 class="text-xl font-semibold">{{ selectedTable?.label }}</h2>
@@ -103,7 +101,6 @@
       </section>
     </div>
 
-    <!-- Модальное окно создания/редактирования -->
     <div
         v-if="isModalOpen"
         class="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center z-50 p-4"
@@ -120,7 +117,6 @@
           <div v-for="column in formColumns" :key="column.field">
             <label class="block text-sm lg:text-base text-text mb-1">{{ column.label }}</label>
 
-            <!-- Текстовое поле -->
             <input
                 v-if="column.type === 'text'"
                 v-model="currentRecord[column.field]"
@@ -131,7 +127,6 @@
                 :maxlength="column.maxLength"
             />
 
-            <!-- Числовое поле -->
             <input
                 v-else-if="column.type === 'number'"
                 v-model.number="currentRecord[column.field]"
@@ -142,7 +137,6 @@
                 :step="column.step"
             />
 
-            <!-- Стандартное поле -->
             <input
                 v-else
                 v-model="currentRecord[column.field]"
@@ -171,7 +165,6 @@
       </div>
     </div>
 
-    <!-- Модальное окно подтверждения удаления -->
     <div
         v-if="isDeleteConfirmOpen"
         class="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center z-50 p-4"
@@ -360,36 +353,30 @@ const currentRecord = ref({});
 const recordToDelete = ref(null);
 const isLoading = ref(false);
 
-// Колонки для отображения в таблице
 const displayColumns = computed(() => {
   if (!selectedTable.value) return [];
   return selectedTable.value.columns.filter(column => column.showInTable);
 });
 
-// Колонки для формы
 const formColumns = computed(() => {
   if (!selectedTable.value) return [];
   return selectedTable.value.columns.filter(column => column.showInForm);
 });
 
-// Закрытие модального окна
 const closeModal = () => {
   isModalOpen.value = false;
   currentRecord.value = {};
 };
 
-// Загрузка данных при монтировании
 onMounted(async () => {
   await fetchTableData(selectedTable.value);
 });
 
-// Выбор таблицы
 const selectTable = async (table) => {
   selectedTable.value = table;
   await fetchTableData(table);
 };
 
-// Загрузка данных таблицы
 const fetchTableData = async (table) => {
   isLoading.value = true;
   try {
@@ -403,7 +390,6 @@ const fetchTableData = async (table) => {
   }
 };
 
-// Открытие модального окна создания
 const openCreateModal = () => {
   currentRecord.value = {};
   formColumns.value.forEach(column => {
@@ -414,25 +400,21 @@ const openCreateModal = () => {
   isModalOpen.value = true;
 };
 
-// Открытие модального окна редактирования
 const openEditModal = (row) => {
   currentRecord.value = {...row};
   isEditing.value = true;
   isModalOpen.value = true;
 };
 
-// Подтверждение удаления
 const confirmDelete = (row) => {
   recordToDelete.value = row;
   isDeleteConfirmOpen.value = true;
 };
 
-// Закрытие модального окна подтверждения удаления
 const closeDeleteModal = () => {
   isDeleteConfirmOpen.value = false;
 };
 
-// Удаление записи
 const deleteRecord = async () => {
   try {
     await api.delete(`${selectedTable.value.endpoint}/${recordToDelete.value.id}`);
@@ -445,7 +427,6 @@ const deleteRecord = async () => {
   }
 };
 
-// Отправка формы
 const submitForm = async () => {
   try {
     const payload = {};

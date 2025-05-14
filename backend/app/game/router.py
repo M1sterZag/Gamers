@@ -1,9 +1,8 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
-from typing import List
 
 from app.auth.dependencies import get_current_admin_user
-from app.game.schemas import SGameCreate, SGameRead, SGameTypeCreate, SGameTypeRead
+from app.game.schemas import SGameCreate, SGameTypeCreate
 from app.game.dao import GameDAO, GameTypeDAO
 from app.dao.dependencies import get_session_with_commit, get_session_without_commit
 

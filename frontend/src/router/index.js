@@ -93,7 +93,7 @@ router.beforeEach(async (to, from, next) => {
     if (to.meta.requiresAuth && !authStore.isAuthenticated) {
         next('/login');
     } else if (to.path.startsWith('/admin') && !authStore.user?.is_admin) {
-        next('/'); // Перенаправление обычных пользователей
+        next('/');
     } else {
         next();
     }

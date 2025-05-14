@@ -131,7 +131,6 @@
         </div>
       </section>
 
-      <!-- Модальное окно для создания команды -->
       <div v-if="isCreateTeamModalOpen"
            class="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center z-50 p-4">
         <div class="bg-fon p-6 rounded-lg w-full max-w-md">
@@ -341,24 +340,20 @@ const filteredTeams = computed(() => {
     const now = new Date();
     const teamDate = new Date(team.time);
 
-    // Поиск по тексту
     if (searchQuery.value && !team.name.toLowerCase().includes(searchQuery.value.toLowerCase()) &&
         !team.game.toLowerCase().includes(searchQuery.value.toLowerCase()) &&
         !team.gameType.toLowerCase().includes(searchQuery.value.toLowerCase())) {
       matches = false;
     }
 
-    // Фильтр по игре
     if (selectedGame.value && team.game_id !== selectedGame.value) {
       matches = false;
     }
 
-    // Фильтр по типу игры
     if (selectedGameType.value && team.game_type_id !== selectedGameType.value) {
       matches = false;
     }
 
-    // Фильтр по дате
     if (selectedDate.value) {
       const today = new Date();
       today.setHours(0, 0, 0, 0);
@@ -385,7 +380,6 @@ const filteredTeams = computed(() => {
       }
     }
 
-    // Фильтр по количеству участников
     if (selectedPlayers.value) {
       switch (selectedPlayers.value) {
         case 'small':
@@ -400,7 +394,6 @@ const filteredTeams = computed(() => {
       }
     }
 
-    // Фильтр "Мои команды"
     if (onlyMyTeams.value && !team.isMyTeam) {
       matches = false;
     }
@@ -417,7 +410,6 @@ const filteredTeams = computed(() => {
 
 const openCreateTeamForm = () => {
   isCreateTeamModalOpen.value = true;
-  // Сброс значений при открытии формы
   newTeam.value = {
     name: '',
     description: '',

@@ -73,13 +73,10 @@ async def create_team(team_data: STeamCreate,
 
 @router.get("")
 async def read_teams(session: AsyncSession = Depends(get_session_without_commit)) -> List[STeamRead]:
-    # Получаем все команды
     teams = await TeamDAO.find_all(session=session)
 
-    # Формируем результат
     result = []
     for team in teams:
-        # Для каждой команды получаем участников отдельным запросом
         members = await TeamMemberDAO.find_all(session=session, team_id=team.id)
 
         team_data = team.__dict__
@@ -95,15 +92,12 @@ async def read_team(
         session: AsyncSession = Depends(get_session_without_commit)
 ):
     try:
-        # Получаем команду
         team = await TeamDAO.find_one_or_none_by_id(session=session, data_id=team_id)
         if not team:
             raise HTTPException(status_code=404, detail="Команда не найдена")
 
-        # Получаем участников команды
         members = await TeamMemberDAO.find_all(session, team_id=team_id)
 
-        # Получаем информацию о пользователях
         members_with_users = []
         for member in members:
             user = await UsersDAO.find_one_or_none_by_id(session=session, data_id=member.user_id)
@@ -114,7 +108,6 @@ async def read_team(
                 "joined_at": member.joined_at
             })
 
-        # Получаем информацию об игре и типе игры
         game = await GameDAO.find_one_or_none_by_id(session=session, data_id=team.game_id)
         game_type = await GameTypeDAO.find_one_or_none_by_id(session=session, data_id=team.game_type_id)
 
@@ -152,11 +145,9 @@ async def delete_team(
     if not team:
         raise HTTPException(status_code=404, detail="Команда не найдена")
 
-    # Проверяем права пользователя
     if not current_user.is_admin and team.owner_id != current_user.id:
         raise HTTPException(status_code=403, detail="У вас нет прав для удаления этой команды")
 
-    # Удаляем команду
     await TeamDAO.delete(session=session, id=team_id)
     return {"message": "Команда и все связанные данные успешно удалены"}
 
@@ -166,7 +157,6 @@ async def create_team_member(
         team_id: int,
         current_user: SUserRead = Depends(get_current_active_user),
         session: AsyncSession = Depends(get_session_with_commit)):
-    # Находим команду по ID
     team = await TeamDAO.find_one_or_none_by_id(session=session, data_id=team_id)
     if not team:
         raise HTTPException(
@@ -174,7 +164,6 @@ async def create_team_member(
             detail="Команда не найдена"
         )
 
-    # Проверяем, не является ли пользователь уже участником команды
     existing_member = await TeamMemberDAO.find_one_or_none(
         session=session,
         team_id=team_id,
@@ -186,23 +175,19 @@ async def create_team_member(
             detail="Пользователь уже является участником команды"
         )
 
-    # Получаем текущее количество участников команды
     current_members_count = await session.execute(
         select(func.count()).where(TeamMember.team_id == team_id)
     )
     current_members_count = current_members_count.scalar()
 
-    # Проверяем, не превышено ли максимальное количество участников
     if current_members_count == team.max_members:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Команда уже заполнена"
         )
 
-    # Добавляем пользователя в команду
     await TeamMemberDAO.add(session=session, user_id=current_user.id, team_id=team_id)
 
-    # Ищем чат и добавляем пользователя в чат команды
     chat = await ChatDAO.find_one_or_none(session=session, team_id=team.id)
     if chat:
         await ChatMemberDAO.add(session=session, user_id=current_user.id, chat_id=chat.id)
@@ -221,28 +206,22 @@ async def delete_team_member(
         current_user: SUserRead = Depends(get_current_active_user),
         session: AsyncSession = Depends(get_session_with_commit),
 ):
-    # Находим команду по ID
     team = await TeamDAO.find_one_or_none_by_id(team_id, session)
     if not team:
         raise HTTPException(status_code=404, detail="Команда не найдена")
 
-    # Если user_id не указан, удаляем текущего пользователя
     if user_id is None:
         user_id = current_user.id
 
-    # Проверяем, является ли текущий пользователь владельцем команды
     if team.owner_id == current_user.id:
         if user_id == current_user.id:
-            # Владелец не может удалить себя из команды
             raise HTTPException(
                 status_code=403,
                 detail="Владелец не может удалить себя из команды. Используйте endpoint для удаления команды."
             )
         else:
-            # Владелец может удалить других участников
             deleted_count = await TeamMemberDAO.delete(session, team_id=team_id, user_id=user_id)
     else:
-        # Обычный участник может удалить только себя
         if user_id != current_user.id:
             raise HTTPException(
                 status_code=403,
@@ -272,19 +251,15 @@ async def get_user_recent_teams(
         Список последних команд пользователя
     """
     try:
-        # Получаем команды пользователя
         teams = await TeamMemberDAO.find_user_teams(session=session, user_id=user_id)
 
-        # Формируем результат
         result = []
         for team in teams:
-            # Получаем количество участников для каждой команды
             members_count = await session.execute(
                 select(func.count()).where(TeamMember.team_id == team.id)
             )
             members_count = members_count.scalar()
 
-            # Получаем информацию об игре
             game = await GameDAO.find_one_or_none_by_id(session=session, data_id=team.game_id)
             game_type = await GameTypeDAO.find_one_or_none_by_id(session=session, data_id=team.game_type_id)
 

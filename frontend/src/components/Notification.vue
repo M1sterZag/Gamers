@@ -5,7 +5,6 @@
         class="fixed top-8 left-1/2 transform -translate-x-1/2 w-full max-w-[400px] sm:max-w-[500px] p-4 rounded-lg shadow-lg flex items-center justify-between bg-secondary"
         :class="notificationClass"
     >
-      <!-- Иконка -->
       <div class="mr-3">
         <svg
             v-if="type === 'success'"
@@ -40,10 +39,8 @@
         </svg>
       </div>
 
-      <!-- Текст -->
       <p class="flex-1 text-sm sm:text-base" :class="textClass">{{ message }}</p>
 
-      <!-- Кнопка закрытия -->
       <button
           @click="closeNotification"
           class="ml-3 p-1 rounded-full hover:bg-opacity-20 transition-colors"
@@ -72,11 +69,10 @@
 <script setup>
 import {computed, ref} from 'vue';
 
-// Пропсы для настройки уведомления
 const props = defineProps({
   type: {
     type: String,
-    default: 'success', // 'success' или 'error'
+    default: 'success',
   },
   message: {
     type: String,
@@ -84,24 +80,20 @@ const props = defineProps({
   },
   duration: {
     type: Number,
-    default: 3000, // Время отображения в миллисекундах
+    default: 3000,
   },
 });
 
-// Состояние видимости уведомления
 const isVisible = ref(true);
 
-// Закрытие уведомления
 const closeNotification = () => {
   isVisible.value = false;
 };
 
-// Автоматическое закрытие через duration
 setTimeout(() => {
   closeNotification();
 }, props.duration);
 
-// Динамические классы для цветов текста, иконок и кнопки закрытия
 const notificationClass = computed(() => {
   return {
     'text-accent': props.type === 'success',
@@ -139,7 +131,6 @@ const closeIconClass = computed(() => {
 </script>
 
 <style scoped>
-/* Анимация появления и исчезновения */
 .fade-enter-active, .fade-leave-active {
   transition: opacity 0.3s ease, transform 0.3s ease;
 }

@@ -42,7 +42,6 @@ const currentMeta = meta[route.path] || {
 </script>
 
 <template>
-  <!-- Основные мета-теги -->
   <title>{{ currentMeta.title }} | {{ siteName }}</title>
   <meta name="description" :content="currentMeta.description">
   <meta name="keywords" content="геймеры, команды, тиммейты, игры, киберспорт">

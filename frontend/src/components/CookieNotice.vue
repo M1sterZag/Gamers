@@ -23,7 +23,6 @@ import {ref, onMounted} from 'vue';
 
 const showNotice = ref(false);
 
-// Проверяем, приняты ли ранее cookie
 onMounted(() => {
   const hasAcceptedCookies = localStorage.getItem('cookies_accepted');
   if (!hasAcceptedCookies) {
@@ -31,7 +30,6 @@ onMounted(() => {
   }
 });
 
-// Функция для принятия cookie
 const acceptCookies = () => {
   localStorage.setItem('cookies_accepted', 'true');
   showNotice.value = false;

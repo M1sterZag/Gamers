@@ -1,6 +1,5 @@
 <template>
   <div class="flex flex-col h-full">
-    <!-- Область сообщений -->
     <div
         ref="messagesContainer"
         class="flex-grow overflow-y-auto p-2 sm:p-4 space-y-4 h-[calc(600px-80px)]"
@@ -30,7 +29,6 @@
       </article>
     </div>
 
-    <!-- Форма отправки - измененная для мобильных устройств -->
     <form @submit.prevent="sendMessage" class="flex items-center p-2 sm:p-4 border-t-2 border-secondary gap-2">
       <input
           v-model="newMessage"
@@ -123,7 +121,7 @@ const sendMessage = () => {
 
 onMounted(() => {
   connectToChat(route.params.id)
-  scrollToBottom() // Прокрутка вниз при загрузке компонента
+  scrollToBottom()
 })
 
 onUnmounted(() => socket?.close())

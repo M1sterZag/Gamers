@@ -4,7 +4,6 @@
       <h2 class="text-text text-xl lg:text-s32 font-semibold">GAMERS</h2>
     </router-link>
 
-    <!-- Навигация -->
     <nav class="my-auto space-y-4">
       <ul class="space-y-2">
         <li v-for="(item, index) in menu" :key="index">
@@ -19,7 +18,6 @@
       </ul>
     </nav>
 
-    <!-- Footer -->
     <footer class="mt-auto text-center space-y-2 pt-4 text-xs lg:text-s12">
       <p>2025 © Gamers</p>
       <a href="/static/privacy_policy.pdf" download class="block hover:underline">Политика конфиденциальности</a>

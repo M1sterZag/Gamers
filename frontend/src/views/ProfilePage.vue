@@ -1,6 +1,5 @@
 <template>
   <main class="">
-    <!-- Заголовок профиля и кнопка выхода -->
     <section class="flex flex-col xs:flex-row items-center justify-between gap-4 mb-5">
       <h1 class="text-3xl lg:text-5xl font-semibold text-text leading-tight">Профиль</h1>
       <button
@@ -11,12 +10,10 @@
       </button>
     </section>
 
-    <!-- Аватар, никнейм и дата регистрации -->
     <section class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8">
       <div
           class="flex flex-col sm:flex-row items-center bg-secondary p-3 rounded-lg border-4 border-secondary w-full gap-2 sm:w-auto"
           :class="{ 'animate-neon-border': hasSubscription }">
-        <!-- Аватар -->
         <div class="flex-shrink-0 w-16 h-16 lg:w-20 lg:h-20 rounded-full overflow-hidden relative">
           <img
               v-if="profileUser?.avatar"
@@ -31,17 +28,14 @@
             {{ profileUser?.username.charAt(0).toUpperCase() }}
           </div>
         </div>
-        <!-- Никнейм -->
         <span class="font-semibold text-xl lg:text-2xl sm:flex-grow">{{ profileUser?.username }}</span>
       </div>
-      <!-- Дата регистрации -->
       <div class="bg-secondary p-3 rounded-lg w-full sm:w-auto">
         <p class="text-s16 lg:text-s20 text-text/80 mt-2">Зарегистрирован</p>
         <p class="text-s16 lg:text-s20 text-text/80">{{ profileUser?.created_at }}</p>
       </div>
     </section>
 
-    <!-- Последние команды -->
     <section>
       <h2 class="text-2xl lg:text-4xl font-semibold text-text mb-6">Последние команды</h2>
 

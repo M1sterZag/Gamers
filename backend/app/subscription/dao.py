@@ -1,7 +1,6 @@
 from datetime import datetime
 
-from loguru import logger
-from sqlalchemy import select, and_
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.dao.base import BaseDAO
@@ -21,10 +20,10 @@ class UserSubscriptionDAO(BaseDAO):
             cls.model.user_id == user_id,
             cls.model.is_active.is_(True),
             cls.model.end_date > datetime.now()
-        ).order_by(cls.model.end_date.desc()).limit(1)  # Сортируем и берем последнюю
+        ).order_by(cls.model.end_date.desc()).limit(1)
 
         result = await session.execute(query)
-        return result.scalars().first()  # Возвращает None если нет результатов
+        return result.scalars().first()
 
     @classmethod
     async def get_all_subscribed_user_ids(

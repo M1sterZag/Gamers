@@ -1,19 +1,13 @@
-# Базовый образ Node.js
 FROM node:alpine AS build
 
-# Копирование package.json и package-lock.json
 COPY package*.json ./
 
-# Установка зависимостей
 RUN npm install
 
-# Копирование исходного кода
 COPY . .
 
-# Сборка проекта
 RUN npm run build
 
-# Этап для nginx
 FROM nginx:stable-alpine
 
 COPY --from=build /dist /usr/share/nginx/html

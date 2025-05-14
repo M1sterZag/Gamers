@@ -15,7 +15,6 @@ def create_tokens(data: dict) -> dict:
     # Текущее время в UTC
     now = datetime.now(timezone.utc)
 
-    # AccessToken - 30 минут
     access_expire = now + timedelta(settings.auth_jwt.ACCESS_TOKEN_EXPIRE_MINUTES)
     access_payload = data.copy()
     access_payload.update({"exp": int(access_expire.timestamp()), "type": "access"})
@@ -56,8 +55,10 @@ def set_tokens(response: Response, user_id: int):
         value=access_token,
         httponly=True,
         path="/",
-        secure=True,  # True если https
-        domain="gamers-team.ru",  # нужно обновить домен
+        # prod
+        secure=True,
+        domain="gamers-team.ru",
+        # localhost
         # secure=False,  # True если https
         # domain=None,  # нужно обновить домен
         samesite="lax"
@@ -68,8 +69,10 @@ def set_tokens(response: Response, user_id: int):
         value=refresh_token,
         httponly=True,
         path="/",
-        secure=True,  # True если https
-        domain="gamers-team.ru",  # нужно обновить домен
+        # prod
+        secure=True,
+        domain="gamers-team.ru",
+        # localhost
         # secure=False,  # True если https
         # domain=None,  # нужно обновить домен
         samesite="lax"

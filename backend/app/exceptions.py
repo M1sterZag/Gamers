@@ -60,16 +60,19 @@ ForbiddenException = HTTPException(
     detail='Недостаточно прав'
 )
 
+# Пришел не валидный токен
 TokenInvalidFormatException = HTTPException(
     status_code=status.HTTP_400_BAD_REQUEST,
     detail="Неверный формат токена. Ожидается 'Bearer <токен>'"
 )
 
+# Пользователь заблокирован
 AccountIsNotActiveException = HTTPException(
     status_code=status.HTTP_403_FORBIDDEN,
     detail="Аккаунт заблокирован или отключен"
 )
 
+# Команда не найдена
 TeamNotFoundException = HTTPException(
     status_code=status.HTTP_404_NOT_FOUND,
     detail="Team not found"

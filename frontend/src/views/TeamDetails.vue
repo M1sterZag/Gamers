@@ -39,7 +39,6 @@
       </header>
 
       <div class="grid grid-cols-1 lg:grid-cols-[1fr_2fr] gap-6">
-        <!-- Левая колонка -->
         <section class="space-y-4 max-h-[500px] overflow-y-auto">
           <article class="bg-secondary p-4 rounded-lg">
             <h3 class="text-lg font-semibold mb-2">Описание команды</h3>
@@ -69,13 +68,11 @@
           </div>
         </section>
 
-        <!-- Правая колонка (чат) -->
         <section class="h-[500px] border-2 border-secondary rounded-lg overflow-hidden">
           <Chat :team-id="team.id" class="h-full"/>
         </section>
       </div>
 
-      <!-- Модальное окно удаления -->
       <div
           v-if="isDeleteModalOpen"
           class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4"
@@ -108,7 +105,6 @@
         </article>
       </div>
 
-      <!-- Модальное окно покидания команды -->
       <div
           v-if="isLeaveModalOpen"
           class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4"

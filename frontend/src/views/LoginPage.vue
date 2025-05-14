@@ -1,12 +1,9 @@
 <template>
   <main class="min-h-screen flex items-center justify-center bg-fon">
-    <!-- Семантический контейнер -->
     <section class="p-6 sm:p-8 rounded-lg w-full max-w-sm bg-background">
       <h1 class="text-s32 font-montserrat text-center font-semibold text-text mb-6">Вход</h1>
 
-      <!-- Форма входа -->
       <form @submit.prevent="submitForm" class="space-y-4">
-        <!-- Поле Email -->
         <div>
           <label for="email" class="block mb-1 text-s16 font-medium text-text">Email</label>
           <input
@@ -19,7 +16,6 @@
           <p v-if="errors.email" class="text-red-500 text-s12 mt-1">{{ errors.email }}</p>
         </div>
 
-        <!-- Поле Пароль -->
         <div>
           <label for="password" class="block mb-1 text-s16 font-medium text-text">Пароль</label>
           <input
@@ -32,7 +28,6 @@
           <p v-if="errors.password" class="text-red-500 text-s12 mt-1">{{ errors.password }}</p>
         </div>
 
-        <!-- Кнопка Войти -->
         <button
             type="submit"
             class="w-full py-3 bg-accent hover:bg-accent_hover text-secondary rounded-lg font-semibold text-s16 transition"
@@ -61,7 +56,6 @@
             transition
             "
         >
-          <!-- иконка Яндекса -->
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" class="w-5 h-5 mr-2">
             <path fill="#d61e3b"
                   d="M21.88 2h-4c-4 0-8.07 3-8.07 9.62a8.33 8.33 0 0 0 4.14 7.66L9 28.13a1.25 1.25 0 0 0 0 1.27a1.21 1.21 0 0 0 1 .6h2.49a1.24 1.24 0 0 0 1.2-.75l4.59-9h.34v8.62a1.14 1.14 0 0 0 1.2 1.13H22a1.12 1.12 0 0 0 1.16-1.06V3.22A1.19 1.19 0 0 0 22 2ZM18.7 16.28h-.59c-2.3 0-3.66-1.87-3.66-5c0-3.9 1.73-5.29 3.34-5.29h.94Z"/>
@@ -70,7 +64,6 @@
         </a>
       </div>
 
-      <!-- Ссылка на регистрацию -->
       <div class="mt-6 text-center">
         <p class="text-s14 text-text/80">
           Нет аккаунта?
@@ -91,13 +84,11 @@ import {useAuthStore} from '../stores/auth';
 const router = useRouter();
 const authStore = useAuthStore();
 
-// Реактивная форма
 const form = reactive({
   email: '',
   password: '',
 });
 
-// Ошибки валидации
 const errors = reactive({
   email: '',
   password: '',
@@ -109,7 +100,6 @@ const oauthUrl = computed(() =>
     `https://oauth.yandex.ru/authorize?response_type=code&client_id=${clientId}&redirect_uri=${redirectUri}`
 );
 
-// Валидация формы
 function validateForm() {
   let valid = true;
   errors.email = '';
@@ -134,24 +124,21 @@ function validateForm() {
   return valid;
 }
 
-// Отправка формы
 async function submitForm() {
   if (!validateForm()) return;
 
   try {
     await authStore.login(form.email, form.password);
-    await router.push('/'); // Перенаправление на главную страницу
+    await router.push('/');
   } catch (error) {
     console.error('Ошибка авторизации:', error);
 
-    // Очистка предыдущих ошибок
     errors.email = '';
     errors.password = '';
 
     const errorData = error.response?.data;
 
     if (Array.isArray(errorData)) {
-      // Обработка ошибок валидации с сервера
       errorData.forEach((err) => {
         if (err.loc.includes('email')) {
           errors.email = err.msg || 'Некорректный email';
@@ -160,7 +147,6 @@ async function submitForm() {
         }
       });
     } else if (errorData?.detail) {
-      // Обработка других ошибок
       if (errorData.detail.includes('Incorrect email or password')) {
         errors.password = 'Неверный email или пароль';
       } else if (errorData.detail.includes('Account is not active')) {

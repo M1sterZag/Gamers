@@ -1,11 +1,9 @@
 <template>
   <main class="">
-    <!-- Заголовок -->
     <h1 class="text-3xl font-semibold text-text text-center mb-3">
       Оплата подписки
     </h1>
 
-    <!-- Информация о подписке -->
     <section class="mb-5">
       <div v-if="selectedSubscription" class="bg-secondary p-4 lg:p-6 rounded-lg shadow-md max-w-sm mx-auto">
         <p><strong>Подписка:</strong> {{ selectedSubscription.name }}</p>
@@ -15,7 +13,6 @@
       <p v-else class="text-center text-text/80">Выберите подписку для продолжения.</p>
     </section>
 
-    <!-- Форма оплаты -->
     <form @submit.prevent="submitPayment" class="max-w-sm mx-auto space-y-4">
       <div>
         <label for="cardNumber" class="block text-sm lg:text-base font-medium text-text">Номер карты</label>
@@ -69,13 +66,11 @@ import api from "@/api/index.js";
 const router = useRouter();
 const subscriptionStore = useSubscriptionStore();
 
-// Извлечение ID подписки из параметров URL
 const subId = new URLSearchParams(window.location.search).get('sub_id');
 const selectedSubscription = computed(() => {
   return subscriptionStore.getSubscriptionById(Number(subId));
 });
 
-// Данные формы
 const form = ref({
   cardNumber: '',
   expiryDate: '',
@@ -83,7 +78,6 @@ const form = ref({
 });
 const errors = ref({});
 
-// Валидация формы
 const validateForm = () => {
   errors.value = {};
   let valid = true;
@@ -104,7 +98,6 @@ const validateForm = () => {
   return valid;
 };
 
-// Отправка данных формы
 const submitPayment = async () => {
   if (!validateForm()) return;
 
@@ -118,7 +111,6 @@ const submitPayment = async () => {
   }
 };
 
-// Загрузка подписок при монтировании компонента
 onMounted(async () => {
   if (!subscriptionStore.subscriptions.length) {
     try {

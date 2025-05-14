@@ -45,9 +45,6 @@ async def delete_subscription(
         admin_user=Depends(get_current_admin_user),
         session: AsyncSession = Depends(get_session_with_commit)
 ):
-    """
-    Удаляет подписку по ID.
-    """
     deleted = await SubscriptionDAO.delete(session=session, id=sub_id)
     if not deleted:
         raise HTTPException(status_code=404, detail="Подписка не найдена")
@@ -120,10 +117,8 @@ async def create_payment(
             detail="У вас уже есть активная подписка"
         )
 
-    # Генерация уникального idempotence_key
     idempotence_key = str(uuid.uuid4())
 
-    # Формируем данные для создания платежа
     payment_data = {
         "amount": {
             "value": "{:.2f}".format(float(subscription.price)),
@@ -140,13 +135,10 @@ async def create_payment(
     logger.info(f"Отправляемые данные в ЮKassa: {payment_data}")
 
     try:
-        # Создаем платеж через библиотеку YooKassa
         payment = Payment.create(payment_data, idempotence_key)
 
-        # Получаем ссылку для подтверждения оплаты
         confirmation_url = payment.confirmation.confirmation_url
 
-        # Сохраняем ID платежа для дальнейшей проверки
         await UserSubscriptionDAO.add(
             session=session,
             user_id=current_user.id,
@@ -177,7 +169,6 @@ async def yookassa_webhook(request: Request, session: AsyncSession = Depends(get
 
         logger.info(f"Проверяем ответный платеж {payment['id']}")
         if event == "payment.succeeded":
-            # Проверяем, что платеж успешно завершен
             payment_id = payment["id"]
             user_subscription = await UserSubscriptionDAO.find_one_or_none(
                 session=session,
@@ -185,7 +176,6 @@ async def yookassa_webhook(request: Request, session: AsyncSession = Depends(get
             )
 
             if user_subscription:
-                # Рассчитываем даты начала и окончания подписки
                 start_date = datetime.now()
                 subscription = await SubscriptionDAO.find_one_or_none_by_id(
                     session=session,
@@ -196,7 +186,6 @@ async def yookassa_webhook(request: Request, session: AsyncSession = Depends(get
 
                 end_date = start_date + timedelta(days=subscription.duration)
 
-                # Обновляем запись о подписке
                 logger.info(f"Обновляем оплаченную подписку")
                 updated_count = await UserSubscriptionDAO.update(
                     filter_by={
@@ -207,7 +196,7 @@ async def yookassa_webhook(request: Request, session: AsyncSession = Depends(get
                     session=session,
                     start_date=start_date,
                     end_date=end_date,
-                    is_active=True,  # Активируем подписку
+                    is_active=True,
                 )
 
                 if updated_count > 0:
