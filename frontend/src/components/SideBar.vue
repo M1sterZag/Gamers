@@ -20,8 +20,9 @@
 
     <footer class="mt-auto text-center space-y-2 pt-4 text-xs lg:text-s12">
       <p>2025 © Gamers</p>
-      <a href="/static/privacy_policy.pdf" download class="block hover:underline">Политика конфиденциальности</a>
-      <a href="/static/terms_of_service.pdf" download class="block hover:underline">Пользовательское соглашение</a>
+      <a href="/static/privacy_policy.pdf" target="_blank" class="block hover:underline">Политика конфиденциальности</a>
+      <a href="/static/terms_of_service.pdf" target="_blank" class="block hover:underline">Пользовательское
+        соглашение</a>
     </footer>
   </aside>
 </template>

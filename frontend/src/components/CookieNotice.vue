@@ -6,7 +6,8 @@
     <p class="text-sm lg:text-16 text-text mb-3">
       Сайт использует cookie. Продолжая пользоваться этим Сайтом, вы соглашаетесь на использование файлов cookie в
       соответствии с нашими
-      <a href="/static/cookie_policy.pdf" download class="text-primary underline hover:text-primary_hover">Cookie -
+      <a href="/static/cookie_policy.pdf" target="_blank" class="text-primary underline hover:text-primary_hover">Cookie
+        -
         Правилами</a>.
     </p>
     <button

@@ -61,11 +61,13 @@
           />
           <label class="text-s12 text-text/80">
             Я принимаю
-            <a href="/static/privacy_policy.pdf" download class="text-primary underline hover:text-primary_hover">
+            <a href="/static/privacy_policy.pdf" target="_blank"
+               class="text-primary underline hover:text-primary_hover">
               политику конфиденциальности
             </a>
             и
-            <a href="/static/terms_of_service.pdf" download class="text-primary underline hover:text-primary_hover">
+            <a href="/static/terms_of_service.pdf" target="_blank"
+               class="text-primary underline hover:text-primary_hover">
               пользовательское соглашение
             </a>.
           </label>
