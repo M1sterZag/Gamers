@@ -1,5 +1,15 @@
 <template>
   <main class="">
+    <section class="flex flex-col xs:flex-row items-center justify-between gap-4 mb-5">
+      <h1 class="text-3xl lg:text-5xl font-semibold text-text leading-tight">Профиль</h1>
+      <button
+          class="p-3 lg:p-4 bg-red-500 hover:bg-red-700 text-white rounded-lg transition block font-medium text-s20"
+          @click="logout"
+      >
+        Выйти
+      </button>
+    </section>
+
     <section class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8">
       <div
           class="flex flex-col sm:flex-row items-center bg-secondary p-3 rounded-lg border-4 border-secondary w-full gap-2 sm:w-auto"
@@ -95,13 +105,10 @@
 
 <script setup>
 import {ref, onMounted, computed} from 'vue';
-import {useRoute, useRouter} from 'vue-router';
 import {useAuthStore} from '../stores/auth';
 import {useSubscriptionStore} from '../stores/subscriptionStore';
 import api from '../api';
 
-const route = useRoute();
-const router = useRouter();
 const authStore = useAuthStore();
 const subscriptionStore = useSubscriptionStore();
 
