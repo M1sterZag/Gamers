@@ -108,7 +108,10 @@ import {ref, onMounted, computed} from 'vue';
 import {useAuthStore} from '../stores/auth';
 import {useSubscriptionStore} from '../stores/subscriptionStore';
 import api from '../api';
+import {useRoute, useRouter} from 'vue-router';
 
+const route = useRoute();
+const router = useRouter();
 const authStore = useAuthStore();
 const subscriptionStore = useSubscriptionStore();
 
