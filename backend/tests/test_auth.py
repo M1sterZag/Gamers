@@ -38,10 +38,8 @@ async def test_register_user_already_exists(monkeypatch, client):
 
 @pytest.mark.anyio
 async def test_login_success(monkeypatch, fake_user, client):
-    # Создаем реальный объект пользователя с хешем пароля
     fake_user.password = get_password_hash("securepass123")
 
-    # Мокируем UsersDAO.find_one_or_none чтобы возвращал нашего пользователя
     monkeypatch.setattr(
         UsersDAO,
         "find_one_or_none",
@@ -52,7 +50,7 @@ async def test_login_success(monkeypatch, fake_user, client):
 
     response = await client.post("/auth/login", json={
         "email": fake_user.email,
-        "password": "securepass123"  # Пароль должен совпадать с хешем
+        "password": "securepass123"
     })
 
     assert response.status_code == 200
@@ -61,7 +59,6 @@ async def test_login_success(monkeypatch, fake_user, client):
 
 @pytest.mark.anyio
 async def test_login_incorrect_credentials(monkeypatch, client):
-    # Мокируем UsersDAO.find_one_or_none чтобы возвращал None
     monkeypatch.setattr(
         UsersDAO,
         "find_one_or_none",
