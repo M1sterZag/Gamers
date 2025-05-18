@@ -1,7 +1,7 @@
 from datetime import date
 from typing import Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 
 
 class SMessageBase(BaseModel):
@@ -18,8 +18,7 @@ class SMessageRead(SMessageBase):
     id: int = Field(..., description="ID сообщения")
     created_at: date = Field(..., description="Дата создания")
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class SChatBase(BaseModel):
@@ -36,8 +35,7 @@ class SChatRead(SChatBase):
     name: str = Field(..., min_length=1, max_length=100, description="Название чата")
     created_at: date = Field(..., description="Дата создания")
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class SChatMemberBase(BaseModel):
@@ -52,5 +50,4 @@ class SChatMemberCreate(SChatMemberBase):
 class SChatMemberRead(SChatMemberBase):
     id: int = Field(..., description="ID участника")
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)

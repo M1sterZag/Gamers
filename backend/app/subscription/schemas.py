@@ -16,5 +16,4 @@ class SSubscriptionCreate(SSubscriptionBase):
 class SSubscriptionRead(SSubscriptionBase):
     id: int = Field(..., description="ID подписки")
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)

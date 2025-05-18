@@ -16,8 +16,7 @@ class SGameCreate(SGameBase):
 class SGameRead(SGameBase):
     id: int = Field(..., description="ID игры")
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class SGameTypeBase(BaseModel):
@@ -33,5 +32,4 @@ class SGameTypeCreate(SGameTypeBase):
 class SGameTypeRead(SGameTypeBase):
     id: int = Field(..., description="ID типа игры")
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)

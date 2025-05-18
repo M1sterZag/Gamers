@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_validator, ConfigDict
 from typing import Optional, List
 from datetime import datetime
 
@@ -16,8 +16,7 @@ class STeamMemberRead(STeamMemberBase):
     id: int = Field(..., description="ID участника команды")
     joined_at: datetime = Field(..., description="Дата вступления")
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class STeamBase(BaseModel):
@@ -49,5 +48,4 @@ class STeamRead(STeamBase):
     members: List[STeamMemberRead] = Field(default_factory=list, description="Участники команды")
     created_at: datetime = Field(..., description="Дата создания")
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
