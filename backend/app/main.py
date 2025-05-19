@@ -9,7 +9,13 @@ from app.chat.router import router as router_chats
 from app.subscription.router import router as router_subscriptions
 from app.auth.yandex_oauth import router as router_yandex_oauth
 
-app = FastAPI()
+app = FastAPI(
+    title="Gamers API",
+    root_path="/api",
+    openapi_url="/openapi.json",
+    docs_url="/docs",
+    redoc_url="/redoc"
+)
 
 app.add_middleware(
     CORSMiddleware,
