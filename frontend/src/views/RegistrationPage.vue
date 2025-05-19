@@ -143,8 +143,8 @@ function validateForm() {
   if (!form.password) {
     errors.password = 'Пароль обязателен';
     valid = false;
-  } else if (form.password.length < 8 || form.password.length > 50) {
-    errors.password = 'Пароль должен быть от 8 до 50 символов';
+  } else if (!/^(?=.*\d)(?=.*[!@#$%^&*_])(?=.*[a-z])(?=.*[A-Z]).{8,}$/.test(form.password)) {
+    errors.password = "Пароль слишком слабый! Пароль должен содержать строчные и заглавные буквы латинского алфавита, быть не менее 8 символов, а также содержать спец. символы";
     valid = false;
   }
 
