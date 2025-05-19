@@ -73,10 +73,10 @@
       </nav>
       <footer class="absolute bottom-6 left-6 right-6 text-center space-y-2 text-xs">
         <p>2025 © Gamers</p>
-        <a href="/static/privacy_policy.pdf" download class="hover:underline block">
+        <a href="/static/privacy_policy.pdf" target="_blank" class="hover:underline block">
           Политика конфиденциальности
         </a>
-        <a href="/static/terms_of_service.pdf" download class="hover:underline block">
+        <a href="/static/terms_of_service.pdf" target="_blank" class="hover:underline block">
           Пользовательское соглашение
         </a>
       </footer>
