@@ -1,4 +1,3 @@
-# tests/test_team.py
 import pytest
 from types import SimpleNamespace
 from unittest.mock import AsyncMock
@@ -9,7 +8,6 @@ from app.chat.dao import ChatDAO, ChatMemberDAO
 from app.auth.dao import UsersDAO
 from app.game.dao import GameDAO, GameTypeDAO
 
-# Данные для создания новой команды
 TEAM_CREATE = {
     "name": "Alpha Team",
     "game_id": 1,
@@ -126,12 +124,10 @@ class TestTeamAPI:
         monkeypatch.setattr(TeamDAO, "find_one_or_none_by_id", AsyncMock(return_value=team))
         monkeypatch.setattr(TeamMemberDAO, "find_one_or_none", AsyncMock(return_value=None))
 
-        # Мокаем подсчет членов
         session_exec = AsyncMock()
         session_exec.return_value.scalar = AsyncMock(return_value=1)
         fake_session.execute = session_exec
 
-        # Мокаем создание участника и чат-мембера
         monkeypatch.setattr(TeamMemberDAO, "add", AsyncMock())
         monkeypatch.setattr(ChatDAO, "find_one_or_none", AsyncMock(return_value=SimpleNamespace(id=5)))
         monkeypatch.setattr(ChatMemberDAO, "add", AsyncMock())
