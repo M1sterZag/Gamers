@@ -91,44 +91,39 @@ async def read_team(
         team_id: int,
         session: AsyncSession = Depends(get_session_without_commit)
 ):
-    try:
-        team = await TeamDAO.find_one_or_none_by_id(session=session, data_id=team_id)
-        if not team:
-            raise HTTPException(status_code=404, detail="Команда не найдена")
+    team = await TeamDAO.find_one_or_none_by_id(session=session, data_id=team_id)
+    if not team:
+        raise HTTPException(status_code=404, detail="Команда не найдена")
 
-        members = await TeamMemberDAO.find_all(session, team_id=team_id)
+    members = await TeamMemberDAO.find_all(session, team_id=team_id)
 
-        members_with_users = []
-        for member in members:
-            user = await UsersDAO.find_one_or_none_by_id(session=session, data_id=member.user_id)
-            members_with_users.append({
-                "id": member.id,
-                "user_id": member.user_id,
-                "username": user.username if user else "Unknown",
-                "joined_at": member.joined_at
-            })
+    members_with_users = []
+    for member in members:
+        user = await UsersDAO.find_one_or_none_by_id(session=session, data_id=member.user_id)
+        members_with_users.append({
+            "id": member.id,
+            "user_id": member.user_id,
+            "username": user.username if user else "Unknown",
+            "joined_at": member.joined_at
+        })
 
-        game = await GameDAO.find_one_or_none_by_id(session=session, data_id=team.game_id)
-        game_type = await GameTypeDAO.find_one_or_none_by_id(session=session, data_id=team.game_type_id)
+    game = await GameDAO.find_one_or_none_by_id(session=session, data_id=team.game_id)
+    game_type = await GameTypeDAO.find_one_or_none_by_id(session=session, data_id=team.game_type_id)
 
-        return {
-            "id": team.id,
-            "name": team.name,
-            "description": team.description,
-            "game_id": team.game_id,
-            "game": game.name if game else "Unknown",
-            "game_type_id": team.game_type_id,
-            "gameType": game_type.name if game_type else "Unknown",
-            "max_members": team.max_members,
-            "time": team.time,
-            "owner_id": team.owner_id,
-            "created_at": team.created_at,
-            "members": members_with_users
-        }
-
-    except Exception as e:
-        logger.error(f"Ошибка при получении команды: {str(e)}")
-        raise HTTPException(status_code=500, detail="Внутренняя ошибка сервера")
+    return {
+        "id": team.id,
+        "name": team.name,
+        "description": team.description,
+        "game_id": team.game_id,
+        "game": game.name if game else "Unknown",
+        "game_type_id": team.game_type_id,
+        "gameType": game_type.name if game_type else "Unknown",
+        "max_members": team.max_members,
+        "time": team.time,
+        "owner_id": team.owner_id,
+        "created_at": team.created_at,
+        "members": members_with_users
+    }
 
 
 @router.delete("/{team_id}")
@@ -250,33 +245,28 @@ async def get_user_recent_teams(
     Returns:
         Список последних команд пользователя
     """
-    try:
-        teams = await TeamMemberDAO.find_user_teams(session=session, user_id=user_id)
+    teams = await TeamMemberDAO.find_user_teams(session=session, user_id=user_id)
 
-        result = []
-        for team in teams:
-            members_count = await session.execute(
-                select(func.count()).where(TeamMember.team_id == team.id)
-            )
-            members_count = members_count.scalar()
+    result = []
+    for team in teams:
+        members_count = await session.execute(
+            select(func.count()).where(TeamMember.team_id == team.id)
+        )
+        members_count = members_count.scalar()
 
-            game = await GameDAO.find_one_or_none_by_id(session=session, data_id=team.game_id)
-            game_type = await GameTypeDAO.find_one_or_none_by_id(session=session, data_id=team.game_type_id)
+        game = await GameDAO.find_one_or_none_by_id(session=session, data_id=team.game_id)
+        game_type = await GameTypeDAO.find_one_or_none_by_id(session=session, data_id=team.game_type_id)
 
-            team_data = {
-                "id": team.id,
-                "name": team.name,
-                "description": team.description,
-                "game": game.name if game else "Unknown",
-                "game_type": game_type.name if game_type else "Unknown",
-                "time": team.time,
-                "members_count": members_count,
-                "owner_id": team.owner_id
-            }
-            result.append(team_data)
+        team_data = {
+            "id": team.id,
+            "name": team.name,
+            "description": team.description,
+            "game": game.name if game else "Unknown",
+            "game_type": game_type.name if game_type else "Unknown",
+            "time": team.time,
+            "members_count": members_count,
+            "owner_id": team.owner_id
+        }
+        result.append(team_data)
 
-        return result
-
-    except Exception as e:
-        logger.error(f"Ошибка при получении команд пользователя: {str(e)}")
-        raise HTTPException(status_code=500, detail="Ошибка при получении списка команд")
+    return result

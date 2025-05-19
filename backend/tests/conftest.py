@@ -3,9 +3,10 @@ from httpx import AsyncClient, ASGITransport
 from sqlalchemy.ext.asyncio import AsyncSession
 from unittest.mock import AsyncMock
 
-from app.auth.dependencies import get_current_user, get_current_admin_user
 from app.main import app
 from app.dao import dependencies
+from app.auth.dependencies import get_current_user, get_current_admin_user
+from app.auth.models import User
 
 
 @pytest.fixture(scope="session")
@@ -31,9 +32,7 @@ def fake_session():
 
 @pytest.fixture
 def fake_user():
-    from app.auth.models import User
     from app.auth.utils import get_password_hash
-
     return User(
         id=1,
         email="test@example.com",
@@ -45,11 +44,11 @@ def fake_user():
 
 
 @pytest.fixture(autouse=True)
-def override_dependencies(fake_session):
-    # Подменяем зависимости на фикстуры с моками
+def override_dependencies(fake_session, fake_user):
+    # DB sessions
     app.dependency_overrides[dependencies.get_session_with_commit] = lambda: fake_session
     app.dependency_overrides[dependencies.get_session_without_commit] = lambda: fake_session
-
+    # auth
     app.dependency_overrides[get_current_user] = lambda: fake_user
     app.dependency_overrides[get_current_admin_user] = lambda: fake_user
     yield
