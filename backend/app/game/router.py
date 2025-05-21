@@ -53,7 +53,6 @@ async def delete_game(
     return {"message": "Игра успешно удалена"}
 
 
-# CRUD для типов игр
 @router.post("/types")
 async def create_game_type(
         game_type_data: SGameTypeCreate,
@@ -75,7 +74,6 @@ async def update_game_type(
         admin_user=Depends(get_current_admin_user),
         session: AsyncSession = Depends(get_session_with_commit)
 ):
-    # Исправленный вызов update с правильными параметрами
     updated_count = await GameTypeDAO.update(
         filter_by={"id": game_type_id},
         session=session,
