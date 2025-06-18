@@ -41,8 +41,56 @@
 Для запуска проекта требуется docker и .env в корне проекта с переменными окружения.
 В проекте настроен ci-cd через инструмент github actions.
 Если склонить проект к себе локально, подставить нужные переменные в окружение и поставить хост на localhost, то
-командой ниже можно поднять docker compose со всеми контейнерами
+командой ниже можно поднять docker compose со всеми контейнерами.
 
-```bash  
-cd docker compose up -d --build
-```  
+Нужно создать приватный и публичный сертификат для шифрования JWT в папке ```Gamers/backend/certs``` :
+jwt-private.pem и jwt-public.pem
+
+Также должен быть файл с переменными окружения .env в папке ```Gamers/.env```
+Там должны быть следующие переменные:
+
+```
+SECRET_KEY=
+ALGORITHM=
+ACCESS_TOKEN_EXPIRE_MINUTES=
+
+DB_HOST=db
+#DB_HOST=localhost
+DB_PORT=
+DB_USER=
+DB_NAME=
+DB_PASS=
+
+ADMIN_USERNAME=
+ADMIN_PASS=
+ADMIN_EMAIL=
+
+APP_SECRET_KEY=
+
+UKASSA_KEY=
+UKASSA_SHOP_ID=
+
+YANDEX_CLIENT_ID=
+YANDEX_CLIENT_SECRET=
+YANDEX_REDIRECT_URI=
+YANDEX_AUTH_URL=
+YANDEX_TOKEN_URL=
+YANDEX_USER_INFO_URL=
+```
+
+Также на сервере должны быть сгенерированы ssl сертификаты, я создавал их при помощи certbot. Они должны лежать в папке,
+указанной в docker-compose файле в контейнере nginx.
+
+Для поднятия приложение использовать команды:
+
+```bash
+git clone https://github.com/M1sterZag/Gamers.git
+```
+
+```bash
+cd YourDir
+```
+
+```bash
+docker compose up -d --build
+```
